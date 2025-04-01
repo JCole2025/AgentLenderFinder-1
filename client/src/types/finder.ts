@@ -35,12 +35,21 @@ export interface AgentFormData {
   interest: AgentInterest[];
   location: string;
   multiple_locations: boolean;
+  property_type: string;
+  purchase_timeline: AgentTimeline;
+  price_min: string;
+  price_max: string;
+  loan_started: boolean;
+  investment_properties_count: string;
   strategy: AgentStrategy[];
   timeline: AgentTimeline;
   contact: {
     name: string;
     email: string;
     phone: string;
+    city: string;
+    state: string;
+    zip: string;
   };
   terms_accepted: boolean;
 }

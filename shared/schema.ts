@@ -50,12 +50,21 @@ export const agentFinderSchema = z.object({
   interest: agentInterestSchema,
   location: z.string().min(1, "Please enter a location"),
   multiple_locations: z.boolean().optional(),
+  property_type: z.string().min(1, "Please specify property type"),
+  purchase_timeline: agentTimelineSchema,
+  price_min: z.string().min(1, "Please specify minimum price"),
+  price_max: z.string().min(1, "Please specify maximum price"),
+  loan_started: z.boolean().optional(),
+  investment_properties_count: z.string().min(1, "Please specify how many properties you have"),
   strategy: agentStrategySchema,
   timeline: agentTimelineSchema,
   contact: z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Please enter a valid email"),
     phone: z.string().min(1, "Phone number is required"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    zip: z.string().min(1, "ZIP code is required"),
   }),
   terms_accepted: z.literal(true, {
     errorMap: () => ({ message: "You must accept the terms to continue" })

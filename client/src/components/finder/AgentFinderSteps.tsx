@@ -2,6 +2,9 @@ import FormStep from "./FormStep";
 import { AgentFormData } from "@/types/finder";
 import CheckboxGroup from "./formFields/CheckboxGroup";
 import RadioGroup from "./formFields/RadioGroup";
+import PropertyTypeSelect from "./formFields/PropertyTypeSelect";
+import InvestmentDetailsFields from "./formFields/InvestmentDetailsFields";
+import ContactFormExtended from "./formFields/ContactFormExtended";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -90,7 +93,7 @@ export default function AgentFinderSteps({
         )}
       </FormStep>
 
-      {/* Step 2: Location */}
+      {/* Step 2: Location and Property Type */}
       <FormStep
         isActive={currentStep === 2}
         onNext={onNext}
@@ -99,43 +102,57 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={2}
         finderType="agent"
-        isValid={formData.location.trim() !== ''}
+        isValid={formData.location.trim() !== '' && formData.property_type.trim() !== ''}
         errors={errors}
-        title="Where are you looking to invest?"
-        subtitle="Enter city, state, or zip code"
+        title="Property Location & Type"
+        subtitle="Where & what are you looking to invest in?"
       >
-        <div className="mb-4">
-          <Input 
-            placeholder="City, state, or zip code"
-            value={formData.location}
-            onChange={(e) => updateFormData({ location: e.target.value })}
-            className="w-full"
-          />
-          {errors.location && (
-            <p className="text-red-500 text-sm mt-2">{errors.location}</p>
-          )}
-        </div>
-        
-        <div className="mt-6">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="agent_multiple_locations"
-              checked={formData.multiple_locations}
-              onCheckedChange={(checked) => 
-                updateFormData({ multiple_locations: checked as boolean })
-              }
-            />
-            <Label
-              htmlFor="agent_multiple_locations"
-              className="font-medium"
-            >
-              I'm open to multiple locations
+        <div className="space-y-6">
+          <div className="mb-4">
+            <Label htmlFor="location" className="font-medium">
+              Where are you looking to invest?
             </Label>
+            <Input 
+              id="location"
+              placeholder="City, state, or zip code (e.g. Colorado Springs, CO)"
+              value={formData.location}
+              onChange={(e) => updateFormData({ location: e.target.value })}
+              className={`w-full ${errors.location ? "border-red-500" : ""}`}
+            />
+            {errors.location && (
+              <p className="text-red-500 text-sm mt-2">{errors.location}</p>
+            )}
+          </div>
+          
+          <div className="mt-4">
+            <PropertyTypeSelect
+              selectedValue={formData.property_type}
+              onChange={(value) => updateFormData({ property_type: value })}
+              error={errors.property_type}
+            />
+          </div>
+          
+          <div className="mt-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="agent_multiple_locations"
+                checked={formData.multiple_locations}
+                onCheckedChange={(checked) => 
+                  updateFormData({ multiple_locations: checked as boolean })
+                }
+              />
+              <Label
+                htmlFor="agent_multiple_locations"
+                className="font-medium"
+              >
+                I'm open to multiple locations
+              </Label>
+            </div>
           </div>
         </div>
       </FormStep>
 
-      {/* Step 3: Investment Strategy */}
+      {/* Step 3: Timeline and Purchase Details */}
       <FormStep
         isActive={currentStep === 3}
         onNext={onNext}
@@ -143,6 +160,65 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={3}
+        finderType="agent"
+        isValid={
+          !!formData.purchase_timeline && 
+          formData.price_min.trim() !== '' && 
+          formData.price_max.trim() !== '' &&
+          formData.investment_properties_count.trim() !== ''
+        }
+        errors={errors}
+        title="Purchase Details"
+        subtitle="Tell us about your investment timeline and budget"
+      >
+        <div className="space-y-6">
+          <div>
+            <Label className="font-medium mb-2 block">
+              When are you looking to purchase in {formData.location}?
+            </Label>
+            <RadioGroup
+              options={[
+                { value: "asap", label: agentTimelineLabels.asap },
+                { value: "1_3_months", label: agentTimelineLabels["1_3_months"] },
+                { value: "3_6_months", label: agentTimelineLabels["3_6_months"] },
+                { value: "6_12_months", label: agentTimelineLabels["6_12_months"] },
+                { value: "just_researching", label: agentTimelineLabels.just_researching }
+              ]}
+              selectedValue={formData.purchase_timeline}
+              onChange={(value) => updateFormData({ purchase_timeline: value as any })}
+              name="agent_purchase_timeline"
+            />
+            {errors.purchase_timeline && (
+              <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
+            )}
+          </div>
+          
+          <InvestmentDetailsFields
+            priceMin={formData.price_min}
+            priceMax={formData.price_max}
+            loanStarted={formData.loan_started}
+            propertyCount={formData.investment_properties_count}
+            onPriceMinChange={(value) => updateFormData({ price_min: value })}
+            onPriceMaxChange={(value) => updateFormData({ price_max: value })}
+            onLoanStartedChange={(value) => updateFormData({ loan_started: value })}
+            onPropertyCountChange={(value) => updateFormData({ investment_properties_count: value })}
+            errors={{
+              priceMin: errors.price_min,
+              priceMax: errors.price_max,
+              propertyCount: errors.investment_properties_count
+            }}
+          />
+        </div>
+      </FormStep>
+
+      {/* Step 4: Investment Strategy */}
+      <FormStep
+        isActive={currentStep === 4}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        formData={formData}
+        updateFormData={updateFormData}
+        stepNumber={4}
         finderType="agent"
         isValid={formData.strategy.length > 0}
         errors={errors}
@@ -167,37 +243,6 @@ export default function AgentFinderSteps({
         )}
       </FormStep>
 
-      {/* Step 4: Timeline */}
-      <FormStep
-        isActive={currentStep === 4}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={4}
-        finderType="agent"
-        isValid={!!formData.timeline}
-        errors={errors}
-        title="What's your timeline?"
-        subtitle="When are you looking to invest?"
-      >
-        <RadioGroup
-          options={[
-            { value: "asap", label: agentTimelineLabels.asap },
-            { value: "1_3_months", label: agentTimelineLabels["1_3_months"] },
-            { value: "3_6_months", label: agentTimelineLabels["3_6_months"] },
-            { value: "6_12_months", label: agentTimelineLabels["6_12_months"] },
-            { value: "just_researching", label: agentTimelineLabels.just_researching }
-          ]}
-          selectedValue={formData.timeline}
-          onChange={(value) => updateFormData({ timeline: value as any })}
-          name="agent_timeline"
-        />
-        {errors.timeline && (
-          <p className="text-red-500 text-sm mt-2">{errors.timeline}</p>
-        )}
-      </FormStep>
-
       {/* Step 5: Contact Information */}
       <FormStep
         isActive={currentStep === 5}
@@ -210,7 +255,10 @@ export default function AgentFinderSteps({
         isValid={
           !!formData.contact.name.trim() && 
           !!formData.contact.email.trim() && 
-          !!formData.contact.phone.trim() && 
+          !!formData.contact.phone.trim() &&
+          !!formData.contact.city.trim() &&
+          !!formData.contact.state.trim() &&
+          !!formData.contact.zip.trim() &&
           formData.terms_accepted
         }
         errors={errors}
@@ -219,58 +267,40 @@ export default function AgentFinderSteps({
         nextLabel="Review"
       >
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="agent_full_name" className="block text-sm font-medium text-neutral-darker mb-1">
-              Full Name
-            </Label>
-            <Input
-              id="agent_full_name"
-              placeholder="Your full name"
-              value={formData.contact.name}
-              onChange={(e) => updateFormData({ 
-                contact: { ...formData.contact, name: e.target.value } 
-              })}
-            />
-            {errors['contact.name'] && (
-              <p className="text-red-500 text-sm mt-1">{errors['contact.name']}</p>
-            )}
-          </div>
-          
-          <div>
-            <Label htmlFor="agent_email" className="block text-sm font-medium text-neutral-darker mb-1">
-              Email Address
-            </Label>
-            <Input
-              id="agent_email"
-              type="email"
-              placeholder="your@email.com"
-              value={formData.contact.email}
-              onChange={(e) => updateFormData({ 
-                contact: { ...formData.contact, email: e.target.value } 
-              })}
-            />
-            {errors['contact.email'] && (
-              <p className="text-red-500 text-sm mt-1">{errors['contact.email']}</p>
-            )}
-          </div>
-          
-          <div>
-            <Label htmlFor="agent_phone" className="block text-sm font-medium text-neutral-darker mb-1">
-              Phone Number
-            </Label>
-            <Input
-              id="agent_phone"
-              type="tel"
-              placeholder="(555) 123-4567"
-              value={formData.contact.phone}
-              onChange={(e) => updateFormData({ 
-                contact: { ...formData.contact, phone: e.target.value } 
-              })}
-            />
-            {errors['contact.phone'] && (
-              <p className="text-red-500 text-sm mt-1">{errors['contact.phone']}</p>
-            )}
-          </div>
+          <ContactFormExtended
+            name={formData.contact.name}
+            email={formData.contact.email}
+            phone={formData.contact.phone}
+            city={formData.contact.city}
+            state={formData.contact.state}
+            zip={formData.contact.zip}
+            onNameChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, name: value } 
+            })}
+            onEmailChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, email: value } 
+            })}
+            onPhoneChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, phone: value } 
+            })}
+            onCityChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, city: value } 
+            })}
+            onStateChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, state: value } 
+            })}
+            onZipChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, zip: value } 
+            })}
+            errors={{
+              name: errors['contact.name'],
+              email: errors['contact.email'],
+              phone: errors['contact.phone'],
+              city: errors['contact.city'],
+              state: errors['contact.state'],
+              zip: errors['contact.zip']
+            }}
+          />
           
           <div className="pt-2">
             <div className="flex items-start">

@@ -21,12 +21,21 @@ export function useFinderForm(finderType: FinderType) {
     interest: [],
     location: "",
     multiple_locations: false,
+    property_type: "",
+    purchase_timeline: "" as any,
+    price_min: "",
+    price_max: "",
+    loan_started: false,
+    investment_properties_count: "",
     strategy: [],
     timeline: "" as any,
     contact: {
       name: "",
       email: "",
-      phone: ""
+      phone: "",
+      city: "",
+      state: "",
+      zip: ""
     },
     terms_accepted: false
   };
@@ -69,10 +78,20 @@ export function useFinderForm(finderType: FinderType) {
 
   // Function to update form data
   const updateFormData = (data: Partial<AgentFormData | LenderFormData>) => {
-    setFormData(prev => ({ ...prev, ...data }));
+    if (finderType === "agent") {
+      setFormData(prev => {
+        const agentPrev = prev as AgentFormData;
+        return { ...agentPrev, ...data };
+      });
+    } else {
+      setFormData(prev => {
+        const lenderPrev = prev as LenderFormData;
+        return { ...lenderPrev, ...data };
+      });
+    }
     
     // Validate the updated data
-    validateForm({ ...formData, ...data });
+    validateForm({ ...formData, ...data } as AgentFormData | LenderFormData);
   };
 
   // Validate form data using Zod schemas
