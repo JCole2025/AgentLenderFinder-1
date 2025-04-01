@@ -17,6 +17,7 @@ interface InvestmentDetailsProps {
     priceMax?: string;
     propertyCount?: string;
   };
+  transactionType?: 'buy' | 'sell'; // Optional parameter to show/hide fields based on transaction type
 }
 
 export default function InvestmentDetailsFields({
@@ -28,14 +29,15 @@ export default function InvestmentDetailsFields({
   onPriceMaxChange,
   onLoanStartedChange,
   onPropertyCountChange,
-  errors
+  errors,
+  transactionType = 'buy' // Default to buy if not specified
 }: InvestmentDetailsProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="price-min" className="font-medium">
-            Minimum Purchase Price
+            {transactionType === 'buy' ? 'Minimum Purchase Price' : 'Minimum Sale Price'}
           </Label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
@@ -53,7 +55,7 @@ export default function InvestmentDetailsFields({
         
         <div className="space-y-2">
           <Label htmlFor="price-max" className="font-medium">
-            Maximum Purchase Price
+            {transactionType === 'buy' ? 'Maximum Purchase Price' : 'Maximum Sale Price'}
           </Label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
@@ -70,16 +72,19 @@ export default function InvestmentDetailsFields({
         </div>
       </div>
       
-      <div className="flex items-center space-x-2">
-        <Switch
-          id="loan-started"
-          checked={loanStarted}
-          onCheckedChange={onLoanStartedChange}
-        />
-        <Label htmlFor="loan-started" className="font-medium">
-          I have already started the loan process
-        </Label>
-      </div>
+      {/* Only show loan process for buy transactions */}
+      {transactionType === 'buy' && (
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="loan-started"
+            checked={loanStarted}
+            onCheckedChange={onLoanStartedChange}
+          />
+          <Label htmlFor="loan-started" className="font-medium">
+            I have already started the loan process
+          </Label>
+        </div>
+      )}
       
       <div className="space-y-2">
         <Label htmlFor="property-count" className="font-medium">

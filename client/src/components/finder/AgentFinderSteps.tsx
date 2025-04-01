@@ -71,8 +71,7 @@ export default function AgentFinderSteps({
         <RadioGroup
           options={[
             { value: "buy", label: agentTransactionTypeLabels.buy, description: agentTransactionTypeDescriptions.buy },
-            { value: "sell", label: agentTransactionTypeLabels.sell, description: agentTransactionTypeDescriptions.sell },
-            { value: "both", label: agentTransactionTypeLabels.both, description: agentTransactionTypeDescriptions.both }
+            { value: "sell", label: agentTransactionTypeLabels.sell, description: agentTransactionTypeDescriptions.sell }
           ]}
           selectedValue={formData.transaction_type}
           onChange={(value) => updateFormData({ transaction_type: value as any })}
@@ -92,15 +91,18 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={2}
         finderType="agent"
-        isValid={formData.location.trim() !== '' && formData.property_type.trim() !== ''}
+        isValid={formData.location.trim() !== '' && formData.property_type.trim() !== '' && 
+          (formData.transaction_type !== 'sell' || (formData.property_address && formData.property_address.trim() !== ''))}
         errors={errors}
-        title="Property Location & Type"
-        subtitle="Where & what are you looking to invest in?"
+        title={formData.transaction_type === 'buy' ? "Property Location & Type" : "Property Details"}
+        subtitle={formData.transaction_type === 'buy' ? "Where & what are you looking to invest in?" : "Tell us about the property you want to sell"}
       >
         <div className="space-y-6">
           <div className="mb-4">
             <Label htmlFor="location" className="font-medium">
-              Where are you looking to invest?
+              {formData.transaction_type === 'buy' 
+                ? "Where are you looking to invest?" 
+                : "What city/region is your property located in?"}
             </Label>
             <Input 
               id="location"
@@ -114,6 +116,24 @@ export default function AgentFinderSteps({
             )}
           </div>
           
+          {formData.transaction_type === 'sell' && (
+            <div className="mb-4">
+              <Label htmlFor="property_address" className="font-medium">
+                What is the property address?
+              </Label>
+              <Input 
+                id="property_address"
+                placeholder="Full property address"
+                value={formData.property_address || ''}
+                onChange={(e) => updateFormData({ property_address: e.target.value })}
+                className={`w-full ${errors.property_address ? "border-red-500" : ""}`}
+              />
+              {errors.property_address && (
+                <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
+              )}
+            </div>
+          )}
+          
           <div className="mt-4">
             <PropertyTypeSelect
               selectedValue={formData.property_type}
@@ -122,27 +142,29 @@ export default function AgentFinderSteps({
             />
           </div>
           
-          <div className="mt-4">
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="agent_multiple_locations"
-                checked={formData.multiple_locations}
-                onCheckedChange={(checked) => 
-                  updateFormData({ multiple_locations: checked as boolean })
-                }
-              />
-              <Label
-                htmlFor="agent_multiple_locations"
-                className="font-medium"
-              >
-                I'm open to multiple locations
-              </Label>
+          {formData.transaction_type === 'buy' && (
+            <div className="mt-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="agent_multiple_locations"
+                  checked={formData.multiple_locations}
+                  onCheckedChange={(checked) => 
+                    updateFormData({ multiple_locations: checked as boolean })
+                  }
+                />
+                <Label
+                  htmlFor="agent_multiple_locations"
+                  className="font-medium"
+                >
+                  I'm open to multiple locations
+                </Label>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </FormStep>
 
-      {/* Step 3: Timeline and Purchase Details */}
+      {/* Step 3: Timeline and Purchase/Sale Details */}
       <FormStep
         isActive={currentStep === 3}
         onNext={onNext}
@@ -152,36 +174,40 @@ export default function AgentFinderSteps({
         stepNumber={3}
         finderType="agent"
         isValid={
-          !!formData.purchase_timeline && 
+          (formData.transaction_type === 'buy' ? !!formData.purchase_timeline : true) && 
           formData.price_min.trim() !== '' && 
           formData.price_max.trim() !== '' &&
           formData.investment_properties_count.trim() !== ''
         }
         errors={errors}
-        title="Purchase Details"
-        subtitle="Tell us about your investment timeline and budget"
+        title={formData.transaction_type === 'buy' ? "Purchase Details" : "Sale Details"}
+        subtitle={formData.transaction_type === 'buy' 
+          ? "Tell us about your investment timeline and budget" 
+          : "Tell us about your property sale expectations"}
       >
         <div className="space-y-6">
-          <div>
-            <Label className="font-medium mb-2 block">
-              When are you looking to purchase in {formData.location}?
-            </Label>
-            <RadioGroup
-              options={[
-                { value: "asap", label: agentTimelineLabels.asap },
-                { value: "1_3_months", label: agentTimelineLabels["1_3_months"] },
-                { value: "3_6_months", label: agentTimelineLabels["3_6_months"] },
-                { value: "6_12_months", label: agentTimelineLabels["6_12_months"] },
-                { value: "just_researching", label: agentTimelineLabels.just_researching }
-              ]}
-              selectedValue={formData.purchase_timeline}
-              onChange={(value) => updateFormData({ purchase_timeline: value as any })}
-              name="agent_purchase_timeline"
-            />
-            {errors.purchase_timeline && (
-              <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
-            )}
-          </div>
+          {formData.transaction_type === 'buy' && (
+            <div>
+              <Label className="font-medium mb-2 block">
+                When are you looking to purchase in {formData.location}?
+              </Label>
+              <RadioGroup
+                options={[
+                  { value: "asap", label: agentTimelineLabels.asap },
+                  { value: "1_3_months", label: agentTimelineLabels["1_3_months"] },
+                  { value: "3_6_months", label: agentTimelineLabels["3_6_months"] },
+                  { value: "6_12_months", label: agentTimelineLabels["6_12_months"] },
+                  { value: "just_researching", label: agentTimelineLabels.just_researching }
+                ]}
+                selectedValue={formData.purchase_timeline}
+                onChange={(value) => updateFormData({ purchase_timeline: value as any })}
+                name="agent_purchase_timeline"
+              />
+              {errors.purchase_timeline && (
+                <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
+              )}
+            </div>
+          )}
           
           <InvestmentDetailsFields
             priceMin={formData.price_min}
@@ -197,6 +223,7 @@ export default function AgentFinderSteps({
               priceMax: errors.price_max,
               propertyCount: errors.investment_properties_count
             }}
+            transactionType={formData.transaction_type}
           />
         </div>
       </FormStep>

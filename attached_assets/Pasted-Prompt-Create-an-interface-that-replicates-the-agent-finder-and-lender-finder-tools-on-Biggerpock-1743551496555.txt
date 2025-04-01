@@ -1,0 +1,47 @@
+Prompt: 
+
+Create an interface that replicates the agent finder and lender finder tools on Biggerpockets.com. It should have the same questions and same consumer flow. At the end take the information captured and put it into a webhook format. Each question should have a head and the answers to the questions should model the options that each question in the tool has. 
+
+Include the following questions for agent finder: 
+
+City, State 
+Property Type
+Are you looking to buy or sell a property? 
+If buy, then ask - When are you looking to purchase? 
+If sell, ask for the property address
+What's your target purchase price? Min & Max
+Have you started the loan process?
+How many investment properties do you have?
+
+Contact info: 
+Full name
+Phone
+Email 
+City, state, zip code of the market where investor is looking to purchase
+
+
+Include the following questions for Lender finder: 
+
+finance type like, purchase vs refi vs heloc. Also use this photo as a goog representation of the style.Include property type and finance type (purchase, refi, heloc)
+
+The lender finder should also include property type and also
+
+
+City, State 
+Property Type
+When are you looking to purchase or sell? 
+What's your target purchase price? Min & Max
+How many investment properties do you have?
+
+Contact info: 
+Full name
+Phone
+Email 
+City, state, zip code of the market where investor is looking to purchase
+
+More notes:When people complete the form store all of the information in a table in a database title "lead information" And also send a webhook with all of the lead information, I can provide the end point URL later. Make your own headers and data types based on the promot for now. The style should match what I provided. The form information should save midway and be saved to another table which is titled partial form fills - this should also be sent to an endpoint URL that I will define later - lake a variable to store all of the URL ends points that I will use later. Failed webhook submission should go into another table called "lead submission failures - also wait for me to send a URL end point to that - for now store in a database. 
+
+This app needs to be an i-frame or widget that can easily be embedded into a website through a simple HTML code. 
+
+
+Use this photo as a style reference.

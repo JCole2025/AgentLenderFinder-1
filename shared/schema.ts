@@ -18,8 +18,7 @@ export const finderSubmissions = pgTable("finder_submissions", {
 // Validation schemas for agent finder
 export const agentTransactionTypeSchema = z.enum([
   "buy",
-  "sell",
-  "both"
+  "sell"
 ], {
   required_error: "Please select a transaction type",
 });
@@ -52,6 +51,7 @@ export const agentFinderSchema = z.object({
   multiple_locations: z.boolean().optional(),
   property_type: z.string().min(1, "Please specify property type"),
   purchase_timeline: agentTimelineSchema,
+  property_address: z.string().optional(),
   price_min: z.string().min(1, "Please specify minimum price"),
   price_max: z.string().min(1, "Please specify maximum price"),
   loan_started: z.boolean().optional(),

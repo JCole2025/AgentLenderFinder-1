@@ -13,7 +13,7 @@ export interface FormStepProps {
 }
 
 // Agent Finder Types
-export type AgentTransactionType = "buy" | "sell" | "both";
+export type AgentTransactionType = "buy" | "sell";
 
 export type AgentStrategy = 
   | "buy_and_hold" 
@@ -37,6 +37,7 @@ export interface AgentFormData {
   multiple_locations: boolean;
   property_type: string;
   purchase_timeline: AgentTimeline;
+  property_address?: string; // For sell option
   price_min: string;
   price_max: string;
   loan_started: boolean;
@@ -103,14 +104,12 @@ export interface FinderFormProps {
 // Mapping of values to display labels
 export const agentTransactionTypeLabels: Record<AgentTransactionType, string> = {
   "buy": "Buy property",
-  "sell": "Sell property",
-  "both": "Both buy and sell property"
+  "sell": "Sell property"
 };
 
 export const agentTransactionTypeDescriptions: Record<AgentTransactionType, string> = {
   "buy": "I'm looking to purchase a property",
-  "sell": "I'm looking to sell a property",
-  "both": "I need help with both buying and selling"
+  "sell": "I'm looking to sell a property"
 };
 
 export const agentStrategyLabels: Record<AgentStrategy, string> = {

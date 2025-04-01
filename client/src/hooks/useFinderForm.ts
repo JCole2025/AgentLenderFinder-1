@@ -23,6 +23,7 @@ export function useFinderForm(finderType: FinderType) {
     multiple_locations: false,
     property_type: "",
     purchase_timeline: "" as any,
+    property_address: "",
     price_min: "",
     price_max: "",
     loan_started: false,
