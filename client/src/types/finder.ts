@@ -85,6 +85,10 @@ export interface LenderFormData {
     name: string;
     email: string;
     phone: string;
+    city: string;
+    state: string;
+    zip: string;
+    message?: string;
   };
   terms_accepted: boolean;
 }

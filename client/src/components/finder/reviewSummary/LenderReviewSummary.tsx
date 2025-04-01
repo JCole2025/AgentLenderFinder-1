@@ -43,9 +43,17 @@ export default function LenderReviewSummary({ formData }: LenderReviewSummaryPro
         <p className="mt-1 text-sm whitespace-pre-line">
           {formData.contact.name}<br/>
           {formData.contact.email}<br/>
-          {formData.contact.phone}
+          {formData.contact.phone}<br/>
+          {formData.contact.city}, {formData.contact.state} {formData.contact.zip}
         </p>
       </div>
+      
+      {formData.contact.message && (
+        <div>
+          <h3 className="font-medium text-neutral-darker">Your message to lenders:</h3>
+          <p className="mt-1 text-sm">{formData.contact.message}</p>
+        </div>
+      )}
     </div>
   );
 }

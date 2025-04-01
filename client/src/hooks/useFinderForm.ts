@@ -49,7 +49,11 @@ export function useFinderForm(finderType: FinderType) {
     contact: {
       name: "",
       email: "",
-      phone: ""
+      phone: "",
+      city: "",
+      state: "",
+      zip: "",
+      message: ""
     },
     terms_accepted: false
   };

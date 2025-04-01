@@ -4,6 +4,7 @@ import RadioGroup from "./formFields/RadioGroup";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   lenderLoanPurposeLabels,
   lenderLoanPurposeDescriptions, 
@@ -12,6 +13,7 @@ import {
   lenderCreditScoreLabels
 } from "@/types/finder";
 import LenderReviewSummary from "./reviewSummary/LenderReviewSummary";
+import ContactFormExtended from "./formFields/ContactFormExtended";
 
 interface LenderFinderStepsProps {
   currentStep: number;
@@ -169,66 +171,66 @@ export default function LenderFinderSteps({
         isValid={
           !!formData.contact.name.trim() && 
           !!formData.contact.email.trim() && 
-          !!formData.contact.phone.trim() && 
+          !!formData.contact.phone.trim() &&
+          !!formData.contact.city.trim() &&
+          !!formData.contact.state.trim() &&
+          !!formData.contact.zip.trim() &&
           formData.terms_accepted
         }
         errors={errors}
-        title="Your contact information"
-        subtitle="How can lenders reach you?"
+        title="What's your contact info?"
+        subtitle="On the next page you will see your lender matches & bios to be able to select who, if anyone, gets your investment answers and contact details."
         nextLabel="Review"
       >
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="lender_full_name" className="block text-sm font-medium text-neutral-darker mb-1">
-              Full Name
-            </Label>
-            <Input
-              id="lender_full_name"
-              placeholder="Your full name"
-              value={formData.contact.name}
-              onChange={(e) => updateFormData({ 
-                contact: { ...formData.contact, name: e.target.value } 
-              })}
-            />
-            {errors['contact.name'] && (
-              <p className="text-red-500 text-sm mt-1">{errors['contact.name']}</p>
-            )}
-          </div>
+        <div className="space-y-6">
+          <ContactFormExtended
+            name={formData.contact.name}
+            email={formData.contact.email}
+            phone={formData.contact.phone}
+            city={formData.contact.city}
+            state={formData.contact.state}
+            zip={formData.contact.zip}
+            onNameChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, name: value } 
+            })}
+            onEmailChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, email: value } 
+            })}
+            onPhoneChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, phone: value } 
+            })}
+            onCityChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, city: value } 
+            })}
+            onStateChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, state: value } 
+            })}
+            onZipChange={(value) => updateFormData({ 
+              contact: { ...formData.contact, zip: value } 
+            })}
+            errors={{
+              name: errors['contact.name'],
+              email: errors['contact.email'],
+              phone: errors['contact.phone'],
+              city: errors['contact.city'],
+              state: errors['contact.state'],
+              zip: errors['contact.zip']
+            }}
+          />
           
           <div>
-            <Label htmlFor="lender_email" className="block text-sm font-medium text-neutral-darker mb-1">
-              Email Address
+            <Label htmlFor="message" className="font-medium">
+              Message (optional)
             </Label>
-            <Input
-              id="lender_email"
-              type="email"
-              placeholder="your@email.com"
-              value={formData.contact.email}
+            <Textarea
+              id="message"
+              placeholder="Lenders respond at a faster rate if you add a brief personal message. For example, 'I am an out-of-state investor looking for my first rental property.'"
+              value={formData.contact.message || ''}
               onChange={(e) => updateFormData({ 
-                contact: { ...formData.contact, email: e.target.value } 
+                contact: { ...formData.contact, message: e.target.value } 
               })}
+              className="h-24 mt-2"
             />
-            {errors['contact.email'] && (
-              <p className="text-red-500 text-sm mt-1">{errors['contact.email']}</p>
-            )}
-          </div>
-          
-          <div>
-            <Label htmlFor="lender_phone" className="block text-sm font-medium text-neutral-darker mb-1">
-              Phone Number
-            </Label>
-            <Input
-              id="lender_phone"
-              type="tel"
-              placeholder="(555) 123-4567"
-              value={formData.contact.phone}
-              onChange={(e) => updateFormData({ 
-                contact: { ...formData.contact, phone: e.target.value } 
-              })}
-            />
-            {errors['contact.phone'] && (
-              <p className="text-red-500 text-sm mt-1">{errors['contact.phone']}</p>
-            )}
           </div>
           
           <div className="pt-2">

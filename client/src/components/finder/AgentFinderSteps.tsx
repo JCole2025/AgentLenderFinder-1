@@ -262,11 +262,11 @@ export default function AgentFinderSteps({
           formData.terms_accepted
         }
         errors={errors}
-        title="Your contact information"
-        subtitle="How can agents reach you?"
+        title="What's your contact info?"
+        subtitle="On the next page you will see your agent matches & bios to be able to select who, if anyone, gets your investment answers and contact details."
         nextLabel="Review"
       >
-        <div className="space-y-4">
+        <div className="space-y-6">
           <ContactFormExtended
             name={formData.contact.name}
             email={formData.contact.email}
@@ -313,7 +313,7 @@ export default function AgentFinderSteps({
                 className="mt-1"
               />
               <Label htmlFor="agent_terms" className="ml-3 text-sm">
-                I agree to the <a href="#" className="text-primary">Terms of Service</a> and <a href="#" className="text-primary">Privacy Policy</a>. I consent to be contacted by real estate professionals.
+                I agree to the <a href="#" className="text-blue-500 hover:text-blue-700">Terms of Service</a> and <a href="#" className="text-blue-500 hover:text-blue-700">Privacy Policy</a>. I consent to be contacted by real estate professionals.
               </Label>
             </div>
             {errors.terms_accepted && (

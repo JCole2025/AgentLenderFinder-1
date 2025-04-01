@@ -111,6 +111,10 @@ export const lenderFinderSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Please enter a valid email"),
     phone: z.string().min(1, "Phone number is required"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    zip: z.string().min(1, "ZIP code is required"),
+    message: z.string().optional(),
   }),
   terms_accepted: z.literal(true, {
     errorMap: () => ({ message: "You must accept the terms to continue" })
