@@ -1,0 +1,70 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { z } from "zod";
+import { agentFinderSchema, lenderFinderSchema } from "@shared/schema";
+import axios from "axios";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // API endpoint to submit the finder form data
+  app.post("/api/submit-finder", async (req, res) => {
+    try {
+      const { finderType, formData } = req.body;
+
+      // Validate based on finderType
+      if (finderType === "agent") {
+        agentFinderSchema.parse(formData);
+      } else if (finderType === "lender") {
+        lenderFinderSchema.parse(formData);
+      } else {
+        return res.status(400).json({ message: "Invalid finder type" });
+      }
+
+      // Store the submission
+      const submission = await storage.createFinderSubmission({
+        finderType,
+        submissionData: formData,
+        name: formData.contact.name,
+        email: formData.contact.email,
+        phone: formData.contact.phone,
+        submittedAt: new Date().toISOString(),
+      });
+
+      // Prepare webhook data
+      const webhookData = {
+        finder_type: finderType,
+        timestamp: submission.submittedAt,
+        data: formData
+      };
+
+      // Send to webhook - in a real app, this would use a proper webhook URL
+      // For demo, we'll use a test webhook or log to console
+      const webhookUrl = process.env.WEBHOOK_URL || 'https://webhook.site/your-test-id';
+      
+      try {
+        // Would call a real webhook in production
+        const webhookResponse = await axios.post(webhookUrl, webhookData);
+        await storage.updateWebhookStatus(submission.id, "success", JSON.stringify(webhookResponse.data));
+      } catch (error) {
+        // Log webhook error but don't fail the submission
+        console.error("Webhook error:", error);
+        await storage.updateWebhookStatus(submission.id, "failed", JSON.stringify(error));
+      }
+
+      res.status(200).json({ success: true, id: submission.id });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      
+      console.error("Submission error:", error);
+      res.status(500).json({ message: "An error occurred processing your submission" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}
