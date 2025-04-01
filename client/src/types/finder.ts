@@ -13,7 +13,7 @@ export interface FormStepProps {
 }
 
 // Agent Finder Types
-export type AgentInterest = "buy_investment_property" | "sell_investment_property" | "primary_residence";
+export type AgentTransactionType = "buy" | "sell" | "both";
 
 export type AgentStrategy = 
   | "buy_and_hold" 
@@ -32,7 +32,7 @@ export type AgentTimeline =
   | "just_researching";
 
 export interface AgentFormData {
-  interest: AgentInterest[];
+  transaction_type: AgentTransactionType;
   location: string;
   multiple_locations: boolean;
   property_type: string;
@@ -101,16 +101,16 @@ export interface FinderFormProps {
 }
 
 // Mapping of values to display labels
-export const agentInterestLabels: Record<AgentInterest, string> = {
-  "buy_investment_property": "Buy an investment property",
-  "sell_investment_property": "Sell an investment property",
-  "primary_residence": "Buy or sell a primary residence"
+export const agentTransactionTypeLabels: Record<AgentTransactionType, string> = {
+  "buy": "Buy property",
+  "sell": "Sell property",
+  "both": "Both buy and sell property"
 };
 
-export const agentInterestDescriptions: Record<AgentInterest, string> = {
-  "buy_investment_property": "Buy residential or commercial property for investment purposes",
-  "sell_investment_property": "Sell residential or commercial property you own for investment",
-  "primary_residence": "For your personal home"
+export const agentTransactionTypeDescriptions: Record<AgentTransactionType, string> = {
+  "buy": "I'm looking to purchase a property",
+  "sell": "I'm looking to sell a property",
+  "both": "I need help with both buying and selling"
 };
 
 export const agentStrategyLabels: Record<AgentStrategy, string> = {

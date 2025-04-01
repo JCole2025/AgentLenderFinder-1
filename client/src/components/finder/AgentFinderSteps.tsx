@@ -1,6 +1,5 @@
 import FormStep from "./FormStep";
-import { AgentFormData } from "@/types/finder";
-import CheckboxGroup from "./formFields/CheckboxGroup";
+import { AgentFormData, AgentTransactionType } from "@/types/finder";
 import RadioGroup from "./formFields/RadioGroup";
 import PropertyTypeSelect from "./formFields/PropertyTypeSelect";
 import InvestmentDetailsFields from "./formFields/InvestmentDetailsFields";
@@ -8,9 +7,10 @@ import ContactFormExtended from "./formFields/ContactFormExtended";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import CheckboxGroup from "./formFields/CheckboxGroup";
 import { 
-  agentInterestLabels, 
-  agentInterestDescriptions,
+  agentTransactionTypeLabels,
+  agentTransactionTypeDescriptions,
   agentStrategyLabels,
   agentStrategyDescriptions,
   agentTimelineLabels
@@ -38,17 +38,6 @@ export default function AgentFinderSteps({
   errors,
   isValid
 }: AgentFinderStepsProps) {
-  const handleInterestChange = (value: string, checked: boolean) => {
-    if (checked) {
-      updateFormData({ 
-        interest: [...formData.interest, value as any] 
-      });
-    } else {
-      updateFormData({ 
-        interest: formData.interest.filter(i => i !== value) 
-      });
-    }
-  };
 
   const handleStrategyChange = (value: string, checked: boolean) => {
     if (checked) {
@@ -64,7 +53,7 @@ export default function AgentFinderSteps({
 
   return (
     <>
-      {/* Step 1: Investment Interest */}
+      {/* Step 1: Transaction Type */}
       <FormStep
         isActive={currentStep === 1}
         onNext={onNext}
@@ -73,23 +62,24 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={1}
         finderType="agent"
-        isValid={formData.interest.length > 0}
+        isValid={!!formData.transaction_type}
         errors={errors}
-        title="What are you interested in?"
-        subtitle="Select all that apply"
+        title="What are you looking to do?"
+        subtitle="Select your real estate transaction goal"
         showPrevious={false}
       >
-        <CheckboxGroup
+        <RadioGroup
           options={[
-            { value: "buy_investment_property", label: agentInterestLabels.buy_investment_property, description: agentInterestDescriptions.buy_investment_property },
-            { value: "sell_investment_property", label: agentInterestLabels.sell_investment_property, description: agentInterestDescriptions.sell_investment_property },
-            { value: "primary_residence", label: agentInterestLabels.primary_residence, description: agentInterestDescriptions.primary_residence }
+            { value: "buy", label: agentTransactionTypeLabels.buy, description: agentTransactionTypeDescriptions.buy },
+            { value: "sell", label: agentTransactionTypeLabels.sell, description: agentTransactionTypeDescriptions.sell },
+            { value: "both", label: agentTransactionTypeLabels.both, description: agentTransactionTypeDescriptions.both }
           ]}
-          selectedValues={formData.interest}
-          onChange={handleInterestChange}
+          selectedValue={formData.transaction_type}
+          onChange={(value) => updateFormData({ transaction_type: value as any })}
+          name="agent_transaction_type"
         />
-        {errors.interest && (
-          <p className="text-red-500 text-sm mt-2">{errors.interest}</p>
+        {errors.transaction_type && (
+          <p className="text-red-500 text-sm mt-2">{errors.transaction_type}</p>
         )}
       </FormStep>
 

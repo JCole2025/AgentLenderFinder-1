@@ -16,13 +16,13 @@ export const finderSubmissions = pgTable("finder_submissions", {
 });
 
 // Validation schemas for agent finder
-export const agentInterestSchema = z.array(
-  z.enum([
-    "buy_investment_property",
-    "sell_investment_property",
-    "primary_residence"
-  ])
-).min(1, "Please select at least one option");
+export const agentTransactionTypeSchema = z.enum([
+  "buy",
+  "sell",
+  "both"
+], {
+  required_error: "Please select a transaction type",
+});
 
 export const agentStrategySchema = z.array(
   z.enum([
@@ -47,7 +47,7 @@ export const agentTimelineSchema = z.enum([
 });
 
 export const agentFinderSchema = z.object({
-  interest: agentInterestSchema,
+  transaction_type: agentTransactionTypeSchema,
   location: z.string().min(1, "Please enter a location"),
   multiple_locations: z.boolean().optional(),
   property_type: z.string().min(1, "Please specify property type"),

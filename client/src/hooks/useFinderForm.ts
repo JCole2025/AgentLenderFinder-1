@@ -18,7 +18,7 @@ export function useFinderForm(finderType: FinderType) {
   
   // Initial form state for agent finder
   const initialAgentFormData: AgentFormData = {
-    interest: [],
+    transaction_type: "" as any,
     location: "",
     multiple_locations: false,
     property_type: "",
