@@ -268,13 +268,12 @@ export default function AgentFinderSteps({
                 { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
                 { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" }
               ]}
-              selectedValue={formData.purchase_timeline}
+              selectedValue={formData.purchase_timeline === undefined ? "" : formData.purchase_timeline}
               onChange={(value) => updateFormData({ 
-                purchase_timeline: value === 'default' ? undefined : value as any,
-                timeline: value === 'default' ? undefined : value as any
+                purchase_timeline: value === "default" ? undefined : value as any,
+                timeline: value === "default" ? undefined : value as any
               })}
               name="agent_purchase_timeline"
-              autoAdvance={true}
               onNext={onNext}
             />
             {errors.purchase_timeline && (

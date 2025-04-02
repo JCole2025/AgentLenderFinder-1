@@ -49,14 +49,15 @@ export default function ButtonRadioGroup({
 }: ButtonRadioGroupProps) {
 
   const handleOptionClick = (value: string) => {
-    onChange(value);
+    // If clicking the same value, deselect it
+    const newValue = selectedValue === value ? undefined : value;
+    onChange(newValue);
 
-    // If autoAdvance is enabled and the onNext function is provided,
-    // automatically go to the next step after a small delay
-    if (autoAdvance && onNext && value) {
+    // Only auto-advance if we're selecting a new value (not deselecting)
+    if (autoAdvance && onNext && newValue) {
       setTimeout(() => {
         onNext();
-      }, 400); // Small delay for visual feedback
+      }, 400);
     }
   };
 
