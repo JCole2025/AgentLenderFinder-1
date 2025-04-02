@@ -19,7 +19,20 @@ export default function FinderForm({
   } = useFinderForm(finderType);
 
   const handleNext = () => {
-    if (currentStep < 6) {
+    // Get max steps based on finder type and transaction type
+    let maxSteps = 13; // Default for agent buy
+    
+    if (finderType === 'lender') {
+      maxSteps = 6;
+    } else if (finderType === 'agent') {
+      // Need to cast to access transaction_type
+      const agentData = formData as any;
+      if (agentData.transaction_type === 'sell') {
+        maxSteps = 11;
+      }
+    }
+    
+    if (currentStep < maxSteps) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -42,7 +55,7 @@ export default function FinderForm({
       {finderType === 'agent' ? (
         <AgentFinderSteps
           currentStep={currentStep}
-          formData={formData}
+          formData={formData as any} // Use type assertion to avoid TS errors
           updateFormData={updateFormData}
           onNext={handleNext}
           onPrevious={handlePrevious}
@@ -53,7 +66,7 @@ export default function FinderForm({
       ) : (
         <LenderFinderSteps
           currentStep={currentStep}
-          formData={formData}
+          formData={formData as any} // Use type assertion to avoid TS errors
           updateFormData={updateFormData}
           onNext={handleNext}
           onPrevious={handlePrevious}

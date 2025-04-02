@@ -58,7 +58,7 @@ export default function FinderApp() {
               
               <ProgressBar 
                 currentStep={currentStep} 
-                totalSteps={finderType === "agent" ? 6 : 5}
+                totalSteps={finderType === "agent" ? 13 : 6}
                 finderType={finderType}
               />
               
