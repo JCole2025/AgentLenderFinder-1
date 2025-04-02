@@ -378,7 +378,7 @@ export default function AgentFinderSteps({
         )}
         errors={errors}
         title="What's your contact info?"
-        subtitle="Please provide your contact information so agents can reach you"
+        subtitle="Ready to get matched with 2 agents? Please provide your contact information so agents can reach you"
       >
         <div className="space-y-6">
           <ContactFormExtended
