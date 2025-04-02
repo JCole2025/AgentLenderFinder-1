@@ -239,7 +239,7 @@ export default function AgentFinderSteps({
           <div>
             <ButtonRadioGroup
               options={[
-                { value: "asap", label: "ASAP", description: "I'm ready to make a move now" },
+                { value: "asap", label: "ASAP", description: "I am ready now" },
                 { value: "1_3_months", label: "1-3 Months", description: "I'm planning to invest in the next 1-3 months" },
                 { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
                 { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" }
