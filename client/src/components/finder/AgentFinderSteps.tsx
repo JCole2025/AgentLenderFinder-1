@@ -340,19 +340,13 @@ export default function AgentFinderSteps({
             <div>
               <h3 className="text-lg font-semibold mb-4">What is your investment strategy?</h3>
               <ButtonCheckboxGroup
-                defaultValue={["buy_and_hold_brrrr"]}
                 options={[
                   { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
                   { value: "short_term_rental", label: "Short-term rental or MTR", description: "I plan to list on Airbnb/VRBO" },
                   { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
                 ]}
-                selectedValues={formData.strategy}
-                onChange={(value, checked) => {
-                  handleStrategyChange(value, checked);
-                  if (checked) {
-                    setTimeout(onNext, 300);
-                  }
-                }}
+                selectedValues={formData.strategy || []}
+                onChange={handleStrategyChange}
                 autoAdvance={true}
                 onNext={onNext}
                 minSelected={1}
