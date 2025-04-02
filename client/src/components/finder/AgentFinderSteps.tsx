@@ -464,24 +464,7 @@ export default function AgentFinderSteps({
         </div>
       </FormStep>
       
-      {/* Step 10: Review and Submit */}
-      <FormStep
-        isActive={currentStep === 9}
-        onNext={onSubmit}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={9}
-        
-        isValid={true}
-        errors={errors}
-        title="Review your information"
-        subtitle="Please verify that everything is correct before submitting to our network of agents"
-        nextLabel="Submit to Agents"
-        showSubmit={true}
-      >
-        <AgentReviewSummary formData={formData} />
-      </FormStep>
+      
     </>
   );
 }
