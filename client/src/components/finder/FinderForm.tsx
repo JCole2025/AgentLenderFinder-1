@@ -39,9 +39,21 @@ export default function FinderForm({
   };
 
   const handleSubmit = async () => {
-    const success = await submitForm();
-    if (success) {
-      onSuccess();
+    console.log('FinderForm - handleSubmit called');
+    
+    try {
+      console.log('FinderForm - Calling submitForm');
+      const success = await submitForm();
+      console.log('FinderForm - submitForm result:', success);
+      
+      if (success) {
+        console.log('FinderForm - Calling onSuccess to display success message');
+        onSuccess();
+      } else {
+        console.error('FinderForm - Form submission was not successful');
+      }
+    } catch (error) {
+      console.error('FinderForm - Error during form submission:', error);
     }
   };
 

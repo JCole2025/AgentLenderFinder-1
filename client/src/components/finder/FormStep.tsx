@@ -71,7 +71,15 @@ export default function FormStep({
         {showSubmit && (
           <Button 
             disabled={!isValid}
-            onClick={onNext}
+            onClick={() => {
+              console.log('FormStep - Submit button clicked');
+              console.log('FormStep - isValid:', isValid);
+              console.log('FormStep - onNext function available:', !!onNext);
+              if (onNext) {
+                console.log('FormStep - Calling onNext (which should be onSubmit)');
+                onNext();
+              }
+            }}
             size="lg"
             className="bg-blue-500 hover:bg-blue-600 text-white"
           >

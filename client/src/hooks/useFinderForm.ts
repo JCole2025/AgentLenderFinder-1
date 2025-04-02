@@ -126,19 +126,26 @@ export function useFinderForm() {
 
   // Submit form to API
   const submitForm = async (): Promise<boolean> => {
+    console.log('useFinderForm - submitForm called');
+    console.log('useFinderForm - Form data to submit:', formData);
+    
     try {
       // Send data directly to API without validation on the final review step
       // This allows submissions to proceed even if there are non-critical issues
 
+      console.log('useFinderForm - Sending API request to /api/submit-finder');
       // Send data to API
       const response = await apiRequest("POST", "/api/submit-finder", {
         finderType: "agent",
         formData
       });
 
+      console.log('useFinderForm - API response received:', response.status);
       const data = await response.json();
+      console.log('useFinderForm - API response data:', data);
       
       if (!response.ok) {
+        console.error('useFinderForm - API request failed:', data.message || 'Unknown error');
         toast({
           title: "Error",
           description: data.message || "Failed to submit form",
@@ -147,6 +154,7 @@ export function useFinderForm() {
         return false;
       }
 
+      console.log('useFinderForm - Form submission successful');
       toast({
         title: "Success",
         description: "Your information has been submitted successfully!",

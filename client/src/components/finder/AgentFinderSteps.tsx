@@ -54,6 +54,12 @@ export default function AgentFinderSteps({
     console.log('AgentFinderSteps - handleNext called, calling parent onNext');
     onNext();
   };
+  
+  // Wrapped onSubmit function with debugging
+  const handleSubmit = () => {
+    console.log('AgentFinderSteps - handleSubmit called, calling parent onSubmit');
+    onSubmit();
+  };
 
   const handleStrategyChange = (value: string, checked: boolean) => {
     if (checked) {
@@ -396,11 +402,14 @@ export default function AgentFinderSteps({
       {/* Step 8: Contact Information */}
       <FormStep
         isActive={currentStep === 7}
-        onNext={onNext}
+        onNext={handleSubmit} // Use handleSubmit wrapper for the final step
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={7}
+        nextLabel="Submit"
+        showSubmit={true}
+        showNext={false}
 
         isValid={Boolean(
           formData.contact && 
