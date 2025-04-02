@@ -70,7 +70,7 @@ export default function FinderApp() {
               />
             </>
           ) : (
-            <SuccessMessage onStartOver={resetForm} />
+            <SuccessMessage finderType={finderType} onStartOver={resetForm} />
           )}
         </div>
       </main>

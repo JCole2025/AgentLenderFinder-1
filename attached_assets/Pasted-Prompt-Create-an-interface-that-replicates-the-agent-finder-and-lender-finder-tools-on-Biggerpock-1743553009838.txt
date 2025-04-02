@@ -1,0 +1,82 @@
+Prompt: 
+
+Create an interface that replicates the agent finder and lender finder tools on Biggerpockets.com. It should have the same questions and same consumer flow. At the end take the information captured and put it into a webhook format. Each question should have a head and the answers to the questions should model the options that each question in the tool has. 
+
+Include the following questions for agent finder: 
+
+City, State 
+Property Type
+Are you looking to buy or sell a property? 
+If buy, then ask - When are you looking to purchase? 
+If sell, ask for the property address
+What's your target purchase price? Min & Max
+Have you started the loan process?
+How many investment properties do you have?
+
+Contact info: 
+Full name
+Phone
+Email 
+City, state, zip code of the market where investor is looking to purchase
+
+
+Include the following questions for Lender finder: 
+
+finance type like, purchase vs refi vs heloc. Also use this photo as a goog representation of the style.Include property type and finance type (purchase, refi, heloc)
+
+The lender finder should also include property type and also
+
+
+City, State 
+Property Type
+When are you looking to purchase or sell? 
+What's your target purchase price? Min & Max
+How many investment properties do you have?
+
+Contact info: 
+Full name
+Phone
+Email 
+City, state, zip code of the market where investor is looking to purchase
+
+More notes:When people complete the form store all of the information in a table in a database title "lead information" And also send a webhook with all of the lead information, I can provide the end point URL later. Make your own headers and data types based on the promot for now. The style should match what I provided. The form information should save midway and be saved to another table which is titled partial form fills - this should also be sent to an endpoint URL that I will define later - lake a variable to store all of the URL ends points that I will use later. Failed webhook submission should go into another table called "lead submission failures - also wait for me to send a URL end point to that - for now store in a database. 
+
+This app needs to be an i-frame or widget that can easily be embedded into a website through a simple HTML code. 
+
+To avoid bugs: 
+All numeric data types like purchase price, should require a number. It should not accept alpha characters. Give the option for people to go back to correct fields. 
+
+
+*Context*
+A Complete Scalable Solution For Monetizing Leads From Demand Gen Partners Using a Webhook that Integrates With Concierge’s CRM. This requires more work from our concierge team and increases the cost to monetize leads. The variable cost will increase but we will be able to launch quickly (within 1-2 weeks of testing) and we will require no engineering effort. The lead gen partner will be required to do a small amount of technical work to launch their own lead capture method and send lead information via a webhook. In the future we can build an interface for partners who do not have the technical resources to deploy using a zapier interface that mimics our finder tools. 
+
+1. A user submits their information on Roofstock or Stessa requesting to be matched with an Agent or Tax Pro. 
+
+Consent language: 
+“By entering your information and submitting this form, you agree to BiggerPockets terms of service. 
+
+
+You also expressly consent to having BiggerPockets and its featured real estate tax professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services.”
+
+
+2. After submission the user lands on a page that let’s them know that BiggerPockets Concierge team is matching them with a tax pro. 
+
+Heading: "What’s next?"
+A trained BiggerPockets concierge is searching our network of licensed tax professionals.
+We’ll match you with the perfect tax pro and connect you with them.
+You should expect a text message shortly from 720-902-8552 and an email from concierge@biggerpockets.com
+3. The user information is sent via webhook to endpoints in our concierge CRM. 
+4. Our concierge team immediately texts and emails the user to let them know that we are matching them. 
+
+Text: 
+Hi [first name] it’s BiggerPockets (Stessa’s Tax Finder Partner). We are matching you with the best real estate investor friendly tax pro’s in your market and will introduce you to them shortly. If you’re looking for any particular traits in a Tax pro, just let us know and we’ll include it in our match criteria. [Reply stop to opt out of texts] 
+
+Followup text: 
+Hi [first name], just checking in. Have you been able to connect with your tax pro? You can reply directly here and one of our concierges will is here to help you. 
+
+
+Email: 
+
+5. A human reviews the lead, confirms the number is valid and quickly matches the lead with 2 businesses. 
+
+6. The tax pros followup and we send an email to let them know their tax pro matches. 
