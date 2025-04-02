@@ -84,9 +84,8 @@ export default function AgentFinderSteps({
           selectedValue={formData.transaction_type}
           onChange={(value) => updateFormData({ 
             transaction_type: value as any,
-            // Set default timeline to '3_6_months' instead of 'just_researching'
-            timeline: '3_6_months' as any,
-            purchase_timeline: '3_6_months' as any
+            timeline: undefined,
+            purchase_timeline: undefined
           })}
           name="agent_transaction_type"
           autoAdvance={true}

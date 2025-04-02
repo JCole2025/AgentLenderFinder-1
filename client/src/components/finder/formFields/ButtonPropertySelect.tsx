@@ -71,10 +71,10 @@ export default function ButtonPropertySelect({
       onChange(value);
       
       // Auto advance to next step if enabled and value isn't an unsupported type
-      if (autoAdvance && onNext && !UNSUPPORTED_PROPERTY_TYPES.includes(value)) {
+      if (autoAdvance && onNext && value && !UNSUPPORTED_PROPERTY_TYPES.includes(value)) {
         setTimeout(() => {
           onNext();
-        }, 400); // Small delay for visual feedback
+        }, 400);
       }
     }
   };

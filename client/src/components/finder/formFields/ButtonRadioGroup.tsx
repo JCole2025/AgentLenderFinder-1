@@ -53,7 +53,7 @@ export default function ButtonRadioGroup({
 
     // If autoAdvance is enabled and the onNext function is provided,
     // automatically go to the next step after a small delay
-    if (autoAdvance && onNext) {
+    if (autoAdvance && onNext && value) {
       setTimeout(() => {
         onNext();
       }, 400); // Small delay for visual feedback

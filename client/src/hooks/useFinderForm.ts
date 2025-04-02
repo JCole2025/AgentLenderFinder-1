@@ -12,18 +12,18 @@ export function useFinderForm() {
   
   // Initial form state for agent finder
   const initialAgentFormData: AgentFormData = {
-    transaction_type: "buy", // Default to "buy"
+    transaction_type: undefined,
     location: "",
-    property_type: "single_family", // Default to "Single Family"
-    purchase_timeline: "asap", // Default to "ASAP"
+    property_type: undefined,
+    purchase_timeline: undefined,
     property_address: "",
-    price_min: getDefaultMinPrice(), // Start with $100,000 as minimum price
+    price_min: "",
     price_max: "",
     loan_started: false,
-    owner_occupied: false, // Default to "no" (false)
-    investment_properties_count: "0", // Default to 0
-    strategy: ["not_sure"], // Default to "Not sure yet"
-    timeline: "asap", // Default to "ASAP"
+    owner_occupied: undefined,
+    investment_properties_count: undefined,
+    strategy: [],
+    timeline: undefined,
     contact: {
       first_name: "",
       last_name: "",
