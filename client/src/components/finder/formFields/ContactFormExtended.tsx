@@ -55,12 +55,38 @@ export default function ContactFormExtended(props: ContactFormProps) {
     onLoanAssistanceChange,
     errors
   } = props;
+  
+  // Phone number formatting helper
+  const formatPhoneNumber = (value: string) => {
+    // Strip all non-numeric characters
+    const phoneDigits = value.replace(/\D/g, '');
+    
+    // Apply formatting based on length of the phone number
+    if (phoneDigits.length <= 3) {
+      return phoneDigits;
+    } else if (phoneDigits.length <= 6) {
+      return `(${phoneDigits.slice(0, 3)}) ${phoneDigits.slice(3)}`;
+    } else {
+      return `(${phoneDigits.slice(0, 3)}) ${phoneDigits.slice(3, 6)}-${phoneDigits.slice(6, 10)}`;
+    }
+  };
+  
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedPhone = formatPhoneNumber(e.target.value);
+    onPhoneChange(formattedPhone);
+  };
+  
   return (
-    <div className="space-y-5">
+    <form className="space-y-5" autoComplete="on">
+      {/* Hidden fields to help with autofill */}
+      <input type="hidden" id="name" name="name" autoComplete="name" />
+      <input type="hidden" id="address" name="address" autoComplete="street-address" />
+      <input type="hidden" id="contact-info" name="contact-info" autoComplete="section-contact" />
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="first_name" className="block text-gray-700 font-medium mb-2">
-            First name
+            First name <span className="text-red-500">*</span>
           </Label>
           <Input
             id="first_name"
@@ -71,13 +97,15 @@ export default function ContactFormExtended(props: ContactFormProps) {
             placeholder="Joseph"
             value={first_name}
             onChange={(e) => onFirstNameChange(e.target.value)}
+            required
+            aria-required="true"
           />
           {errors.first_name && <p className="text-sm text-red-500 mt-1">{errors.first_name}</p>}
         </div>
         
         <div>
           <Label htmlFor="last_name" className="block text-gray-700 font-medium mb-2">
-            Last name
+            Last name <span className="text-red-500">*</span>
           </Label>
           <Input
             id="last_name"
@@ -88,6 +116,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
             placeholder="Coleman"
             value={last_name}
             onChange={(e) => onLastNameChange(e.target.value)}
+            required
+            aria-required="true"
           />
           {errors.last_name && <p className="text-sm text-red-500 mt-1">{errors.last_name}</p>}
         </div>
@@ -95,7 +125,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
 
       <div>
         <Label htmlFor="email" className="block text-gray-700 font-medium mb-2">
-          Email
+          Email <span className="text-red-500">*</span>
         </Label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
@@ -113,6 +143,9 @@ export default function ContactFormExtended(props: ContactFormProps) {
             placeholder="joseph@biggerpockets.com"
             value={email}
             onChange={(e) => onEmailChange(e.target.value)}
+            required
+            aria-required="true"
+            inputMode="email"
           />
         </div>
         {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
@@ -120,7 +153,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
 
       <div>
         <Label htmlFor="phone" className="block text-gray-700 font-medium mb-2">
-          Phone
+          Phone <span className="text-red-500">*</span>
         </Label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
@@ -132,13 +165,18 @@ export default function ContactFormExtended(props: ContactFormProps) {
             id="phone"
             type="tel"
             name="tel"
-            autoComplete="tel"
+            autoComplete="tel mobile"
             className={`h-12 text-base pl-10 ${errors.phone ? "border-red-500" : "border-gray-300"}`}
             placeholder="(612) 790-5259"
             value={phone}
-            onChange={(e) => onPhoneChange(e.target.value)}
+            onChange={handlePhoneChange}
+            required
+            aria-required="true"
+            inputMode="tel"
+            pattern="(\(\d{3}\) \d{3}-\d{4}|\(\d{3}\) \d{3}|\d{10}|\d{3}-\d{3}-\d{4})"
           />
         </div>
+        <p className="text-xs text-gray-500 mt-1">Format: (123) 456-7890</p>
         {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
       </div>
       
@@ -173,6 +211,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
             placeholder="CO"
             value={state}
             onChange={(e) => onStateChange(e.target.value)}
+            maxLength={2}
           />
           {errors.state && <p className="text-sm text-red-500 mt-1">{errors.state}</p>}
         </div>
@@ -190,6 +229,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
             placeholder="80202"
             value={zip}
             onChange={(e) => onZipChange(e.target.value)}
+            inputMode="numeric"
+            pattern="\d{5}(-\d{4})?"
           />
           {errors.zip && <p className="text-sm text-red-500 mt-1">{errors.zip}</p>}
         </div>
@@ -238,6 +279,6 @@ export default function ContactFormExtended(props: ContactFormProps) {
           </div>
         </div>
       </div>
-    </div>
+    </form>
   );
 }
