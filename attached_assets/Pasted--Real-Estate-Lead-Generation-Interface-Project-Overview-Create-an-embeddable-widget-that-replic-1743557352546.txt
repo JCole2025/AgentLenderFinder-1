@@ -1,0 +1,522 @@
+# Real Estate Lead Generation Interface
+
+## Project Overview
+Create an embeddable widget that replicates the agent finder and lender finder tools from BiggerPockets.com. The interface captures user information through multi-step forms, stores data in tables, and sends it to configurable webhook endpoints.
+
+## Technical Requirements
+
+The application should include:
+- Agent Finder Form
+- Lender Finder Form
+- Thank You Page
+- Error Handling System
+
+For data storage, create three tables:
+- "lead_information" - Stores complete form submissions
+- "partial_form_fills" - Stores incomplete form data
+- "lead_submission_failures" - Logs failed webhook submissions
+
+Create variables for webhook endpoints that will be defined later:
+- WEBHOOK_ENDPOINT_COMPLETE
+- WEBHOOK_ENDPOINT_PARTIAL
+- WEBHOOK_ENDPOINT_FAILURES
+
+The widget should be:
+- An embedded iFrame or widget
+- Hosted on a Virtual Machine (not local server)
+- Embeddable with a simple HTML code snippet
+
+## State Management Implementation
+
+To ensure proper flow throughout the form, implement this state management system:
+
+```javascript
+// Create a state manager to track form progress
+const formState = {
+  currentStep: 1,
+  totalSteps: 12,
+  formData: {},
+  
+  saveStep: function(stepData) {
+    this.formData = {...this.formData, ...stepData};
+    localStorage.setItem('formProgress', JSON.stringify(this.formData));
+    
+    // Send partial data to webhook
+    this.sendPartialData();
+  },
+  
+  sendPartialData: async function() {
+    try {
+      const response = await fetch(WEBHOOK_ENDPOINT_PARTIAL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(this.formData)
+      });
+      console.log('Partial data saved');
+    } catch (error) {
+      console.error('Error saving partial data', error);
+      logSubmissionFailure(error, this.formData);
+    }
+  },
+  
+  submitForm: async function() {
+    try {
+      if (!this.validateRequiredFields()) {
+        return false;
+      }
+      
+      const response = await fetch(WEBHOOK_ENDPOINT_COMPLETE, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(this.formData)
+      });
+      
+      localStorage.removeItem('formProgress');
+      return true;
+    } catch (error) {
+      console.error('Error submitting form', error);
+      logSubmissionFailure(error, this.formData);
+      return false;
+    }
+  },
+  
+  validateRequiredFields: function() {
+    const requiredFields = ['transactionType', 'location'];
+    // Add other required fields based on the form type and user selections
+    for (const field of requiredFields) {
+      if (!this.formData[field]) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
+```
+
+## CRITICAL: Fixing the "Invalid enum value" Error
+
+To prevent the "Invalid enum value" error, especially for the timeline dropdown, implement this initialization code that MUST run when the page loads:
+
+```javascript
+// IMPORTANT: This must run immediately when the page loads
+// Place this in your main JS file or inline in the HTML
+document.addEventListener('DOMContentLoaded', function() {
+  // Pre-initialize ALL select elements with default values
+  // This MUST happen BEFORE any validation runs
+  initializeFormFields();
+});
+
+function initializeFormFields() {
+  // Set safe default values for all dropdown menus to prevent invalid enum errors
+  const dropdowns = [
+    {id: 'timeline', defaultValue: 'just_researching'},
+    {id: 'propertyType', defaultValue: 'singleFamily'},
+    {id: 'investmentStrategy', defaultValue: 'notSureYet'},
+    {id: 'financeType', defaultValue: 'notSure'},
+    {id: 'creditScore', defaultValue: 'notSure'},
+    {id: 'ownerOccupied', defaultValue: 'no'},
+    {id: 'loanProcess', defaultValue: 'no'}
+  ];
+  
+  // Initialize all dropdowns immediately
+  dropdowns.forEach(dropdown => {
+    const element = document.getElementById(dropdown.id);
+    if (element) {
+      // Assign default value immediately to prevent validation errors
+      element.value = dropdown.defaultValue;
+      
+      // Add change event listener as a fallback
+      element.addEventListener('change', function() {
+        if (!this.value || this.value === '') {
+          this.value = dropdown.defaultValue;
+        }
+      });
+    }
+  });
+  
+  // Initialize any other fields that need defaults
+  const minPriceInput = document.getElementById('minPrice');
+  if (minPriceInput && !minPriceInput.value) {
+    minPriceInput.value = '100000';
+  }
+  
+  // IMPORTANT: For select elements, set hidden initial values
+  document.querySelectorAll('select').forEach(select => {
+    // Create and add a hidden option that won't show in the dropdown
+    const hiddenOption = document.createElement('option');
+    hiddenOption.value = select.getAttribute('data-default') || 
+                        (select.id === 'timeline' ? 'just_researching' : '');
+    hiddenOption.style.display = 'none';
+    hiddenOption.selected = true;
+    select.prepend(hiddenOption);
+  });
+}
+```
+
+## Validation Rules
+
+All forms must follow these validation rules:
+- City/State combinations must be in the format "City, ST" (e.g., "Denver, CO")
+- Price fields must only accept numeric input
+- Minimum purchase price must be at least $100,000 (auto-populated)
+- Maximum price must be greater than minimum price
+- Phone numbers must follow xxx-xxx-xxxx format
+- Email addresses must be valid format
+
+## Form Submission Flow
+
+Implement this code to handle form submission and ensure direct navigation to the thank you page:
+
+```javascript
+function completeForm() {
+  // Disable the submit button to prevent double-clicks
+  document.getElementById('submitButton').disabled = true;
+  
+  // Show a loading indicator
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.className = 'loading-spinner';
+  document.getElementById('formContainer').appendChild(loadingIndicator);
+  
+  // Submit the form
+  formState.submitForm().then(success => {
+    if (success) {
+      // Direct navigation to thank you page without any verification step
+      window.location.href = 'thank-you.html';
+    } else {
+      // Re-enable the button if there was an error
+      document.getElementById('submitButton').disabled = false;
+      
+      // Show error message
+      const errorMessage = document.createElement('div');
+      errorMessage.className = 'error-message';
+      errorMessage.textContent = 'There was an error submitting your form. Please try again.';
+      document.getElementById('formContainer').appendChild(errorMessage);
+      
+      // Remove loading indicator
+      loadingIndicator.remove();
+    }
+  });
+}
+
+// Attach this function to the submit button
+document.getElementById('submitButton').addEventListener('click', function(e) {
+  e.preventDefault();
+  completeForm();
+});
+```
+
+## Agent Finder Form
+
+### Step 1: Transaction Type
+Ask "What would you like to do?" with options:
+- "Buy: I'm looking to buy"
+- "Sell: I'm looking to sell"
+This is a required field.
+
+### Step 2: Location
+Ask "Where are you looking to invest?" as a text input field.
+- Format must be "City, ST" (e.g., "Austin, TX")
+- This is a required field
+
+For location validation:
+
+```javascript
+function validateLocationInput(input) {
+    // Prevent trim errors by safely handling the input
+    if (input === undefined || input === null) {
+        input = '';
+    }
+    
+    input = input.trim();
+    
+    // Format validation (City, ST)
+    const formatPattern = /^([A-Za-z\s\-\.\']+),\s*([A-Z]{2})$/;
+    const formatMatch = input.match(formatPattern);
+    
+    if (!formatMatch) {
+        return {
+            valid: false,
+            error: "Please enter a city and state in the format 'City, ST' (e.g., 'Denver, CO')",
+            allowContinue: true
+        };
+    }
+    
+    const city = formatMatch[1].trim();
+    const state = formatMatch[2].trim();
+    
+    // Check if state is valid
+    const validStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", /* include all states */];
+    
+    if (!validStates.includes(state)) {
+        return {
+            valid: false,
+            error: `"${state}" is not a valid state abbreviation.`,
+            allowContinue: true
+        };
+    }
+    
+    // Verify city-state combination with confirmation if needed
+    // Show dialogue but allow continuation
+}
+```
+
+### Step 3: Property Address (Only for "Sell" Option)
+If the user selected "Sell" in Step 1, ask "What is the property address?"
+This is a required field.
+
+### Step 4: Property Type
+Ask "What type of property are you looking for?" with options:
+- "Single Family"
+- "Multi-Family (2-4 units)"
+- "Commercial/Multifamily (5+ units)"
+- "Townhouse/Condo"
+- "Land"
+This is a required field.
+
+IMPORTANT: If the user selects "Land" or "Commercial/Multifamily (5+ units)", show a popup message:
+"We're sorry, our agents cannot help with this property type at the moment. Please select a different property type or check back later."
+
+### Step 5: Timeline
+If the user selected "Buy" in Step 1, ask "When are you looking to purchase in [City], [State]?" with options:
+- "ASAP: I'm ready to make a move now" (value: "asap")
+- "1-3 Months: I'm planning to invest in the next 1-3 months" (value: "1_3_months")
+- "3-6 Months: I'm planning to invest in the next 3-6 months" (value: "3_6_months")
+- "6-12 Months: I'm planning to invest in the next 6-12 months" (value: "6_12_months")
+- "Just Researching: I'm just exploring my options" (value: "just_researching")
+This is a required field.
+
+HTML implementation to prevent the "Invalid enum value" error:
+
+```html
+<select id="timeline" name="timeline" required data-default="just_researching">
+  <!-- Hidden default option that won't show but prevents the error -->
+  <option value="just_researching" style="display: none;" selected>Select when you plan to purchase</option>
+  
+  <option value="asap">ASAP: I'm ready to make a move now</option>
+  <option value="1_3_months">1-3 Months: I'm planning to invest in the next 1-3 months</option>
+  <option value="3_6_months">3-6 Months: I'm planning to invest in the next 3-6 months</option>
+  <option value="6_12_months">6-12 Months: I'm planning to invest in the next 6-12 months</option>
+  <option value="just_researching">Just Researching: I'm just exploring my options</option>
+</select>
+```
+
+### Step 6: Price Range
+Ask "What is your price range?" with two fields:
+- Minimum Price: Default to $100,000, don't accept lower values
+- Maximum Price: Must be greater than minimum price
+Both fields are required.
+
+### Step 7: Loan Process
+If the user selected "Buy" in Step 1, ask "Have you started the loan process?" with Yes/No options.
+This is a required field.
+
+### Step 8: Owner Occupied
+Ask "Will this be an owner-occupied property?" with Yes/No options.
+This is a required field.
+
+### Step 9: Existing Properties
+Ask "How many investment properties do you currently own?" as a numeric input.
+This is NOT a required field.
+
+### Step 10: Investment Strategy
+Ask "What is your investment strategy?" with these options (multiple selection allowed):
+- "Long Term Rental: I plan to buy and rent out long-term"
+- "Short-term rental or MTR: I plan to list on Airbnb/VRBO"
+- "Not sure yet: I'm still exploring my options"
+Include this text: "Note: We do not yet support Fix and Flip strategies or commercial."
+This is a required field.
+
+### Step 11: Contact Information
+Ask for the following contact information:
+- First Name (required)
+- Last Name (required)
+- Email (required, must be valid format)
+- Phone (required, must be valid format xxx-xxx-xxxx)
+- City (not required)
+- State (not required)
+- Zip (not required)
+
+### Step 12: Terms and Consent
+Include a checkbox for consent with this exact text:
+"By entering your information and submitting this form, you agree to BiggerPockets terms of service. You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services."
+This is a required field.
+
+### Submit Button
+Label the button "Submit Information". When clicked, it should:
+1. Save complete data to the lead_information table
+2. Send data to the webhook endpoint
+3. Redirect directly to the Thank You page WITHOUT a verification step
+
+## Lender Finder Form
+The Lender Finder form follows the same structure as the Agent Finder form, with these key differences:
+
+### Step 1: Finance Type
+Ask "What type of financing do you need?" with these options:
+- "Purchase: I'm buying a property"
+- "Refinance: I want to refinance my existing loan"
+- "HELOC: I need a home equity line of credit"
+- "Construction: I need funding for a construction project"
+- "Not Sure: I'm exploring my options"
+
+### Step 8: Credit Score
+Ask "What is your credit score range?" with these options:
+- "Excellent (740+): Prime borrowing rates"
+- "Good (700-739): Very good loan options"
+- "Fair (650-699): Most loan programs available"
+- "Below 650: Some loan options available"
+- "Not Sure: I don't know my credit score"
+
+All other steps should match the Agent Finder form, including validation rules, required/not required fields, and the property type popup warning.
+
+## Thank You Page Implementation
+
+Create a standalone thank you page that doesn't depend on any form state:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Thank You - BiggerPockets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Add styling to match your design */
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .thank-you-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #0063b1;
+    }
+    .button {
+      display: inline-block;
+      background: #0063b1;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="thank-you-container">
+    <h1>What's next?</h1>
+    <p>A trained BiggerPockets concierge is searching our network of licensed professionals.</p>
+    <p>We'll match you with the perfect professionals and connect you with them.</p>
+    <p>You should expect a text message shortly from 720-902-8552 and an email from concierge@biggerpockets.com</p>
+    
+    <div id="crossSellContainer">
+      <!-- This will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    // Simple script to check the referring form and show appropriate cross-sell
+    document.addEventListener('DOMContentLoaded', function() {
+      const referrer = document.referrer;
+      const crossSellContainer = document.getElementById('crossSellContainer');
+      
+      if (referrer.includes('agent-finder')) {
+        crossSellContainer.innerHTML = `
+          <div class="cross-sell">
+            <p>Would you also like to be matched with lenders?</p>
+            <a href="lender-finder.html" class="button">Find Lenders</a>
+          </div>
+        `;
+      } else if (referrer.includes('lender-finder')) {
+        crossSellContainer.innerHTML = `
+          <div class="cross-sell">
+            <p>Would you also like to be matched with agents?</p>
+            <a href="agent-finder.html" class="button">Find Agents</a>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>
+```
+
+## Debugging Support
+
+Add this debugging tool to help troubleshoot issues during development:
+
+```javascript
+// Enable this during development by setting DEBUG = true
+const DEBUG = true;
+
+function debugLog(message, data) {
+  if (!DEBUG) return;
+  
+  console.log(`DEBUG: ${message}`, data);
+  
+  // Also display in a debug console on the page
+  const debugConsole = document.getElementById('debugConsole') || createDebugConsole();
+  const logEntry = document.createElement('div');
+  logEntry.textContent = `${new Date().toISOString().slice(11, 19)} - ${message}`;
+  if (data) {
+    const dataText = document.createElement('pre');
+    dataText.textContent = JSON.stringify(data, null, 2);
+    logEntry.appendChild(dataText);
+  }
+  debugConsole.appendChild(logEntry);
+  
+  // Scroll to the bottom
+  debugConsole.scrollTop = debugConsole.scrollHeight;
+}
+
+function createDebugConsole() {
+  const debugConsole = document.createElement('div');
+  debugConsole.id = 'debugConsole';
+  debugConsole.style.cssText = 'position: fixed; bottom: 0; right: 0; width: 300px; height: 200px; background: rgba(0,0,0,0.8); color: lime; font-family: monospace; font-size: 12px; padding: 10px; overflow: auto; z-index: 9999;';
+  
+  // Add a clear button
+  const clearButton = document.createElement('button');
+  clearButton.textContent = 'Clear';
+  clearButton.style.cssText = 'position: absolute; top: 5px; right: 5px; font-size: 10px;';
+  clearButton.addEventListener('click', () => {
+    debugConsole.innerHTML = '';
+    debugConsole.appendChild(clearButton);
+  });
+  
+  debugConsole.appendChild(clearButton);
+  document.body.appendChild(debugConsole);
+  return debugConsole;
+}
+```
+
+## Additional Implementation Tips
+
+1. **Prevent Errors with Default Values**
+   - Always initialize form fields with default values
+   - Use hidden default options for dropdown menus
+   - Handle undefined or null values before processing
+
+2. **Simplify the Form Structure**
+   - Break the form into smaller modules
+   - Keep each step in a separate file or function
+   - Use event delegation for dynamic content
+
+3. **Use Progressive Enhancement**
+   - Make sure the form works with basic HTML
+   - Add JavaScript to enhance the experience
+   - Provide fallbacks for all dynamic features
+
+4. **Implement Error Recovery**
+   - Save form progress at each step
+   - Allow users to resume incomplete forms
+   - Provide clear error messages if something goes wrong
+
+5. **Optimize for Mobile**
+   - Ensure responsive design
+   - Simplify the interface for small screens
+   - Test on multiple devices
