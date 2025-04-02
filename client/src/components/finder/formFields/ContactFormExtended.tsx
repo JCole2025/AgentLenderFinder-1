@@ -17,6 +17,8 @@ interface ContactFormProps {
   email: string;
   phone: string;
   state: string;
+  city?: string; // Optional now
+  zip?: string; // Optional now
   terms_accepted: boolean;
   loan_assistance: boolean;
   onFirstNameChange: (value: string) => void;
@@ -24,6 +26,8 @@ interface ContactFormProps {
   onEmailChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onStateChange: (value: string) => void;
+  onCityChange?: (value: string) => void; // Optional now
+  onZipChange?: (value: string) => void; // Optional now 
   onTermsAcceptedChange: (value: boolean) => void;
   onLoanAssistanceChange: (value: boolean) => void;
   errors: {
@@ -32,6 +36,8 @@ interface ContactFormProps {
     email?: string;
     phone?: string;
     state?: string;
+    city?: string;
+    zip?: string;
     terms_accepted?: string;
   };
 }

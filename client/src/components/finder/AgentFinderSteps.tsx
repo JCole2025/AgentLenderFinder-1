@@ -483,9 +483,7 @@ export default function AgentFinderSteps({
             last_name={formData.contact.last_name}
             email={formData.contact.email}
             phone={formData.contact.phone}
-            city={formData.contact.city}
             state={formData.contact.state}
-            zip={formData.contact.zip}
             terms_accepted={formData.terms_accepted}
             loan_assistance={formData.loan_assistance}
             onFirstNameChange={(value: string) => updateFormData({ 
@@ -500,14 +498,8 @@ export default function AgentFinderSteps({
             onPhoneChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, phone: value } 
             })}
-            onCityChange={(value: string) => updateFormData({ 
-              contact: { ...formData.contact, city: value } 
-            })}
             onStateChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, state: value } 
-            })}
-            onZipChange={(value: string) => updateFormData({ 
-              contact: { ...formData.contact, zip: value } 
             })}
             onTermsAcceptedChange={(value: boolean) => updateFormData({ 
               terms_accepted: value 
@@ -520,9 +512,7 @@ export default function AgentFinderSteps({
               last_name: errors['contact.last_name'],
               email: errors['contact.email'],
               phone: errors['contact.phone'],
-              city: errors['contact.city'],
               state: errors['contact.state'],
-              zip: errors['contact.zip'],
               terms_accepted: errors.terms_accepted
             }}
           />
