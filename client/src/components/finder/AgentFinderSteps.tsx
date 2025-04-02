@@ -271,8 +271,8 @@ export default function AgentFinderSteps({
               ]}
               selectedValue={formData.purchase_timeline}
               onChange={(value) => updateFormData({ 
-                purchase_timeline: value as any,
-                timeline: value as any
+                purchase_timeline: value === 'default' ? undefined : value as any,
+                timeline: value === 'default' ? undefined : value as any
               })}
               name="agent_purchase_timeline"
               onNext={onNext}

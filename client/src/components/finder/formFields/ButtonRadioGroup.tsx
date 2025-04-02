@@ -10,11 +10,12 @@ interface RadioOption {
 
 interface ButtonRadioGroupProps {
   options: RadioOption[];
-  selectedValue: string;
-  onChange: (value: string) => void;
+  selectedValue: string | undefined;
+  onChange: (value: string | undefined) => void;
   name: string;
   autoAdvance?: boolean;
   onNext?: () => void;
+  defaultValue?: string;
 }
 
 // Map of icons to use for different types of options
@@ -43,12 +44,13 @@ export default function ButtonRadioGroup({
   onChange,
   name,
   autoAdvance = false,
-  onNext
+  onNext,
+  defaultValue
 }: ButtonRadioGroupProps) {
-  
+
   const handleOptionClick = (value: string) => {
     onChange(value);
-    
+
     // If autoAdvance is enabled and the onNext function is provided,
     // automatically go to the next step after a small delay
     if (autoAdvance && onNext) {
@@ -57,13 +59,13 @@ export default function ButtonRadioGroup({
       }, 400); // Small delay for visual feedback
     }
   };
-  
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {options.map((option) => {
         const isSelected = option.value === selectedValue;
         const icon = iconMap[option.value] || <HelpCircle className="h-6 w-6" />;
-        
+
         return (
           <button
             key={option.value}
@@ -82,7 +84,7 @@ export default function ButtonRadioGroup({
             `}>
               {icon}
             </div>
-            
+
             <div className="space-y-1">
               <div className="font-semibold text-base">
                 {option.label}
@@ -90,7 +92,7 @@ export default function ButtonRadioGroup({
                   <Check className="h-4 w-4 ml-1 inline-block text-blue-500" />
                 )}
               </div>
-              
+
               {option.description && (
                 <p className="text-sm text-gray-500">
                   {option.description}
