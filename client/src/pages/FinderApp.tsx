@@ -1,12 +1,9 @@
 import { useState } from "react";
-import FinderToggle from "@/components/finder/FinderToggle";
 import ProgressBar from "@/components/finder/ProgressBar";
 import FinderForm from "@/components/finder/FinderForm";
 import SuccessMessage from "@/components/finder/SuccessMessage";
-import { FinderType } from "@/types/finder";
 
 export default function FinderApp() {
-  const [finderType, setFinderType] = useState<FinderType>("agent");
   const [showSuccess, setShowSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   
@@ -26,22 +23,8 @@ export default function FinderApp() {
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
               </svg>
-              <span className="ml-3 text-xl font-semibold">BiggerPockets Finder</span>
+              <span className="ml-3 text-xl font-semibold">BiggerPockets Agent Finder</span>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <button 
-                className={`font-medium ${finderType === 'agent' ? 'text-primary' : 'text-neutral-dark hover:text-primary'}`}
-                onClick={() => setFinderType('agent')}
-              >
-                Agent Finder
-              </button>
-              <button 
-                className={`font-medium ${finderType === 'lender' ? 'text-primary' : 'text-neutral-dark hover:text-primary'}`}
-                onClick={() => setFinderType('lender')}
-              >
-                Lender Finder
-              </button>
-            </nav>
           </div>
         </div>
       </header>
@@ -51,26 +34,24 @@ export default function FinderApp() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           {!showSuccess ? (
             <>
-              <FinderToggle 
-                activeType={finderType} 
-                onToggle={setFinderType} 
-              />
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold text-center">Find the Right Real Estate Agent</h1>
+                <p className="text-center text-gray-600 mt-2">Complete this form to get matched with experienced agents in your target area</p>
+              </div>
               
               <ProgressBar 
                 currentStep={currentStep} 
-                totalSteps={finderType === "agent" ? 13 : 6}
-                finderType={finderType}
+                totalSteps={13}
               />
               
               <FinderForm 
-                finderType={finderType}
                 currentStep={currentStep}
                 setCurrentStep={setCurrentStep}
                 onSuccess={() => setShowSuccess(true)}
               />
             </>
           ) : (
-            <SuccessMessage finderType={finderType} onStartOver={resetForm} />
+            <SuccessMessage onStartOver={resetForm} />
           )}
         </div>
       </main>

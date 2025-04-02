@@ -1,15 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
-import { FinderType } from "@/types/finder";
 
 interface SuccessMessageProps {
-  finderType: FinderType;
   onStartOver: () => void;
 }
 
-export default function SuccessMessage({ finderType, onStartOver }: SuccessMessageProps) {
-  const professionalType = finderType === "agent" ? "real estate agent" : "lender";
+export default function SuccessMessage({ onStartOver }: SuccessMessageProps) {
+  const professionalType = "real estate agent";
   
   return (
     <Card className="max-w-2xl mx-auto">

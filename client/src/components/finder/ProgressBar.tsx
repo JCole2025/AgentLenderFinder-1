@@ -1,9 +1,6 @@
-import { FinderType } from "@/types/finder";
-
 interface ProgressBarProps {
   currentStep: number;
   totalSteps: number;
-  finderType?: FinderType;
 }
 
 // Define the steps for agent finder
@@ -19,18 +16,9 @@ const agentSteps = [
   { name: "Review", completed: false }
 ];
 
-// Define the steps for lender finder
-const lenderSteps = [
-  { name: "Purpose", completed: true },
-  { name: "Property", completed: false },
-  { name: "Location", completed: false },
-  { name: "Credit", completed: false },
-  { name: "Contact", completed: false }
-];
-
-export default function ProgressBar({ currentStep, totalSteps, finderType = "agent" }: ProgressBarProps) {
-  // Use the appropriate steps based on finderType
-  const steps = finderType === "agent" ? agentSteps : lenderSteps;
+export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProps) {
+  // Use agent steps as the application only supports Agent Finder now
+  const steps = agentSteps;
   
   // Mark steps as completed based on current step
   const updatedSteps = steps.map((step, index) => ({

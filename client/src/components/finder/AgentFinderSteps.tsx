@@ -64,7 +64,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={1}
-        finderType="agent"
+        
         isValid={!!formData.transaction_type}
         errors={errors}
         title="What would you like to do?"
@@ -98,7 +98,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={2}
-        finderType="agent"
+        
         isValid={Boolean(formData.location && formData.location.trim() !== '')}
         errors={errors}
         title="Where are you looking to invest?"
@@ -136,7 +136,7 @@ export default function AgentFinderSteps({
           formData={formData}
           updateFormData={updateFormData}
           stepNumber={3}
-          finderType="agent"
+          
           isValid={Boolean(formData.property_address && formData.property_address.trim() !== '')}
           errors={errors}
           title="What is the property address?"
@@ -170,7 +170,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={formData.transaction_type === 'sell' ? 4 : 3}
-        finderType="agent"
+        
         isValid={Boolean(formData.property_type && formData.property_type.trim() !== '')}
         errors={errors}
         title="What type of property are you looking for?"
@@ -196,7 +196,7 @@ export default function AgentFinderSteps({
           formData={formData}
           updateFormData={updateFormData}
           stepNumber={4}
-          finderType="agent"
+          
           isValid={Boolean(formData.purchase_timeline)}
           errors={errors}
           title={`When are you looking to purchase in ${formData.location}?`}
@@ -233,7 +233,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={formData.transaction_type === 'buy' ? 5 : 4}
-        finderType="agent"
+        
         isValid={Boolean(
           formData.price_min && formData.price_min.trim() !== '' && 
           formData.price_max && formData.price_max.trim() !== ''
@@ -304,7 +304,7 @@ export default function AgentFinderSteps({
           formData={formData}
           updateFormData={updateFormData}
           stepNumber={6}
-          finderType="agent"
+          
           isValid={true} // Not required field
           errors={errors}
           title="Have you started the loan process?"
@@ -338,7 +338,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={formData.transaction_type === 'buy' ? 7 : 5}
-        finderType="agent"
+        
         isValid={true} // Not a required field
         errors={errors}
         title="Will this be an owner-occupied property?"
@@ -371,7 +371,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={formData.transaction_type === 'buy' ? 8 : 6}
-        finderType="agent"
+        
         isValid={true} // Not a required field
         errors={errors}
         title="How many investment properties do you currently own?"
@@ -413,7 +413,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={formData.transaction_type === 'buy' ? 9 : 7}
-        finderType="agent"
+        
         isValid={formData.strategy.length > 0}
         errors={errors}
         title="What is your investment strategy?"
@@ -442,7 +442,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={formData.transaction_type === 'buy' ? 10 : 8}
-        finderType="agent"
+        
         isValid={Boolean(
           formData.contact && 
           formData.contact.first_name && !!formData.contact.first_name.trim() && 
@@ -506,7 +506,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={formData.transaction_type === 'buy' ? 11 : 9}
-        finderType="agent"
+        
         isValid={formData.terms_accepted}
         errors={errors}
         title="Terms and Consent"
@@ -541,7 +541,7 @@ export default function AgentFinderSteps({
           formData={formData}
           updateFormData={updateFormData}
           stepNumber={12}
-          finderType="agent"
+          
           isValid={true} // Not required field
           errors={errors}
           title="Would you like loan assistance?"
@@ -575,7 +575,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={formData.transaction_type === 'buy' ? 13 : 10}
-        finderType="agent"
+        
         isValid={true}
         errors={errors}
         title="Review your information"

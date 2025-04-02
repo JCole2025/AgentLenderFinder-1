@@ -1,4 +1,4 @@
-export type FinderType = "agent" | "lender";
+export type FinderType = "agent";
 
 export interface FormStepProps {
   isActive: boolean;
@@ -7,7 +7,6 @@ export interface FormStepProps {
   formData: any;
   updateFormData: (data: any) => void;
   stepNumber: number;
-  finderType: FinderType;
   isValid: boolean;
   errors: Record<string, any>;
 }
@@ -53,48 +52,9 @@ export interface AgentFormData {
   loan_assistance: boolean; // Added for optional loan assistance checkbox
 }
 
-// Lender Finder Types
-export type LenderLoanPurpose = 
-  | "purchase" 
-  | "refinance" 
-  | "heloc" 
-  | "construction"
-  | "not_sure";
-
-export type LenderPropertyType = 
-  | "single_family" 
-  | "multi_family_2_4" 
-  | "multi_family_5plus" 
-  | "commercial"
-  | "land";
-
-export type LenderCreditScore = 
-  | "excellent_740plus" 
-  | "good_700_739" 
-  | "fair_650_699" 
-  | "below_650"
-  | "not_sure";
-
-export interface LenderFormData {
-  loan_purpose: LenderLoanPurpose;
-  property_type: LenderPropertyType;
-  location: string;
-  credit_score: LenderCreditScore;
-  contact: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    city: string;
-    state: string;
-    zip: string;
-    message?: string;
-  };
-  terms_accepted: boolean;
-}
+// Lender Finder Types have been removed since the application now only supports Agent Finder
 
 export interface FinderFormProps {
-  finderType: FinderType;
   currentStep: number;
   setCurrentStep: (step: number) => void;
   onSuccess: () => void;
@@ -131,42 +91,4 @@ export const agentTimelineLabels: Record<AgentTimeline, string> = {
   "just_researching": "Just researching"
 };
 
-export const lenderLoanPurposeLabels: Record<LenderLoanPurpose, string> = {
-  "purchase": "Purchase a property",
-  "refinance": "Refinance a property",
-  "heloc": "Home Equity Line of Credit (HELOC)",
-  "construction": "Construction loan",
-  "not_sure": "Not sure yet"
-};
-
-export const lenderLoanPurposeDescriptions: Record<LenderLoanPurpose, string> = {
-  "purchase": "Get financing to buy a new investment property",
-  "refinance": "Get a new loan on a property you already own",
-  "heloc": "Access equity in your property",
-  "construction": "Finance new construction or major renovations",
-  "not_sure": "I'd like to explore my options"
-};
-
-export const lenderPropertyTypeLabels: Record<LenderPropertyType, string> = {
-  "single_family": "Single-family home",
-  "multi_family_2_4": "Small multi-family (2-4 units)",
-  "multi_family_5plus": "Large multi-family (5+ units)",
-  "commercial": "Commercial property",
-  "land": "Land"
-};
-
-export const lenderPropertyTypeDescriptions: Record<LenderPropertyType, string> = {
-  "single_family": "Detached house with one unit",
-  "multi_family_2_4": "Duplex, triplex, or fourplex",
-  "multi_family_5plus": "Apartment buildings",
-  "commercial": "Office, retail, industrial, etc.",
-  "land": "Vacant lot or undeveloped land"
-};
-
-export const lenderCreditScoreLabels: Record<LenderCreditScore, string> = {
-  "excellent_740plus": "Excellent (740+)",
-  "good_700_739": "Good (700-739)",
-  "fair_650_699": "Fair (650-699)",
-  "below_650": "Below 650",
-  "not_sure": "Not sure"
-};
+// All lender-related constants have been removed since the application now only supports Agent Finder

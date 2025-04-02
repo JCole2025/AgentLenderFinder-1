@@ -80,69 +80,14 @@ export const agentFinderSchema = z.object({
   loan_assistance: z.boolean().optional(), // Added for optional loan assistance checkbox
 });
 
-// Validation schemas for lender finder
-export const lenderLoanPurposeSchema = z.enum([
-  "purchase",
-  "refinance",
-  "heloc",
-  "construction",
-  "not_sure"
-], {
-  required_error: "Please select a loan purpose",
-});
-
-export const lenderPropertyTypeSchema = z.enum([
-  "single_family",
-  "multi_family_2_4",
-  "multi_family_5plus",
-  "commercial",
-  "land"
-], {
-  required_error: "Please select a property type",
-});
-
-export const lenderCreditScoreSchema = z.enum([
-  "excellent_740plus",
-  "good_700_739",
-  "fair_650_699",
-  "below_650",
-  "not_sure"
-], {
-  required_error: "Please select a credit score range",
-});
-
-export const lenderFinderSchema = z.object({
-  loan_purpose: lenderLoanPurposeSchema,
-  property_type: lenderPropertyTypeSchema,
-  location: z.string().min(1, "Please enter a location"),
-  credit_score: lenderCreditScoreSchema,
-  contact: z.object({
-    first_name: z.string().min(1, "First name is required"),
-    last_name: z.string().min(1, "Last name is required"),
-    email: z.string().email("Please enter a valid email"),
-    phone: z.string().min(1, "Phone number is required"),
-    city: z.string().min(1, "City is required"),
-    state: z.string().min(1, "State is required"),
-    zip: z.string().min(1, "ZIP code is required"),
-    message: z.string().optional(),
-  }),
-  terms_accepted: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the terms to continue" })
-  }),
-});
+// Lender finder schemas have been removed since application only supports Agent Finder
 
 export const finderSubmissionSchema = z.object({
-  finderType: z.enum(["agent", "lender"]),
-  data: z.discriminatedUnion("finderType", [
-    z.object({
-      finderType: z.literal("agent"),
-      formData: agentFinderSchema
-    }),
-    z.object({
-      finderType: z.literal("lender"),
-      formData: lenderFinderSchema
-    })
-  ])
+  finderType: z.literal("agent"),
+  data: z.object({
+    finderType: z.literal("agent"),
+    formData: agentFinderSchema
+  })
 });
 
 export const insertFinderSubmissionSchema = createInsertSchema(finderSubmissions).pick({
@@ -168,5 +113,4 @@ export type InsertPartialFinderSubmission = z.infer<typeof insertPartialFinderSu
 export type FinderSubmission = typeof finderSubmissions.$inferSelect;
 export type PartialFinderSubmission = typeof partialFinderSubmissions.$inferSelect;
 export type AgentFinderData = z.infer<typeof agentFinderSchema>;
-export type LenderFinderData = z.infer<typeof lenderFinderSchema>;
 export type FinderSubmissionData = z.infer<typeof finderSubmissionSchema>;

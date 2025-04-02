@@ -1,10 +1,8 @@
 import { useFinderForm } from "@/hooks/useFinderForm";
 import { FinderFormProps } from "@/types/finder";
 import AgentFinderSteps from "./AgentFinderSteps";
-import LenderFinderSteps from "./LenderFinderSteps";
 
 export default function FinderForm({ 
-  finderType, 
   currentStep, 
   setCurrentStep, 
   onSuccess 
@@ -16,20 +14,16 @@ export default function FinderForm({
     isValid,
     resetForm,
     submitForm
-  } = useFinderForm(finderType);
+  } = useFinderForm();
 
   const handleNext = () => {
-    // Get max steps based on finder type and transaction type
+    // Get max steps based on transaction type
     let maxSteps = 13; // Default for agent buy
     
-    if (finderType === 'lender') {
-      maxSteps = 6;
-    } else if (finderType === 'agent') {
-      // Need to cast to access transaction_type
-      const agentData = formData as any;
-      if (agentData.transaction_type === 'sell') {
-        maxSteps = 11;
-      }
+    // Need to cast to access transaction_type
+    const agentData = formData as any;
+    if (agentData.transaction_type === 'sell') {
+      maxSteps = 11;
     }
     
     if (currentStep < maxSteps) {
@@ -52,29 +46,16 @@ export default function FinderForm({
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      {finderType === 'agent' ? (
-        <AgentFinderSteps
-          currentStep={currentStep}
-          formData={formData as any} // Use type assertion to avoid TS errors
-          updateFormData={updateFormData}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          onSubmit={handleSubmit}
-          errors={errors}
-          isValid={isValid}
-        />
-      ) : (
-        <LenderFinderSteps
-          currentStep={currentStep}
-          formData={formData as any} // Use type assertion to avoid TS errors
-          updateFormData={updateFormData}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          onSubmit={handleSubmit}
-          errors={errors}
-          isValid={isValid}
-        />
-      )}
+      <AgentFinderSteps
+        currentStep={currentStep}
+        formData={formData as any} // Use type assertion to avoid TS errors
+        updateFormData={updateFormData}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
+        onSubmit={handleSubmit}
+        errors={errors}
+        isValid={isValid}
+      />
     </div>
   );
 }
