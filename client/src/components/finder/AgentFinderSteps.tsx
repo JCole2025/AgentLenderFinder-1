@@ -134,7 +134,7 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={3}
 
-        isValid={true} // Not a required field
+        isValid={formData.owner_occupied !== undefined} // Required field
         errors={errors}
         title="Will this be an owner-occupied property?"
         subtitle="Let us know if you plan to live in this property"
