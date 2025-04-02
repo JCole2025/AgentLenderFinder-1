@@ -47,7 +47,13 @@ export default function InvestmentDetailsFields({
               className={`pl-7 ${errors.priceMin ? "border-red-500" : ""}`}
               placeholder="100,000"
               value={priceMin}
-              onChange={(e) => onPriceMinChange(e.target.value)}
+              onChange={(e) => {
+                // Only allow numbers and commas
+                const value = e.target.value;
+                if (/^[0-9,]*$/.test(value) || value === '') {
+                  onPriceMinChange(value);
+                }
+              }}
             />
           </div>
           {errors.priceMin && <p className="text-sm text-red-500">{errors.priceMin}</p>}
@@ -65,7 +71,13 @@ export default function InvestmentDetailsFields({
               className={`pl-7 ${errors.priceMax ? "border-red-500" : ""}`}
               placeholder="350,000"
               value={priceMax}
-              onChange={(e) => onPriceMaxChange(e.target.value)}
+              onChange={(e) => {
+                // Only allow numbers and commas
+                const value = e.target.value;
+                if (/^[0-9,]*$/.test(value) || value === '') {
+                  onPriceMaxChange(value);
+                }
+              }}
             />
           </div>
           {errors.priceMax && <p className="text-sm text-red-500">{errors.priceMax}</p>}
@@ -96,7 +108,13 @@ export default function InvestmentDetailsFields({
           className={errors.propertyCount ? "border-red-500" : ""}
           placeholder="0"
           value={propertyCount}
-          onChange={(e) => onPropertyCountChange(e.target.value)}
+          onChange={(e) => {
+            // Only allow numbers
+            const value = e.target.value;
+            if (/^[0-9]*$/.test(value) || value === '') {
+              onPropertyCountChange(value);
+            }
+          }}
         />
         {errors.propertyCount && <p className="text-sm text-red-500">{errors.propertyCount}</p>}
       </div>

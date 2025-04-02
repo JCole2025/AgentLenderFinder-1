@@ -91,8 +91,8 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={2}
         finderType="agent"
-        isValid={formData.location.trim() !== '' && formData.property_type.trim() !== '' && 
-          (formData.transaction_type !== 'sell' || (formData.property_address && formData.property_address.trim() !== ''))}
+        isValid={Boolean(formData.location.trim() !== '' && formData.property_type.trim() !== '' && 
+          (formData.transaction_type !== 'sell' || (formData.property_address && formData.property_address.trim() !== '')))}
         errors={errors}
         title={formData.transaction_type === 'buy' ? "Property Location & Type" : "Property Details"}
         subtitle={formData.transaction_type === 'buy' ? "Where & what are you looking to invest in?" : "Tell us about the property you want to sell"}
@@ -330,7 +330,11 @@ export default function AgentFinderSteps({
                 className="mt-1"
               />
               <Label htmlFor="agent_terms" className="ml-3 text-sm">
-                I agree to the <a href="#" className="text-blue-500 hover:text-blue-700">Terms of Service</a> and <a href="#" className="text-blue-500 hover:text-blue-700">Privacy Policy</a>. I consent to be contacted by real estate professionals.
+                By entering your information and submitting this form, you agree to BiggerPockets <a href="#" className="text-blue-500 hover:text-blue-700">terms of service</a> and <a href="#" className="text-blue-500 hover:text-blue-700">privacy policy</a>. 
+                
+                <p className="mt-2 text-xs text-gray-600">
+                  You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services.
+                </p>
               </Label>
             </div>
             {errors.terms_accepted && (

@@ -6,7 +6,94 @@ import { agentFinderSchema, lenderFinderSchema } from "@shared/schema";
 import axios from "axios";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // API endpoint to submit the finder form data
+  // API endpoint for partial form submissions (saving progress)
+  app.post("/api/save-progress", async (req, res) => {
+    try {
+      const { finderType, partialData, currentStep, sessionId } = req.body;
+      
+      if (!sessionId) {
+        return res.status(400).json({ message: "Session ID is required" });
+      }
+      
+      // Check if there's an existing submission for this session
+      const existingSubmission = await storage.getPartialSubmissionBySession(sessionId);
+      
+      if (existingSubmission) {
+        // Update existing submission
+        const updatedSubmission = await storage.updatePartialSubmission(
+          existingSubmission.id, 
+          {
+            partialData,
+            currentStep,
+            lastUpdated: new Date().toISOString()
+          }
+        );
+        return res.status(200).json({ success: true, id: updatedSubmission?.id });
+      } else {
+        // Create new partial submission
+        const submission = await storage.createPartialSubmission({
+          finderType,
+          partialData,
+          currentStep,
+          sessionId,
+          lastUpdated: new Date().toISOString(),
+          isCompleted: false
+        });
+        return res.status(201).json({ success: true, id: submission.id });
+      }
+    } catch (error) {
+      console.error("Save progress error:", error);
+      res.status(500).json({ message: "An error occurred saving your progress" });
+    }
+  });
+  
+  // API endpoint to retrieve saved progress
+  app.get("/api/get-progress/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      
+      if (!sessionId) {
+        return res.status(400).json({ message: "Session ID is required" });
+      }
+      
+      const savedProgress = await storage.getPartialSubmissionBySession(sessionId);
+      
+      if (savedProgress) {
+        return res.status(200).json({ 
+          success: true, 
+          data: {
+            finderType: savedProgress.finderType,
+            currentStep: savedProgress.currentStep,
+            partialData: savedProgress.partialData
+          }
+        });
+      } else {
+        return res.status(404).json({ message: "No saved progress found" });
+      }
+    } catch (error) {
+      console.error("Get progress error:", error);
+      res.status(500).json({ message: "An error occurred retrieving your progress" });
+    }
+  });
+  
+  // API endpoint to mark a partial submission as complete
+  app.post("/api/complete-progress/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      if (!id) {
+        return res.status(400).json({ message: "Submission ID is required" });
+      }
+      
+      await storage.markPartialSubmissionComplete(parseInt(id, 10));
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Complete progress error:", error);
+      res.status(500).json({ message: "An error occurred completing your submission" });
+    }
+  });
+
+  // API endpoint to submit the complete finder form data
   app.post("/api/submit-finder", async (req, res) => {
     try {
       const { finderType, formData } = req.body;

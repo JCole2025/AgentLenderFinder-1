@@ -244,7 +244,11 @@ export default function LenderFinderSteps({
                 className="mt-1"
               />
               <Label htmlFor="lender_terms" className="ml-3 text-sm">
-                I agree to the <a href="#" className="text-primary">Terms of Service</a> and <a href="#" className="text-primary">Privacy Policy</a>. I consent to be contacted by lenders and financing professionals.
+                By entering your information and submitting this form, you agree to BiggerPockets <a href="#" className="text-primary">terms of service</a> and <a href="#" className="text-primary">privacy policy</a>. 
+                
+                <p className="mt-2 text-xs text-gray-600">
+                  You also expressly consent to having BiggerPockets and its featured real estate lenders call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services.
+                </p>
               </Label>
             </div>
             {errors.terms_accepted && (

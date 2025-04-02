@@ -15,6 +15,17 @@ export const finderSubmissions = pgTable("finder_submissions", {
   webhookResponse: text("webhook_response"),
 });
 
+// Partial form submissions table (for tracking incomplete submissions)
+export const partialFinderSubmissions = pgTable("partial_finder_submissions", {
+  id: serial("id").primaryKey(),
+  finderType: text("finder_type").notNull(), // 'agent' or 'lender'
+  partialData: json("partial_data").notNull(), // Will store the form data as it's being filled
+  currentStep: integer("current_step").notNull(),
+  sessionId: text("session_id").notNull(), // To identify unique user sessions
+  lastUpdated: text("last_updated").notNull(),
+  isCompleted: boolean("is_completed").default(false), // Flag when the user completes the form
+});
+
 // Validation schemas for agent finder
 export const agentTransactionTypeSchema = z.enum([
   "buy",
@@ -144,8 +155,19 @@ export const insertFinderSubmissionSchema = createInsertSchema(finderSubmissions
   submittedAt: true,
 });
 
+export const insertPartialFinderSubmissionSchema = createInsertSchema(partialFinderSubmissions).pick({
+  finderType: true,
+  partialData: true,
+  currentStep: true,
+  sessionId: true,
+  lastUpdated: true,
+  isCompleted: true,
+});
+
 export type InsertFinderSubmission = z.infer<typeof insertFinderSubmissionSchema>;
+export type InsertPartialFinderSubmission = z.infer<typeof insertPartialFinderSubmissionSchema>;
 export type FinderSubmission = typeof finderSubmissions.$inferSelect;
+export type PartialFinderSubmission = typeof partialFinderSubmissions.$inferSelect;
 export type AgentFinderData = z.infer<typeof agentFinderSchema>;
 export type LenderFinderData = z.infer<typeof lenderFinderSchema>;
 export type FinderSubmissionData = z.infer<typeof finderSubmissionSchema>;
