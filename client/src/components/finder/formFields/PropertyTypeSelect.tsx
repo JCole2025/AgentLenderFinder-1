@@ -8,12 +8,11 @@ import {
 import { Label } from "@/components/ui/label";
 
 const propertyTypes = [
-  { value: "single_family", label: "Single Family Residence" },
+  { value: "single_family", label: "Single Family" },
   { value: "multi_family_2_4", label: "Multi-Family (2-4 units)" },
   { value: "multi_family_5plus", label: "Multi-Family (5+ units)" },
-  { value: "commercial", label: "Commercial" },
-  { value: "land", label: "Land/Lots" },
-  { value: "other", label: "Other" }
+  { value: "townhouse_condo", label: "Townhouse/Condo" },
+  { value: "land_commercial_other", label: "Land, Commercial, Other" }
 ];
 
 interface PropertyTypeSelectProps {

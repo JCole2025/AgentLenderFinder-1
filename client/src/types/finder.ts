@@ -16,12 +16,8 @@ export interface FormStepProps {
 export type AgentTransactionType = "buy" | "sell";
 
 export type AgentStrategy = 
-  | "buy_and_hold" 
-  | "fix_and_flip" 
-  | "brrrr" 
+  | "buy_and_hold_brrrr" 
   | "short_term_rental"
-  | "multifamily"
-  | "commercial"
   | "not_sure";
 
 export type AgentTimeline = 
@@ -34,7 +30,6 @@ export type AgentTimeline =
 export interface AgentFormData {
   transaction_type: AgentTransactionType;
   location: string;
-  multiple_locations: boolean;
   property_type: string;
   purchase_timeline: AgentTimeline;
   property_address?: string; // For sell option
@@ -45,7 +40,8 @@ export interface AgentFormData {
   strategy: AgentStrategy[];
   timeline: AgentTimeline;
   contact: {
-    name: string;
+    first_name: string;
+    last_name: string;
     email: string;
     phone: string;
     city: string;
@@ -83,7 +79,8 @@ export interface LenderFormData {
   location: string;
   credit_score: LenderCreditScore;
   contact: {
-    name: string;
+    first_name: string;
+    last_name: string;
     email: string;
     phone: string;
     city: string;
@@ -113,23 +110,15 @@ export const agentTransactionTypeDescriptions: Record<AgentTransactionType, stri
 };
 
 export const agentStrategyLabels: Record<AgentStrategy, string> = {
-  "buy_and_hold": "Buy and hold",
-  "fix_and_flip": "Fix and flip",
-  "brrrr": "BRRRR",
+  "buy_and_hold_brrrr": "Buy and Hold or BRRRR",
   "short_term_rental": "Short-term rental",
-  "multifamily": "Multi-family",
-  "commercial": "Commercial",
   "not_sure": "Not sure yet"
 };
 
 export const agentStrategyDescriptions: Record<AgentStrategy, string> = {
-  "buy_and_hold": "Long-term rental investment",
-  "fix_and_flip": "Renovate and sell for profit",
-  "brrrr": "Buy, Rehab, Rent, Refinance, Repeat",
-  "short_term_rental": "Airbnb or vacation rentals",
-  "multifamily": "Duplexes, apartment buildings, etc.",
-  "commercial": "Office, retail, industrial, etc.",
-  "not_sure": "I'd like to explore my options"
+  "buy_and_hold_brrrr": "I plan to buy and rent out long-term",
+  "short_term_rental": "I plan to list on Airbnb/VRBO",
+  "not_sure": "I'm still exploring my options"
 };
 
 export const agentTimelineLabels: Record<AgentTimeline, string> = {

@@ -21,11 +21,7 @@ export default function AgentReviewSummary({ formData }: AgentReviewSummaryProps
             : "Property location:"}
         </h3>
         <p className="mt-1 text-sm">{formData.location}</p>
-        {formData.transaction_type === 'buy' && (
-          <p className="mt-1 text-sm">
-            Open to multiple locations: {formData.multiple_locations ? 'Yes' : 'No'}
-          </p>
-        )}
+        {/* We've removed the multiple locations option */}
         {formData.transaction_type === 'sell' && formData.property_address && (
           <div className="mt-2">
             <h3 className="font-medium text-neutral-darker">Property address:</h3>
@@ -94,7 +90,7 @@ export default function AgentReviewSummary({ formData }: AgentReviewSummaryProps
       <div>
         <h3 className="font-medium text-neutral-darker">Your contact information:</h3>
         <p className="mt-1 text-sm whitespace-pre-line">
-          {formData.contact.name}<br/>
+          {formData.contact.first_name} {formData.contact.last_name}<br/>
           {formData.contact.email}<br/>
           {formData.contact.phone}<br/>
           {formData.contact.city}, {formData.contact.state} {formData.contact.zip}

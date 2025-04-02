@@ -2,20 +2,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface ContactFormProps {
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone: string;
   city: string;
   state: string;
   zip: string;
-  onNameChange: (value: string) => void;
+  onFirstNameChange: (value: string) => void;
+  onLastNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onCityChange: (value: string) => void;
   onStateChange: (value: string) => void;
   onZipChange: (value: string) => void;
   errors: {
-    name?: string;
+    first_name?: string;
+    last_name?: string;
     email?: string;
     phone?: string;
     city?: string;
@@ -24,36 +27,56 @@ interface ContactFormProps {
   };
 }
 
-export default function ContactFormExtended({
-  name,
-  email,
-  phone,
-  city,
-  state,
-  zip,
-  onNameChange,
-  onEmailChange,
-  onPhoneChange,
-  onCityChange,
-  onStateChange,
-  onZipChange,
-  errors
-}: ContactFormProps) {
+export default function ContactFormExtended(props: ContactFormProps) {
+  const {
+    first_name,
+    last_name,
+    email,
+    phone,
+    city,
+    state,
+    zip,
+    onFirstNameChange,
+    onLastNameChange,
+    onEmailChange,
+    onPhoneChange,
+    onCityChange,
+    onStateChange,
+    onZipChange,
+    errors
+  } = props;
   return (
     <div className="space-y-5">
-      <div>
-        <Label htmlFor="name" className="block text-gray-700 font-medium mb-2">
-          Full name
-        </Label>
-        <Input
-          id="name"
-          type="text"
-          className={`h-12 text-base ${errors.name ? "border-red-500" : "border-gray-300"}`}
-          placeholder="Joseph Coleman"
-          value={name}
-          onChange={(e) => onNameChange(e.target.value)}
-        />
-        {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="first_name" className="block text-gray-700 font-medium mb-2">
+            First name
+          </Label>
+          <Input
+            id="first_name"
+            type="text"
+            className={`h-12 text-base ${errors.first_name ? "border-red-500" : "border-gray-300"}`}
+            placeholder="Joseph"
+            value={first_name}
+            onChange={(e) => onFirstNameChange(e.target.value)}
+          />
+          {errors.first_name && <p className="text-sm text-red-500 mt-1">{errors.first_name}</p>}
+        </div>
+        
+        <div>
+          <Label htmlFor="last_name" className="block text-gray-700 font-medium mb-2">
+            Last name
+          </Label>
+          <Input
+            id="last_name"
+            type="text"
+            className={`h-12 text-base ${errors.last_name ? "border-red-500" : "border-gray-300"}`}
+            placeholder="Coleman"
+            value={last_name}
+            onChange={(e) => onLastNameChange(e.target.value)}
+          />
+          {errors.last_name && <p className="text-sm text-red-500 mt-1">{errors.last_name}</p>}
+        </div>
       </div>
 
       <div>

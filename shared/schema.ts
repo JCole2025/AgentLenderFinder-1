@@ -36,12 +36,8 @@ export const agentTransactionTypeSchema = z.enum([
 
 export const agentStrategySchema = z.array(
   z.enum([
-    "buy_and_hold",
-    "fix_and_flip",
-    "brrrr",
+    "buy_and_hold_brrrr",
     "short_term_rental",
-    "multifamily",
-    "commercial",
     "not_sure"
   ])
 ).min(1, "Please select at least one option");
@@ -59,7 +55,6 @@ export const agentTimelineSchema = z.enum([
 export const agentFinderSchema = z.object({
   transaction_type: agentTransactionTypeSchema,
   location: z.string().min(1, "Please enter a location"),
-  multiple_locations: z.boolean().optional(),
   property_type: z.string().min(1, "Please specify property type"),
   purchase_timeline: agentTimelineSchema,
   property_address: z.string().optional(),
@@ -70,7 +65,8 @@ export const agentFinderSchema = z.object({
   strategy: agentStrategySchema,
   timeline: agentTimelineSchema,
   contact: z.object({
-    name: z.string().min(1, "Name is required"),
+    first_name: z.string().min(1, "First name is required"),
+    last_name: z.string().min(1, "Last name is required"),
     email: z.string().email("Please enter a valid email"),
     phone: z.string().min(1, "Phone number is required"),
     city: z.string().min(1, "City is required"),
@@ -119,7 +115,8 @@ export const lenderFinderSchema = z.object({
   location: z.string().min(1, "Please enter a location"),
   credit_score: lenderCreditScoreSchema,
   contact: z.object({
-    name: z.string().min(1, "Name is required"),
+    first_name: z.string().min(1, "First name is required"),
+    last_name: z.string().min(1, "Last name is required"),
     email: z.string().email("Please enter a valid email"),
     phone: z.string().min(1, "Phone number is required"),
     city: z.string().min(1, "City is required"),

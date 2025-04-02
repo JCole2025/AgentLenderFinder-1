@@ -142,25 +142,6 @@ export default function AgentFinderSteps({
             />
           </div>
           
-          {formData.transaction_type === 'buy' && (
-            <div className="mt-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="agent_multiple_locations"
-                  checked={formData.multiple_locations}
-                  onCheckedChange={(checked) => 
-                    updateFormData({ multiple_locations: checked as boolean })
-                  }
-                />
-                <Label
-                  htmlFor="agent_multiple_locations"
-                  className="font-medium"
-                >
-                  I'm open to multiple locations
-                </Label>
-              </div>
-            </div>
-          )}
         </div>
       </FormStep>
 
@@ -244,12 +225,8 @@ export default function AgentFinderSteps({
       >
         <CheckboxGroup
           options={[
-            { value: "buy_and_hold", label: agentStrategyLabels.buy_and_hold, description: agentStrategyDescriptions.buy_and_hold },
-            { value: "fix_and_flip", label: agentStrategyLabels.fix_and_flip, description: agentStrategyDescriptions.fix_and_flip },
-            { value: "brrrr", label: agentStrategyLabels.brrrr, description: agentStrategyDescriptions.brrrr },
+            { value: "buy_and_hold_brrrr", label: agentStrategyLabels.buy_and_hold_brrrr, description: agentStrategyDescriptions.buy_and_hold_brrrr },
             { value: "short_term_rental", label: agentStrategyLabels.short_term_rental, description: agentStrategyDescriptions.short_term_rental },
-            { value: "multifamily", label: agentStrategyLabels.multifamily, description: agentStrategyDescriptions.multifamily },
-            { value: "commercial", label: agentStrategyLabels.commercial, description: agentStrategyDescriptions.commercial },
             { value: "not_sure", label: agentStrategyLabels.not_sure, description: agentStrategyDescriptions.not_sure }
           ]}
           selectedValues={formData.strategy}
@@ -270,7 +247,8 @@ export default function AgentFinderSteps({
         stepNumber={5}
         finderType="agent"
         isValid={
-          !!formData.contact.name.trim() && 
+          !!formData.contact.first_name.trim() && 
+          !!formData.contact.last_name.trim() && 
           !!formData.contact.email.trim() && 
           !!formData.contact.phone.trim() &&
           !!formData.contact.city.trim() &&
@@ -285,32 +263,37 @@ export default function AgentFinderSteps({
       >
         <div className="space-y-6">
           <ContactFormExtended
-            name={formData.contact.name}
+            first_name={formData.contact.first_name}
+            last_name={formData.contact.last_name}
             email={formData.contact.email}
             phone={formData.contact.phone}
             city={formData.contact.city}
             state={formData.contact.state}
             zip={formData.contact.zip}
-            onNameChange={(value) => updateFormData({ 
-              contact: { ...formData.contact, name: value } 
+            onFirstNameChange={(value: string) => updateFormData({ 
+              contact: { ...formData.contact, first_name: value } 
             })}
-            onEmailChange={(value) => updateFormData({ 
+            onLastNameChange={(value: string) => updateFormData({ 
+              contact: { ...formData.contact, last_name: value } 
+            })}
+            onEmailChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, email: value } 
             })}
-            onPhoneChange={(value) => updateFormData({ 
+            onPhoneChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, phone: value } 
             })}
-            onCityChange={(value) => updateFormData({ 
+            onCityChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, city: value } 
             })}
-            onStateChange={(value) => updateFormData({ 
+            onStateChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, state: value } 
             })}
-            onZipChange={(value) => updateFormData({ 
+            onZipChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, zip: value } 
             })}
             errors={{
-              name: errors['contact.name'],
+              first_name: errors['contact.first_name'],
+              last_name: errors['contact.last_name'],
               email: errors['contact.email'],
               phone: errors['contact.phone'],
               city: errors['contact.city'],

@@ -1,0 +1,123 @@
+joseph274
+Agent Finder Form Questions & Answers
+Step 1: Transaction Type
+Question: What would you like to do?
+Data Type: String (enum)
+Possible Answers:
+
+Buy: I'm looking to buy
+Sell: I'm looking to sell 
+Step 2: Location
+Question: Where are you looking to invest?
+Data Type: String
+Format: City, State (e.g., "Austin, TX")
+Validation: Must be a valid city and state combination
+
+
+
+Step A (For "Sell" Option Only)
+Question: What is the property address?
+Data Type: String
+
+Step 3: Property Type
+Question: What type of property are you looking for?
+Data Type: String (enum)
+Possible Answers:
+
+Single Family
+Multi-Family (2-4 units)
+Multi-Family (5+ units)
+Townhouse/Condo
+Land, Commercial, Other
+
+Step 4: Investment Details
+Question: What is your price range?
+Data Type: String (formatted as currency)
+Min Price:
+
+Minimum: $100,000
+Format: Currency with commas (e.g., "100,000")
+Max Price:
+
+Format: Currency with commas (e.g., "350,000")
+Validation: Must be greater than min price
+Question (for "Buy" option only): I have already started the loan process
+Data Type: Boolean (true/false)
+
+Question: How many investment properties do you currently own?
+Data Type: String (numeric)
+Format: Numbers only
+
+Step 5: Strategy
+Question: What is your investment strategy?
+Data Type: Array of strings (multiple selection possible)
+Possible Answers:
+
+Buy and Hold or BRRRR: I plan to buy and rent out long-term
+BRRRR: Buy, Rehab, Rent, Refinance, Repeat
+Short Term Rental: I plan to list on Airbnb/VRBO
+Not Sure: I'm still exploring my options
+
+Step 6: Timeline
+Question: What is your investment timeline?
+Data Type: String (enum)
+Possible Answers:
+
+ASAP: I'm ready to make a move now
+1-3 Months: I'm planning to invest in the next 1-3 months
+3-6 Months: I'm planning to invest in the next 3-6 months
+6-12 Months: I'm planning to invest in the next 6-12 months
+
+Step 7: Contact Information
+Question: First Name
+Question: Last Name
+Data Type: String
+
+Question: Email
+Data Type: String
+Validation: Must be valid email format
+
+Question: Phone
+Data Type: String
+Validation: Must be valid phone format in xxx-xxx-xxxx format. 
+
+Question: City
+Data Type: String
+Validation: Must be valid city in the united states
+
+Question: State
+Data Type: String
+Validation: Must be valid state in the united states
+
+Question: Zip
+Data Type: String
+Validation: Must be valid zip in the united states
+
+Question: Terms and Privacy Policy
+Data Type: Boolean (must be true to submit)
+Text: I agree to the Terms of Service and understand my information will be used as described in the Privacy Policy. 
+
+
+Lender specific questions: 
+
+Purchase: I'm buying a property
+Refinance: I want to refinance my existing loan
+HELOC: I need a home equity line of credit
+Construction: I need funding for a construction project
+Not Sure: I'm exploring my options
+
+
+
+Credit Score
+Question: What is your credit score range?
+Data Type: String (enum)
+Possible Answers:
+
+Excellent (740+): Prime borrowing rates
+Good (700-739): Very good loan options
+Fair (650-699): Most loan programs available
+Below 650: Some loan options available
+Not Sure: I don't know my credit score
+Step 5: Contact Information
+Question: Name
+Data Type: String

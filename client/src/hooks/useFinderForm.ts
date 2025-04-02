@@ -22,7 +22,6 @@ export function useFinderForm(finderType: FinderType) {
   const initialAgentFormData: AgentFormData = {
     transaction_type: "" as any,
     location: "",
-    multiple_locations: false,
     property_type: "",
     purchase_timeline: "" as any,
     property_address: "",
@@ -33,7 +32,8 @@ export function useFinderForm(finderType: FinderType) {
     strategy: [],
     timeline: "" as any,
     contact: {
-      name: "",
+      first_name: "",
+      last_name: "",
       email: "",
       phone: "",
       city: "",
@@ -50,7 +50,8 @@ export function useFinderForm(finderType: FinderType) {
     location: "",
     credit_score: "" as any,
     contact: {
-      name: "",
+      first_name: "",
+      last_name: "",
       email: "",
       phone: "",
       city: "",

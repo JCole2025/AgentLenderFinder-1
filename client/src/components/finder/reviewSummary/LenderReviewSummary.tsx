@@ -41,7 +41,7 @@ export default function LenderReviewSummary({ formData }: LenderReviewSummaryPro
       <div>
         <h3 className="font-medium text-neutral-darker">Your contact information:</h3>
         <p className="mt-1 text-sm whitespace-pre-line">
-          {formData.contact.name}<br/>
+          {formData.contact.first_name} {formData.contact.last_name}<br/>
           {formData.contact.email}<br/>
           {formData.contact.phone}<br/>
           {formData.contact.city}, {formData.contact.state} {formData.contact.zip}

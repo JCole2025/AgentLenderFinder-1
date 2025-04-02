@@ -169,7 +169,8 @@ export default function LenderFinderSteps({
         stepNumber={5}
         finderType="lender"
         isValid={
-          !!formData.contact.name.trim() && 
+          !!formData.contact.first_name.trim() && 
+          !!formData.contact.last_name.trim() && 
           !!formData.contact.email.trim() && 
           !!formData.contact.phone.trim() &&
           !!formData.contact.city.trim() &&
@@ -184,32 +185,37 @@ export default function LenderFinderSteps({
       >
         <div className="space-y-6">
           <ContactFormExtended
-            name={formData.contact.name}
+            first_name={formData.contact.first_name}
+            last_name={formData.contact.last_name}
             email={formData.contact.email}
             phone={formData.contact.phone}
             city={formData.contact.city}
             state={formData.contact.state}
             zip={formData.contact.zip}
-            onNameChange={(value) => updateFormData({ 
-              contact: { ...formData.contact, name: value } 
+            onFirstNameChange={(value: string) => updateFormData({ 
+              contact: { ...formData.contact, first_name: value } 
             })}
-            onEmailChange={(value) => updateFormData({ 
+            onLastNameChange={(value: string) => updateFormData({ 
+              contact: { ...formData.contact, last_name: value } 
+            })}
+            onEmailChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, email: value } 
             })}
-            onPhoneChange={(value) => updateFormData({ 
+            onPhoneChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, phone: value } 
             })}
-            onCityChange={(value) => updateFormData({ 
+            onCityChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, city: value } 
             })}
-            onStateChange={(value) => updateFormData({ 
+            onStateChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, state: value } 
             })}
-            onZipChange={(value) => updateFormData({ 
+            onZipChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, zip: value } 
             })}
             errors={{
-              name: errors['contact.name'],
+              first_name: errors['contact.first_name'],
+              last_name: errors['contact.last_name'],
               email: errors['contact.email'],
               phone: errors['contact.phone'],
               city: errors['contact.city'],
