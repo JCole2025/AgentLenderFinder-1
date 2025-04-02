@@ -68,7 +68,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={1}
-        
+
         isValid={!!formData.transaction_type}
         errors={errors}
         title="What would you like to do?"
@@ -105,7 +105,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={2}
-        
+
         isValid={Boolean(formData.property_type && formData.property_type.trim() !== '')}
         errors={errors}
         title={formData.transaction_type === 'buy' ? "What type of property are you looking for?" : "What type of property are you selling?"}
@@ -133,7 +133,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={3}
-        
+
         isValid={true} // Not a required field
         errors={errors}
         title="Will this be an owner-occupied property?"
@@ -157,7 +157,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={4}
-        
+
         isValid={Boolean(formData.location && formData.location.trim() !== '')}
         errors={errors}
         title={formData.transaction_type === 'buy' ? "Where are you looking to invest?" : "Where is your property located?"}
@@ -195,7 +195,7 @@ export default function AgentFinderSteps({
           formData={formData}
           updateFormData={updateFormData}
           stepNumber={5}
-          
+
           isValid={Boolean(formData.property_address && formData.property_address.trim() !== '')}
           errors={errors}
           title="What is the property address?"
@@ -230,11 +230,12 @@ export default function AgentFinderSteps({
           formData={formData}
           updateFormData={updateFormData}
           stepNumber={5}
-          
+
           isValid={Boolean(formData.purchase_timeline)}
           errors={errors}
           title={`When are you looking to purchase in ${formData.location}?`}
           subtitle="Select your timeline"
+          showNext={false}
         >
           <div>
             <ButtonRadioGroup
@@ -244,7 +245,7 @@ export default function AgentFinderSteps({
                 { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
                 { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" }
               ]}
-              selectedValue={formData.purchase_timeline}
+              selectedValue={formData.purchase_timeline || "asap"}
               onChange={(value) => updateFormData({ 
                 purchase_timeline: value as any,
                 timeline: value as any
@@ -268,7 +269,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={6}
-        
+
         isValid={Boolean(
           formData.price_min && formData.price_min.trim() !== '' && 
           formData.price_max && formData.price_max.trim() !== '' &&
@@ -310,7 +311,7 @@ export default function AgentFinderSteps({
                 </div>
                 {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="price-max" className="font-medium">
                   {formData.transaction_type === 'buy' ? 'Maximum Purchase Price' : 'Maximum Sale Price'}
@@ -334,7 +335,7 @@ export default function AgentFinderSteps({
               </div>
             </div>
           </div>
-          
+
           {/* Investment Strategy Section - Only for Buy */}
           {formData.transaction_type === 'buy' && (
             <div>
@@ -368,7 +369,7 @@ export default function AgentFinderSteps({
         formData={formData}
         updateFormData={updateFormData}
         stepNumber={7}
-        
+
         isValid={Boolean(
           formData.contact && 
           formData.contact.first_name && !!formData.contact.first_name.trim() && 
@@ -433,8 +434,8 @@ export default function AgentFinderSteps({
           />
         </div>
       </FormStep>
-      
-      
+
+
     </>
   );
 }
