@@ -274,6 +274,7 @@ export default function AgentFinderSteps({
                 timeline: value === "default" ? undefined : value as any
               })}
               name="agent_purchase_timeline"
+              autoAdvance={true}
               onNext={onNext}
             />
             {errors.purchase_timeline && (

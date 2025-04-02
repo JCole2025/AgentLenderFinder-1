@@ -49,12 +49,18 @@ export default function ButtonRadioGroup({
 }: ButtonRadioGroupProps) {
 
   const handleOptionClick = (value: string) => {
-    // If clicking the same value, deselect it
-    const newValue = selectedValue === value ? undefined : value;
+    // For the timeline step, we don't want to allow deselection 
+    // Always use the new value (don't allow undefined)
+    const newValue = value;
     onChange(newValue);
+    
+    console.log('Button clicked:', value);
+    console.log('Auto advance enabled:', autoAdvance);
+    console.log('onNext available:', !!onNext);
 
-    // Only auto-advance if we're selecting a new value (not deselecting)
-    if (autoAdvance && onNext && newValue) {
+    // Always auto-advance if enabled, regardless of value
+    if (autoAdvance && onNext) {
+      console.log('Auto advancing after selection');
       setTimeout(() => {
         onNext();
       }, 400);
