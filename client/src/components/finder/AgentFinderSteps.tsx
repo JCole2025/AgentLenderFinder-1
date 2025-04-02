@@ -163,7 +163,7 @@ export default function AgentFinderSteps({
         </div>
       </FormStep>
 
-      {/* Step 4: Location */}
+      {/* Step 4: Location and Price Range */}
       <FormStep
         isActive={currentStep === 4}
         onNext={onNext}
@@ -172,18 +172,23 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={4}
 
-        isValid={Boolean(formData.location && formData.location.trim() !== '')}
+        isValid={Boolean(
+          formData.location && formData.location.trim() !== '' && 
+          formData.price_min && formData.price_min.trim() !== '' && 
+          formData.price_max && formData.price_max.trim() !== ''
+        )}
         errors={errors}
         title={formData.transaction_type === 'buy' ? "Where are you looking to invest?" : "Where is your property located?"}
-        subtitle="Enter the city and state"
+        subtitle="Tell us about your location and budget"
       >
-        <div className="space-y-6">
+        <div className="space-y-8">
+          {/* Location Section */}
           <div className="mb-4 space-y-4">
-            <Label className="font-medium">
+            <h3 className="text-lg font-semibold mb-2">
               {formData.transaction_type === 'buy' 
                 ? "Target location" 
                 : "Property location"}
-            </Label>
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="city" className="text-sm font-medium">City</Label>
@@ -219,6 +224,68 @@ export default function AgentFinderSteps({
             </div>
             {errors.location && (
               <p className="text-red-500 text-sm">{errors.location}</p>
+            )}
+          </div>
+
+          {/* Price Range Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">What is your price range?</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="price-min" className="font-medium">
+                  {formData.transaction_type === 'buy' ? 'Minimum Purchase Price' : 'Minimum Sale Price'}
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
+                  <Input
+                    id="price-min"
+                    type="text"
+                    className={`pl-7 ${errors.price_min ? "border-red-500" : ""}`}
+                    placeholder="100,000"
+                    value={formData.price_min}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9,]/g, '');
+                      const formattedPrice = formatPrice(value);
+                      updateFormData({ price_min: formattedPrice });
+                    }}
+                    onFocus={(e) => {
+                      // If empty, auto-populate with the minimum value
+                      if (!formData.price_min) {
+                        updateFormData({ price_min: getDefaultMinPrice() });
+                      }
+                    }}
+                  />
+                </div>
+                {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="price-max" className="font-medium">
+                  {formData.transaction_type === 'buy' ? 'Maximum Purchase Price' : 'Maximum Sale Price'}
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
+                  <Input
+                    id="price-max"
+                    type="text"
+                    className={`pl-7 ${errors.price_max ? "border-red-500" : ""}`}
+                    placeholder="500,000"
+                    value={formData.price_max}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9,]/g, '');
+                      const formattedPrice = formatPrice(value);
+                      updateFormData({ price_max: formattedPrice });
+                    }}
+                  />
+                </div>
+                {errors.price_max && <p className="text-sm text-red-500">{errors.price_max}</p>}
+              </div>
+            </div>
+            
+            {(errors.price_range || errors.price_min_max) && (
+              <p className="text-sm text-red-500 mt-2">
+                {errors.price_range || errors.price_min_max}
+              </p>
             )}
           </div>
         </div>
@@ -299,85 +366,24 @@ export default function AgentFinderSteps({
         </FormStep>
       )}
 
-      {/* Step 7: Price Range and Investment Strategy */}
-      <FormStep
-        isActive={currentStep === 6}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={6}
+      {/* Step 6: Investment Strategy (Only for Buy) */}
+      {formData.transaction_type === 'buy' && (
+        <FormStep
+          isActive={currentStep === 6}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={6}
 
-        isValid={Boolean(
-          formData.price_min && formData.price_min.trim() !== '' && 
-          formData.price_max && formData.price_max.trim() !== '' &&
-          (formData.transaction_type === 'sell' || formData.strategy.length > 0)
-        )}
-        errors={errors}
-        title="Price range and investment strategy"
-        subtitle="Tell us about your budget and plans"
-      >
-        <div className="space-y-8">
-          {/* Price Range Section */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">What is your price range?</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price-min" className="font-medium">
-                  {formData.transaction_type === 'buy' ? 'Minimum Purchase Price' : 'Minimum Sale Price'}
-                </Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
-                  <Input
-                    id="price-min"
-                    type="text"
-                    className={`pl-7 ${errors.price_min ? "border-red-500" : ""}`}
-                    placeholder="100,000"
-                    value={formData.price_min}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9,]/g, '');
-                      const formattedPrice = formatPrice(value);
-                      updateFormData({ price_min: formattedPrice });
-                    }}
-                    onFocus={(e) => {
-                      // If empty, auto-populate with the minimum value
-                      if (!formData.price_min) {
-                        updateFormData({ price_min: getDefaultMinPrice() });
-                      }
-                    }}
-                  />
-                </div>
-                {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="price-max" className="font-medium">
-                  {formData.transaction_type === 'buy' ? 'Maximum Purchase Price' : 'Maximum Sale Price'}
-                </Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
-                  <Input
-                    id="price-max"
-                    type="text"
-                    className={`pl-7 ${errors.price_max ? "border-red-500" : ""}`}
-                    placeholder="350,000"
-                    value={formData.price_max}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9,]/g, '');
-                      const formattedPrice = formatPrice(value);
-                      updateFormData({ price_max: formattedPrice });
-                    }}
-                  />
-                </div>
-                {errors.price_max && <p className="text-sm text-red-500">{errors.price_max}</p>}
-              </div>
-            </div>
-          </div>
-
-          {/* Investment Strategy Section - Only for Buy */}
-          {formData.transaction_type === 'buy' && (
+          isValid={Boolean(formData.strategy && formData.strategy.length > 0)}
+          errors={errors}
+          title="What is your investment strategy?"
+          subtitle="Tell us about your investment plans"
+          showNext={false}
+        >
+          <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">What is your investment strategy?</h3>
               <ButtonCheckboxGroup
                 options={[
                   { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
@@ -395,9 +401,14 @@ export default function AgentFinderSteps({
               )}
               <p className="text-sm text-gray-500 mt-4">Note: We do not yet support Fix and Flip strategies or commercial.</p>
             </div>
-          )}
-        </div>
-      </FormStep>
+          </div>
+        </FormStep>
+      )}
+      
+      {/* Skip step 6 for sell path - add empty component to maintain indexing */}
+      {formData.transaction_type === 'sell' && (
+        <div className="hidden"></div>
+      )}
 
       {/* Step 8: Contact Information */}
       <FormStep
