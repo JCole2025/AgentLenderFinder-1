@@ -22,22 +22,10 @@ const propertyTypes = [
     description: "Shared wall properties"
   },
   { 
-    value: "multi_family_5plus", 
-    label: "Multi-Family (5+ units)", 
-    icon: <Warehouse className="h-6 w-6" />,
-    description: "Larger apartment complexes"
-  },
-  { 
-    value: "land", 
-    label: "Land", 
-    icon: <Landmark className="h-6 w-6" />,
-    description: "Undeveloped property without structures"
-  },
-  { 
     value: "commercial", 
-    label: "Commercial Property", 
-    icon: <Building className="h-6 w-6" />,
-    description: "Office, retail, or industrial space"
+    label: "Commercial/Multi-Family (5+)/Land", 
+    icon: <Warehouse className="h-6 w-6" />,
+    description: "Commercial, large apartments, or undeveloped land"
   }
 ];
 
