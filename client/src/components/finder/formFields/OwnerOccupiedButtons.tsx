@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Home, Building } from 'lucide-react';
 
 interface OwnerOccupiedButtonsProps {
   isOwnerOccupied: boolean;
@@ -34,7 +33,6 @@ export default function OwnerOccupiedButtons({
         }`}
         onClick={() => handleClick(true)}
       >
-        <Home className="h-10 w-10" />
         <div>
           <p className="font-semibold text-lg">Yes</p>
           <p className="text-sm mt-1">I plan to live in this property</p>
@@ -49,7 +47,6 @@ export default function OwnerOccupiedButtons({
         }`}
         onClick={() => handleClick(false)}
       >
-        <Building className="h-10 w-10" />
         <div>
           <p className="font-semibold text-lg">No</p>
           <p className="text-sm mt-1">This is an investment property</p>
