@@ -164,23 +164,47 @@ export default function AgentFinderSteps({
         subtitle="Enter the city and state"
       >
         <div className="space-y-6">
-          <div className="mb-4">
-            <Label htmlFor="location" className="font-medium">
+          <div className="mb-4 space-y-4">
+            <Label className="font-medium">
               {formData.transaction_type === 'buy' 
                 ? "Target location" 
                 : "Property location"}
             </Label>
-            <Input 
-              id="location"
-              placeholder="City, ST (e.g. Denver, CO)"
-              value={formData.location}
-              onChange={(e) => updateFormData({ location: e.target.value })}
-              className={`w-full ${errors.location ? "border-red-500" : ""}`}
-            />
-            {errors.location ? (
-              <p className="text-red-500 text-sm mt-2">{errors.location}</p>
-            ) : (
-              <p className="text-gray-500 text-sm mt-2">{getLocationInputHelperText()}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="city" className="text-sm font-medium">City</Label>
+                <Input 
+                  id="city"
+                  placeholder="Denver"
+                  value={formData.location.split(',')[0] || ''}
+                  onChange={(e) => {
+                    const state = formData.location.split(',')[1]?.trim() || '';
+                    updateFormData({ 
+                      location: `${e.target.value}${state ? `, ${state}` : ''}`
+                    });
+                  }}
+                  className={`w-full ${errors.location ? "border-red-500" : ""}`}
+                />
+              </div>
+              <div>
+                <Label htmlFor="state" className="text-sm font-medium">State</Label>
+                <Input 
+                  id="state"
+                  placeholder="CO"
+                  value={formData.location.split(',')[1]?.trim() || ''}
+                  onChange={(e) => {
+                    const city = formData.location.split(',')[0] || '';
+                    updateFormData({ 
+                      location: `${city}${e.target.value ? `, ${e.target.value}` : ''}`
+                    });
+                  }}
+                  className={`w-full ${errors.location ? "border-red-500" : ""}`}
+                  maxLength={2}
+                />
+              </div>
+            </div>
+            {errors.location && (
+              <p className="text-red-500 text-sm">{errors.location}</p>
             )}
           </div>
         </div>
