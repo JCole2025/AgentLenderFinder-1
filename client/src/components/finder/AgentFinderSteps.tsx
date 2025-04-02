@@ -347,7 +347,12 @@ export default function AgentFinderSteps({
                   { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
                 ]}
                 selectedValues={formData.strategy}
-                onChange={handleStrategyChange}
+                onChange={(value, checked) => {
+                  handleStrategyChange(value, checked);
+                  if (checked) {
+                    setTimeout(onNext, 300);
+                  }
+                }}
                 minSelected={1}
               />
               {errors.strategy && (
