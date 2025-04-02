@@ -110,6 +110,7 @@ export default function AgentFinderSteps({
         errors={errors}
         title={formData.transaction_type === 'buy' ? "What type of property are you looking for?" : "What type of property are you selling?"}
         subtitle="Select the property type"
+        showNext={false}
       >
         <div className="space-y-6">
           <div className="mt-4">
