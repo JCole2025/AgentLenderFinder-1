@@ -12,6 +12,8 @@ import {
 } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { validateLocationInput } from "@/lib/locationValidator";
+import { validatePrice, validatePriceRange, getDefaultMinPrice } from "@/lib/priceValidator";
 
 export function useFinderForm(finderType: FinderType) {
   const { toast } = useToast();
@@ -24,7 +26,7 @@ export function useFinderForm(finderType: FinderType) {
     property_type: "",
     purchase_timeline: "" as any,
     property_address: "",
-    price_min: "",
+    price_min: getDefaultMinPrice(), // Start with $100,000 as minimum price
     price_max: "",
     loan_started: false,
     investment_properties_count: "",
@@ -86,12 +88,14 @@ export function useFinderForm(finderType: FinderType) {
     if (finderType === "agent") {
       setFormData(prev => {
         const agentPrev = prev as AgentFormData;
-        return { ...agentPrev, ...data };
+        const updatedData = { ...agentPrev, ...data } as AgentFormData;
+        return updatedData;
       });
     } else {
       setFormData(prev => {
         const lenderPrev = prev as LenderFormData;
-        return { ...lenderPrev, ...data };
+        const updatedData = { ...lenderPrev, ...data } as LenderFormData;
+        return updatedData;
       });
     }
     
@@ -99,18 +103,63 @@ export function useFinderForm(finderType: FinderType) {
     validateForm({ ...formData, ...data } as AgentFormData | LenderFormData);
   };
 
-  // Validate form data using Zod schemas
+  // Validate form data using Zod schemas and custom validators
   const validateForm = (data: AgentFormData | LenderFormData) => {
     try {
+      let customErrors: Record<string, string> = {};
+      let isFormValid = true;
+      
+      // Validate location for both agent and lender forms
+      if (data.location && !validateLocationInput(data.location)) {
+        customErrors.location = "Please enter a valid city, state format (e.g., 'Austin, TX')";
+        isFormValid = false;
+      }
+      
+      // Validate price fields for agent form
+      if (finderType === "agent") {
+        const agentData = data as AgentFormData;
+        
+        // Only validate prices if transaction type is 'buy'
+        if (agentData.transaction_type === 'buy') {
+          // Validate min price
+          if (agentData.price_min && !validatePrice(agentData.price_min)) {
+            customErrors.price_min = "Minimum price must be at least $100,000";
+            isFormValid = false;
+          }
+          
+          // Validate max price
+          if (agentData.price_max && !validatePrice(agentData.price_max)) {
+            customErrors.price_max = "Please enter a valid price";
+            isFormValid = false;
+          }
+          
+          // Validate price range if both min and max are provided
+          if (agentData.price_min && agentData.price_max) {
+            if (!validatePriceRange(agentData.price_min, agentData.price_max)) {
+              customErrors.price_max = "Maximum price must be greater than minimum price";
+              isFormValid = false;
+            }
+          }
+        }
+      }
+      
+      // Run Zod schema validation
       if (finderType === "agent") {
         agentFinderSchema.parse(data);
-        setIsValid(true);
-        setErrors({});
       } else {
         lenderFinderSchema.parse(data);
-        setIsValid(true);
-        setErrors({});
       }
+      
+      // If we have custom errors, set them even if Zod validation passes
+      if (Object.keys(customErrors).length > 0) {
+        setErrors(customErrors);
+        setIsValid(false);
+        return;
+      }
+      
+      // If we made it here, form is valid
+      setIsValid(true);
+      setErrors({});
     } catch (error) {
       if (error instanceof z.ZodError) {
         const formattedErrors: Record<string, string> = {};
@@ -137,7 +186,57 @@ export function useFinderForm(finderType: FinderType) {
   // Submit form to API
   const submitForm = async (): Promise<boolean> => {
     try {
-      // Validate form before submission
+      // Run custom validation first
+      let customErrors: Record<string, string> = {};
+      let isFormValid = true;
+      
+      // Validate location for both agent and lender forms
+      if (formData.location && !validateLocationInput(formData.location)) {
+        customErrors.location = "Please enter a valid city, state format (e.g., 'Austin, TX')";
+        isFormValid = false;
+      }
+      
+      // Validate price fields for agent form
+      if (finderType === "agent") {
+        const agentData = formData as AgentFormData;
+        
+        // Only validate prices if transaction type is 'buy'
+        if (agentData.transaction_type === 'buy') {
+          // Validate min price
+          if (agentData.price_min && !validatePrice(agentData.price_min)) {
+            customErrors.price_min = "Minimum price must be at least $100,000";
+            isFormValid = false;
+          }
+          
+          // Validate max price
+          if (agentData.price_max && !validatePrice(agentData.price_max)) {
+            customErrors.price_max = "Please enter a valid price";
+            isFormValid = false;
+          }
+          
+          // Validate price range if both min and max are provided
+          if (agentData.price_min && agentData.price_max) {
+            if (!validatePriceRange(agentData.price_min, agentData.price_max)) {
+              customErrors.price_max = "Maximum price must be greater than minimum price";
+              isFormValid = false;
+            }
+          }
+        }
+      }
+      
+      // If we have custom validation errors, don't submit
+      if (Object.keys(customErrors).length > 0) {
+        setErrors(customErrors);
+        setIsValid(false);
+        toast({
+          title: "Error",
+          description: "Please fix the form errors and try again",
+          variant: "destructive"
+        });
+        return false;
+      }
+      
+      // Run Zod schema validation
       if (finderType === "agent") {
         agentFinderSchema.parse(formData);
       } else {

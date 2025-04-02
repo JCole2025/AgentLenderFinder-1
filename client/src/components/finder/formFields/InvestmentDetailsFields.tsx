@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { formatPrice, getDefaultMinPrice, validatePrice, validatePriceRange } from "@/lib/priceValidator";
 
 interface InvestmentDetailsProps {
   priceMin: string;
@@ -48,10 +49,14 @@ export default function InvestmentDetailsFields({
               placeholder="100,000"
               value={priceMin}
               onChange={(e) => {
-                // Only allow numbers and commas
-                const value = e.target.value;
-                if (/^[0-9,]*$/.test(value) || value === '') {
-                  onPriceMinChange(value);
+                const value = e.target.value.replace(/[^0-9,]/g, '');
+                const formattedPrice = formatPrice(value);
+                onPriceMinChange(formattedPrice);
+              }}
+              onFocus={(e) => {
+                // If empty, auto-populate with the minimum value
+                if (!priceMin) {
+                  onPriceMinChange(getDefaultMinPrice());
                 }
               }}
             />
@@ -72,11 +77,9 @@ export default function InvestmentDetailsFields({
               placeholder="350,000"
               value={priceMax}
               onChange={(e) => {
-                // Only allow numbers and commas
-                const value = e.target.value;
-                if (/^[0-9,]*$/.test(value) || value === '') {
-                  onPriceMaxChange(value);
-                }
+                const value = e.target.value.replace(/[^0-9,]/g, '');
+                const formattedPrice = formatPrice(value);
+                onPriceMaxChange(formattedPrice);
               }}
             />
           </div>
