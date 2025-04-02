@@ -27,9 +27,9 @@ export default function OwnerOccupiedButtons({
     <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
       <Button
         type="button"
-        variant={isOwnerOccupied ? "default" : "outline"}
+        variant={isOwnerOccupied === true ? "default" : "outline"}
         className={`h-auto py-6 px-4 flex flex-col items-center justify-center text-center gap-3 ${
-          isOwnerOccupied ? 'border-2 border-primary' : ''
+          isOwnerOccupied === true ? 'border-2 border-primary' : ''
         }`}
         onClick={() => handleClick(true)}
       >
@@ -42,9 +42,9 @@ export default function OwnerOccupiedButtons({
       
       <Button
         type="button"
-        variant={!isOwnerOccupied ? "default" : "outline"}
+        variant={isOwnerOccupied === false ? "default" : "outline"}
         className={`h-auto py-6 px-4 flex flex-col items-center justify-center text-center gap-3 ${
-          !isOwnerOccupied ? 'border-2 border-primary' : ''
+          isOwnerOccupied === false ? 'border-2 border-primary' : ''
         }`}
         onClick={() => handleClick(false)}
       >
