@@ -34,11 +34,6 @@ export default function FinderApp() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           {!showSuccess ? (
             <>
-              <div className="mb-8">
-                <h1 className="text-2xl font-bold text-center">Find the Right Real Estate Agent</h1>
-                <p className="text-center text-gray-600 mt-2">Complete this form to get matched with experienced agents in your target area</p>
-              </div>
-              
               <ProgressBar 
                 currentStep={currentStep} 
                 totalSteps={12}
