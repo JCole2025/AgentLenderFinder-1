@@ -136,13 +136,22 @@ export function validateAndFormatStateInput(input: string): string | undefined {
 }
 
 /**
- * Gets a list of state options for dropdown or autocomplete
+ * Gets a list of state options for dropdown or autocomplete using full state names
  * 
- * @returns Array of objects with label (State Name) and value (State Code)
+ * @returns Array of objects with label (State Name) and value (State Name)
  */
 export function getStateOptions(): Array<{ label: string; value: string }> {
-  return Object.entries(stateNameToCode).map(([name, code]) => ({
-    label: `${name} (${code})`,
-    value: code
+  return Object.keys(stateNameToCode).map(name => ({
+    label: name,
+    value: name
   }));
+}
+
+/**
+ * Gets all valid state names as an array
+ * 
+ * @returns Array of state names
+ */
+export function getAllStateNames(): string[] {
+  return Object.keys(stateNameToCode);
 }
