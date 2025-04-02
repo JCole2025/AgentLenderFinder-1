@@ -56,7 +56,7 @@ export default function ButtonPropertySelect({
   selectedValue,
   onChange,
   error,
-  autoAdvance = false,
+  autoAdvance = true,
   onNext
 }: ButtonPropertySelectProps) {
   const [showUnsupportedDialog, setShowUnsupportedDialog] = useState(false);

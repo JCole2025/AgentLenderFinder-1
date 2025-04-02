@@ -6,6 +6,7 @@ import PropertyTypeSelect from "./formFields/PropertyTypeSelect";
 import ButtonPropertySelect from "./formFields/ButtonPropertySelect";
 import InvestmentDetailsFields from "./formFields/InvestmentDetailsFields";
 import ContactFormExtended from "./formFields/ContactFormExtended";
+import OwnerOccupiedButtons from "./formFields/OwnerOccupiedButtons";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -135,23 +136,14 @@ export default function AgentFinderSteps({
         errors={errors}
         title="Will this be an owner-occupied property?"
         subtitle="Let us know if you plan to live in this property"
-        showNext={true} // Explicitly show the Next button
+        showNext={false} // Hide Next button as we auto-advance
       >
         <div className="space-y-6">
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="owner-occupied"
-              checked={formData.owner_occupied}
-              onCheckedChange={(checked) => updateFormData({ owner_occupied: checked })}
-            />
-            <Label htmlFor="owner-occupied" className="font-medium">
-              Yes, I plan to live in this property
-            </Label>
-          </div>
-          
-          <p className="text-sm text-gray-500 italic mt-4">
-            This field is optional. Click Next to continue.
-          </p>
+          <OwnerOccupiedButtons 
+            isOwnerOccupied={formData.owner_occupied}
+            onChange={(value) => updateFormData({ owner_occupied: value })}
+            onNext={onNext}
+          />
         </div>
       </FormStep>
 
