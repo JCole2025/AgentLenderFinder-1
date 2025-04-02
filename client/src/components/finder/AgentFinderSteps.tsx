@@ -270,6 +270,7 @@ export default function AgentFinderSteps({
                 { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" }
               ]}
               selectedValue={formData.purchase_timeline || "asap"}
+              defaultValue="asap"
               onChange={(value) => updateFormData({ 
                 purchase_timeline: value as any,
                 timeline: value as any
