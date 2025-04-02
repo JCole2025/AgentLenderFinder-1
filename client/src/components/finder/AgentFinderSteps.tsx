@@ -373,7 +373,8 @@ export default function AgentFinderSteps({
           formData.contact.first_name && !!formData.contact.first_name.trim() && 
           formData.contact.last_name && !!formData.contact.last_name.trim() && 
           formData.contact.email && !!formData.contact.email.trim() && 
-          formData.contact.phone && !!formData.contact.phone.trim()
+          formData.contact.phone && !!formData.contact.phone.trim() &&
+          formData.terms_accepted
           // City, state, and zip are not required per the specifications
         )}
         errors={errors}
@@ -429,40 +430,6 @@ export default function AgentFinderSteps({
               terms_accepted: errors.terms_accepted
             }}
           />
-        </div>
-      </FormStep>
-      
-      {/* Step 9: Terms and Consent */}
-      <FormStep
-        isActive={currentStep === 8}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={8}
-        
-        isValid={formData.terms_accepted}
-        errors={errors}
-        title="Terms and Consent"
-        subtitle="Please review and accept our terms to continue"
-      >
-        <div className="pt-2">
-          <div className="flex items-start">
-            <Checkbox
-              id="agent_terms"
-              checked={formData.terms_accepted}
-              onCheckedChange={(checked) => 
-                updateFormData({ terms_accepted: checked as boolean })
-              }
-              className="mt-1"
-            />
-            <Label htmlFor="agent_terms" className="ml-3 text-sm">
-              By entering your information and submitting this form, you agree to BiggerPockets <a href="#" className="text-blue-500 hover:text-blue-700">terms of service</a>. You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services.
-            </Label>
-          </div>
-          {errors.terms_accepted && (
-            <p className="text-red-500 text-sm mt-1">{errors.terms_accepted}</p>
-          )}
         </div>
       </FormStep>
       

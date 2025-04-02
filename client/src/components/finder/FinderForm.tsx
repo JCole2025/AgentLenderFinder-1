@@ -18,7 +18,7 @@ export default function FinderForm({
 
   const handleNext = () => {
     // Simplified form has the same number of steps for both buy and sell
-    const maxSteps = 9; // Total steps for both transaction types
+    const maxSteps = 8; // Total steps for both transaction types
     
     if (currentStep < maxSteps) {
       setCurrentStep(currentStep + 1);
