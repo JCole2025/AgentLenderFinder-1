@@ -91,7 +91,8 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={2}
         finderType="agent"
-        isValid={Boolean(formData.location.trim() !== '' && formData.property_type.trim() !== '' && 
+        isValid={Boolean(formData.location && formData.location.trim() !== '' && 
+          formData.property_type && formData.property_type.trim() !== '' && 
           (formData.transaction_type !== 'sell' || (formData.property_address && formData.property_address.trim() !== '')))}
         errors={errors}
         title={formData.transaction_type === 'buy' ? "Property Location & Type" : "Property Details"}
@@ -154,12 +155,12 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={3}
         finderType="agent"
-        isValid={
+        isValid={Boolean(
           (formData.transaction_type === 'buy' ? !!formData.purchase_timeline : true) && 
-          formData.price_min.trim() !== '' && 
-          formData.price_max.trim() !== '' &&
-          formData.investment_properties_count.trim() !== ''
-        }
+          formData.price_min && formData.price_min.trim() !== '' && 
+          formData.price_max && formData.price_max.trim() !== '' &&
+          formData.investment_properties_count && formData.investment_properties_count.trim() !== ''
+        )}
         errors={errors}
         title={formData.transaction_type === 'buy' ? "Purchase Details" : "Sale Details"}
         subtitle={formData.transaction_type === 'buy' 
@@ -246,16 +247,17 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={5}
         finderType="agent"
-        isValid={
-          !!formData.contact.first_name.trim() && 
-          !!formData.contact.last_name.trim() && 
-          !!formData.contact.email.trim() && 
-          !!formData.contact.phone.trim() &&
-          !!formData.contact.city.trim() &&
-          !!formData.contact.state.trim() &&
-          !!formData.contact.zip.trim() &&
+        isValid={Boolean(
+          formData.contact && 
+          formData.contact.first_name && !!formData.contact.first_name.trim() && 
+          formData.contact.last_name && !!formData.contact.last_name.trim() && 
+          formData.contact.email && !!formData.contact.email.trim() && 
+          formData.contact.phone && !!formData.contact.phone.trim() &&
+          formData.contact.city && !!formData.contact.city.trim() &&
+          formData.contact.state && !!formData.contact.state.trim() &&
+          formData.contact.zip && !!formData.contact.zip.trim() &&
           formData.terms_accepted
-        }
+        )}
         errors={errors}
         title="What's your contact info?"
         subtitle="On the next page you will see your agent matches & bios to be able to select who, if anyone, gets your investment answers and contact details."
