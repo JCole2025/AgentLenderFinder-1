@@ -108,7 +108,7 @@ export default function AgentReviewSummary({ formData }: AgentReviewSummaryProps
           {formData.contact.first_name} {formData.contact.last_name}<br/>
           {formData.contact.email}<br/>
           {formData.contact.phone}<br/>
-          {formData.contact.city}, {formData.contact.state} {formData.contact.zip}
+          {formData.contact.state}
         </p>
       </div>
     </div>

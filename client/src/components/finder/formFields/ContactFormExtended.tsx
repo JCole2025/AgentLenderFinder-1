@@ -16,18 +16,14 @@ interface ContactFormProps {
   last_name: string;
   email: string;
   phone: string;
-  city: string;
   state: string;
-  zip: string;
   terms_accepted: boolean;
   loan_assistance: boolean;
   onFirstNameChange: (value: string) => void;
   onLastNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
-  onCityChange: (value: string) => void;
   onStateChange: (value: string) => void;
-  onZipChange: (value: string) => void;
   onTermsAcceptedChange: (value: boolean) => void;
   onLoanAssistanceChange: (value: boolean) => void;
   errors: {
@@ -35,9 +31,7 @@ interface ContactFormProps {
     last_name?: string;
     email?: string;
     phone?: string;
-    city?: string;
     state?: string;
-    zip?: string;
     terms_accepted?: string;
   };
 }
@@ -48,28 +42,24 @@ export default function ContactFormExtended(props: ContactFormProps) {
     last_name,
     email,
     phone,
-    city,
     state,
-    zip,
     terms_accepted,
     loan_assistance,
     onFirstNameChange,
     onLastNameChange,
     onEmailChange,
     onPhoneChange,
-    onCityChange,
     onStateChange,
-    onZipChange,
     onTermsAcceptedChange,
     onLoanAssistanceChange,
     errors
   } = props;
-  
+
   // Phone number formatting helper
   const formatPhoneNumber = (value: string) => {
     // Strip all non-numeric characters
     const phoneDigits = value.replace(/\D/g, '');
-    
+
     // Apply formatting based on length of the phone number
     if (phoneDigits.length <= 3) {
       return phoneDigits;
@@ -79,19 +69,19 @@ export default function ContactFormExtended(props: ContactFormProps) {
       return `(${phoneDigits.slice(0, 3)}) ${phoneDigits.slice(3, 6)}-${phoneDigits.slice(6, 10)}`;
     }
   };
-  
+
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedPhone = formatPhoneNumber(e.target.value);
     onPhoneChange(formattedPhone);
   };
-  
+
   return (
     <form className="space-y-5" autoComplete="on">
       {/* Hidden fields to help with autofill */}
       <input type="hidden" id="name" name="name" autoComplete="name" />
       <input type="hidden" id="address" name="address" autoComplete="street-address" />
       <input type="hidden" id="contact-info" name="contact-info" autoComplete="section-contact" />
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="first_name" className="block text-gray-700 font-medium mb-2">
@@ -111,7 +101,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
           />
           {errors.first_name && <p className="text-sm text-red-500 mt-1">{errors.first_name}</p>}
         </div>
-        
+
         <div>
           <Label htmlFor="last_name" className="block text-gray-700 font-medium mb-2">
             Last name <span className="text-red-500">*</span>
@@ -188,85 +178,32 @@ export default function ContactFormExtended(props: ContactFormProps) {
         <p className="text-xs text-gray-500 mt-1">Format: (123) 456-7890</p>
         {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-1">
-          <Label htmlFor="city" className="block text-gray-700 font-medium mb-2">
-            City
-          </Label>
-          <Input
-            id="city"
-            type="text"
-            name="address-level2"
-            autoComplete="address-level2"
-            className={`h-12 text-base ${errors.city ? "border-red-500" : "border-gray-300"}`}
-            placeholder="Denver"
-            value={city}
-            onChange={(e) => onCityChange(e.target.value)}
-          />
-          {errors.city && <p className="text-sm text-red-500 mt-1">{errors.city}</p>}
-        </div>
 
-        <div>
-          <Label htmlFor="state" className="block text-gray-700 font-medium mb-2">
-            State
-          </Label>
-          <Select
-            value={state}
-            onValueChange={(value) => onStateChange(value)}
-          >
-            <SelectTrigger 
-              id="state" 
-              className={`h-12 text-base ${errors.state ? "border-red-500" : "border-gray-300"}`}
+      <div>
+            <Label htmlFor="state" className="block text-gray-700 font-medium mb-2">
+              State
+            </Label>
+            <Select
+              value={state}
+              onValueChange={(value) => onStateChange(value)}
             >
-              <SelectValue placeholder="Select State" />
-            </SelectTrigger>
-            <SelectContent>
-              {getStateOptions().map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.state && <p className="text-sm text-red-500 mt-1">{errors.state}</p>}
-        </div>
-        
-        <div>
-          <Label htmlFor="zip" className="block text-gray-700 font-medium mb-2">
-            ZIP code
-          </Label>
-          <Input
-            id="zip"
-            type="text"
-            name="postal-code"
-            autoComplete="postal-code"
-            className={`h-12 text-base ${errors.zip ? "border-red-500" : "border-gray-300"}`}
-            placeholder="80202"
-            value={zip}
-            onChange={(e) => {
-              // Only allow digits and hyphen, limit to ZIP code format
-              const zipValue = e.target.value.replace(/[^\d-]/g, '');
-              
-              // Format as XXXXX or XXXXX-XXXX
-              let formattedZip = zipValue;
-              if (zipValue.length > 5 && !zipValue.includes('-')) {
-                formattedZip = `${zipValue.slice(0, 5)}-${zipValue.slice(5, 9)}`;
-              } else if (zipValue.length > 10) {
-                formattedZip = zipValue.slice(0, 10);
-              }
-              
-              onZipChange(formattedZip);
-            }}
-            inputMode="numeric"
-            pattern="\d{5}(-\d{4})?"
-            maxLength={10}
-          />
-          <p className="text-xs text-gray-500 mt-1">Format: 80202 or 80202-1234</p>
-          {errors.zip && <p className="text-sm text-red-500 mt-1">{errors.zip}</p>}
-        </div>
-      </div>
-      
+              <SelectTrigger 
+                id="state" 
+                className={`h-12 text-base ${errors.state ? "border-red-500" : "border-gray-300"}`}
+              >
+                <SelectValue placeholder="Select State" />
+              </SelectTrigger>
+              <SelectContent>
+                {getStateOptions().map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.state && <p className="text-sm text-red-500 mt-1">{errors.state}</p>}
+          </div>
+
       {/* Consent Checkboxes */}
       <div className="space-y-4 pt-4">
         <div className="flex items-start space-x-3">
@@ -292,7 +229,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
             )}
           </div>
         </div>
-        
+
         <div className="flex items-start space-x-3">
           <Checkbox 
             id="loan_assistance" 
