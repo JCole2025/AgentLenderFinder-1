@@ -74,6 +74,7 @@ export default function AgentFinderSteps({
         title="What would you like to do?"
         subtitle="Select your real estate transaction goal"
         showPrevious={false}
+        showNext={false}
       >
         <ButtonRadioGroup
           options={[
