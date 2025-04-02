@@ -54,12 +54,20 @@ export default function AgentReviewSummary({ formData }: AgentReviewSummaryProps
       </div>
       
       {formData.transaction_type === 'buy' && (
-        <div>
-          <h3 className="font-medium text-neutral-darker">Loan Process Started:</h3>
-          <p className="mt-1 text-sm">
-            {formData.loan_started ? 'Yes' : 'No'}
-          </p>
-        </div>
+        <>
+          <div>
+            <h3 className="font-medium text-neutral-darker">Loan Process Started:</h3>
+            <p className="mt-1 text-sm">
+              {formData.loan_started ? 'Yes' : 'No'}
+            </p>
+          </div>
+          <div>
+            <h3 className="font-medium text-neutral-darker">Need Loan Assistance:</h3>
+            <p className="mt-1 text-sm">
+              {formData.loan_assistance ? 'Yes' : 'No'}
+            </p>
+          </div>
+        </>
       )}
       
       <div>

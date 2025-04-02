@@ -1,0 +1,151 @@
+# Agent Finder Lead Generation Widget
+
+Create an embeddable widget that replicates the agent finder tool from BiggerPockets.com. The interface captures user information through a multi-step form, stores data in tables, and sends it to configurable webhook endpoints.
+
+## Technical Requirements
+
+The application should include:
+- Agent Finder Form with multi-step flow
+- Thank You Page
+- Error Handling System
+
+For data storage, create three tables:
+- "agent_lead_information" - Stores complete form submissions
+- "agent_partial_form_fills" - Stores incomplete form data
+- "agent_lead_submission_failures" - Logs failed webhook submissions
+
+Create variables for webhook endpoints that will be defined later:
+- AGENT_WEBHOOK_ENDPOINT_COMPLETE
+- AGENT_WEBHOOK_ENDPOINT_PARTIAL
+- AGENT_WEBHOOK_ENDPOINT_FAILURES
+
+## CRITICAL: Fixing the "Invalid enum value" Error
+
+To prevent the "Invalid enum value" error, ensure all dropdown menus have default values assigned when the page loads. Specifically, set the following default values:
+- Timeline dropdown: default to "asap" (ASAP: I'm ready to make a move now)
+- Property Type dropdown: default to "singleFamily"
+- Investment Strategy: default to "notSureYet"
+- Owner Occupied: default to "no"
+
+Also, make sure each select element has a hidden default option to prevent validation errors.
+
+## Form Submission Flow
+
+When the user clicks the "Submit Information" button:
+1. Validate required fields
+2. Disable the submit button to prevent double submissions
+3. Show a loading indicator
+4. Save data to the lead_information table
+5. Send data to the webhook endpoint
+6. Redirect directly to the Thank You page WITHOUT a verification step
+7. If there's an error, re-enable the button and show an error message
+
+## Agent Finder Form Steps
+
+### Step 1: Basic Information
+Ask the following related questions on a single screen:
+- **Transaction Type**: "What would you like to do?" with options:
+  - "Buy: I'm looking to buy"
+  - "Sell: I'm looking to sell"
+- **Location**: "Where are you looking to invest?" as a text input field
+  - Format must be "City, ST" (e.g., "Austin, TX")
+- **Property Type**: "What type of property are you looking for?" with options:
+  - "Single Family"
+  - "Multi-Family (2-4 units)"
+  - "Commercial/Multifamily (5+ units)" 
+  - "Townhouse/Condo"
+  - "Land"
+  
+All these fields are required, except show Property Address only for "Sell" option:
+- **Property Address**: "What is the property address?" (only for "Sell" option)
+
+IMPORTANT: If the user selects "Land" or "Commercial/Multifamily (5+ units)", show a popup message:
+"We're sorry, our agents cannot help with this property type at the moment. Please select a different property type or check back later."
+
+### Step 2: Purchase Details
+If user selected "Buy" in Step 1, ask the following questions on a single screen:
+- **Timeline**: "When are you looking to purchase in [City], [State]?" with options:
+  - "ASAP: I'm ready to make a move now" (value: "asap")
+  - "1-3 Months: I'm planning to invest in the next 1-3 months" (value: "1_3_months")
+  - "3-6 Months: I'm planning to invest in the next 3-6 months" (value: "3_6_months")
+  - "6-12 Months: I'm planning to invest in the next 6-12 months" (value: "6_12_months")
+  - "Just Researching: I'm just exploring my options" (value: "just_researching")
+- **Price Range**:
+  - Minimum Price: Default to $100,000, don't accept lower values
+  - Maximum Price: Must be greater than minimum price
+- **Owner Occupied**: "Will this be an owner-occupied property?" with Yes/No options
+- **Existing Properties**: "How many investment properties do you currently own?" as a numeric input (NOT required)
+
+Timeline and Price Range are required fields. Owner Occupied is required. Existing Properties is not required.
+
+### Step 3: Investment Strategy
+If user selected "Buy" in Step 1, ask on a single screen:
+- **Investment Strategy**: "What is your investment strategy?" with options (multiple selection allowed):
+  - "Long Term Rental: I plan to buy and rent out long-term"
+  - "Short-term rental or MTR: I plan to list on Airbnb/VRBO"
+  - "Not sure yet: I'm still exploring my options"
+- Include this text: "Note: We do not yet support Fix and Flip strategies or commercial."
+This is a required field.
+
+### Step 4: Contact Information
+Ask for the following contact information on a single screen:
+- First Name (required)
+- Last Name (required)
+- Email (required, must be valid format)
+- Phone (required, must be valid format xxx-xxx-xxxx)
+- City (not required)
+- State (not required)
+- Zip (not required)
+
+### Step 5: Terms and Submission
+On the final screen, include:
+- **Terms and Consent Checkbox**: (required) with this exact text:
+"By entering your information and submitting this form, you agree to BiggerPockets terms of service. You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services."
+
+- **Loan Assistance Checkbox**: (optional) with this text:
+"I would also like to be matched with a lender who can help me with financing."
+
+- **Submit Button**: 
+Label the button "Submit Information". When clicked, it should:
+1. Save complete data to the agent_lead_information table
+2. Send data to the webhook endpoint (include the loan assistance preference)
+3. Redirect directly to the Thank You page WITHOUT a verification step
+
+## Thank You Page Implementation
+
+Create a standalone thank you page for agent leads with:
+- Heading: "What's next?"
+- Content: "A trained BiggerPockets concierge is searching our network of licensed real estate agents. We'll match you with the perfect agents and connect you with them. You should expect a text message shortly from 720-902-8552 and an email from concierge@biggerpockets.com"
+- Cross-sell: "Would you also like to be matched with lenders?" with a "Find Lenders" button that links to the lender finder form
+
+## Validation Rules
+
+The form must implement these validation rules:
+- City/State combinations must be in the format "City, ST" (e.g., "Denver, CO")
+- Price fields must only accept numeric input
+- Minimum purchase price must be at least $100,000 (auto-populated)
+- Maximum price must be greater than minimum price
+- Phone numbers must follow xxx-xxx-xxxx format
+- Email addresses must be valid format
+
+## Additional Implementation Tips
+
+1. **Prevent Errors with Default Values**
+   - Always initialize form fields with default values
+   - Use hidden default options for dropdown menus
+   - Handle undefined or null values before processing
+
+2. **Simplify the Form Structure**
+   - Break the form into smaller modules
+   - Keep each step in a separate file or function
+   - Use event delegation for dynamic content
+
+3. **Implement Error Recovery**
+   - Save form progress at each step
+   - Allow users to resume incomplete forms
+   - Provide clear error messages if something goes wrong
+
+4. **Optimize for Mobile**
+   - Ensure responsive design
+   - Simplify the interface for small screens
+   - Test on multiple devices

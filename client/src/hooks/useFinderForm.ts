@@ -20,18 +20,18 @@ export function useFinderForm(finderType: FinderType) {
   
   // Initial form state for agent finder
   const initialAgentFormData: AgentFormData = {
-    transaction_type: "" as any,
+    transaction_type: "buy", // Default to "buy"
     location: "",
-    property_type: "",
-    purchase_timeline: "" as any,
+    property_type: "single_family", // Default to "Single Family"
+    purchase_timeline: "asap", // Default to "ASAP"
     property_address: "",
     price_min: getDefaultMinPrice(), // Start with $100,000 as minimum price
     price_max: "",
     loan_started: false,
-    owner_occupied: false, // Added for step 8
-    investment_properties_count: "",
-    strategy: [],
-    timeline: "" as any,
+    owner_occupied: false, // Default to "no" (false)
+    investment_properties_count: "0", // Default to 0
+    strategy: ["not_sure"], // Default to "Not sure yet"
+    timeline: "asap", // Default to "ASAP"
     contact: {
       first_name: "",
       last_name: "",
@@ -41,15 +41,16 @@ export function useFinderForm(finderType: FinderType) {
       state: "",
       zip: ""
     },
-    terms_accepted: false
+    terms_accepted: false,
+    loan_assistance: false // New field for loan assistance checkbox
   };
 
   // Initial form state for lender finder
   const initialLenderFormData: LenderFormData = {
-    loan_purpose: "" as any,
-    property_type: "" as any,
+    loan_purpose: "purchase", // Default to "purchase"
+    property_type: "single_family", // Default to "Single Family"
     location: "",
-    credit_score: "" as any,
+    credit_score: "excellent_740plus", // Default to "Excellent"
     contact: {
       first_name: "",
       last_name: "",

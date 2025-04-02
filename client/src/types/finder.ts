@@ -50,6 +50,7 @@ export interface AgentFormData {
     zip: string;
   };
   terms_accepted: boolean;
+  loan_assistance: boolean; // Added for optional loan assistance checkbox
 }
 
 // Lender Finder Types

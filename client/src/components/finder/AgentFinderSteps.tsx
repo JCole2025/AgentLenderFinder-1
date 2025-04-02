@@ -531,15 +531,50 @@ export default function AgentFinderSteps({
           )}
         </div>
       </FormStep>
+      
+      {/* Step 13: Loan Assistance (only for Buy) */}
+      {formData.transaction_type === 'buy' && (
+        <FormStep
+          isActive={currentStep === 12}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={12}
+          finderType="agent"
+          isValid={true} // Not required field
+          errors={errors}
+          title="Would you like loan assistance?"
+          subtitle="We can connect you with lenders who can help finance your investment property"
+          showNext={true} // Explicitly show the Next button
+        >
+          <div className="space-y-6">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="loan-assistance"
+                checked={formData.loan_assistance}
+                onCheckedChange={(checked) => updateFormData({ loan_assistance: checked })}
+              />
+              <Label htmlFor="loan-assistance" className="font-medium">
+                Yes, connect me with lenders who can help me finance this property
+              </Label>
+            </div>
+            
+            <p className="text-sm text-gray-500 italic mt-4">
+              This field is optional. Click Next to continue.
+            </p>
+          </div>
+        </FormStep>
+      )}
 
       {/* Final Step: Review and Submit */}
       <FormStep
-        isActive={currentStep === (formData.transaction_type === 'buy' ? 12 : 10)}
+        isActive={currentStep === (formData.transaction_type === 'buy' ? 13 : 10)}
         onNext={onSubmit}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'buy' ? 12 : 10}
+        stepNumber={formData.transaction_type === 'buy' ? 13 : 10}
         finderType="agent"
         isValid={true}
         errors={errors}

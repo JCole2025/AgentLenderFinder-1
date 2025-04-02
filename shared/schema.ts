@@ -77,6 +77,7 @@ export const agentFinderSchema = z.object({
   terms_accepted: z.literal(true, {
     errorMap: () => ({ message: "You must accept the terms to continue" })
   }),
+  loan_assistance: z.boolean().optional(), // Added for optional loan assistance checkbox
 });
 
 // Validation schemas for lender finder
