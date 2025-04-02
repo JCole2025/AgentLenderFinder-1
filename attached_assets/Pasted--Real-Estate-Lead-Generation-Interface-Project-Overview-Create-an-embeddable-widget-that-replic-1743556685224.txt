@@ -1,0 +1,535 @@
+# Real Estate Lead Generation Interface
+
+## Project Overview
+Create an embeddable widget that replicates the agent finder and lender finder tools from BiggerPockets.com. The interface captures user information through multi-step forms, stores data in tables, and sends it to configurable webhook endpoints.
+
+## Technical Requirements
+
+### Application Structure
+```pseudocode
+Application {
+    Components: {
+        AgentFinderForm,
+        LenderFinderForm,
+        ThankYouPage,
+        ErrorHandling
+    }
+    
+    Tables: {
+        "lead_information": [Complete form submissions],
+        "partial_form_fills": [Incomplete form data],
+        "lead_submission_failures": [Failed webhook submissions]
+    }
+    
+    Variables: {
+        WEBHOOK_ENDPOINT_COMPLETE: "TO_BE_DEFINED_LATER",
+        WEBHOOK_ENDPOINT_PARTIAL: "TO_BE_DEFINED_LATER",
+        WEBHOOK_ENDPOINT_FAILURES: "TO_BE_DEFINED_LATER"
+    }
+    
+    Deployment: {
+        Type: "Embedded iFrame or Widget",
+        Environment: "Virtual Machine (not local server)",
+        EmbedMethod: "Simple HTML code snippet"
+    }
+}
+```
+
+## Common Validation Rules
+- City/State combinations must be valid (e.g., "Denver, CO") - reject entries like "Anywhere, USA"
+- Price fields must only accept numeric input (no alphabetic characters)
+- Minimum purchase price: $100,000 (auto-populate, don't accept lower values)
+- Maximum price must be greater than minimum price
+- Phone numbers must follow xxx-xxx-xxxx format
+- Email addresses must be valid format
+
+## Agent Finder Form Flow
+
+### Step 1: Transaction Type
+- **Question**: "What would you like to do?"
+- **Data Type**: Single selection
+- **Options**: 
+  - "Buy: I'm looking to buy"
+  - "Sell: I'm looking to sell"
+- **Required**: Yes
+- **Store Data**: Save partial data after selection
+
+### Step 2: Location
+- **Question**: "Where are you looking to invest?"
+- **Data Type**: Text input
+- **Format**: City, State (e.g., "Austin, TX")
+- **Validation**: Must be a valid city and state combination
+- **Required**: Yes
+- **Enhanced Validation**:
+
+```pseudocode
+function validateLocationInput(input) {
+    // Step 1: Check basic format (City, ST)
+    const formatPattern = /^([A-Za-z\s\-\.\']+),\s*([A-Z]{2})$/;
+    const formatMatch = input.match(formatPattern);
+    
+    if (!formatMatch) {
+        return {
+            valid: false,
+            error: "Please enter a city and state in the format 'City, ST' (e.g., 'Denver, CO')",
+            allowContinue: true
+        };
+    }
+    
+    const city = formatMatch[1].trim();
+    const state = formatMatch[2].trim();
+    
+    // Step 2: Check if state is valid
+    const validStates = [
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+        "DC" // Including District of Columbia
+    ];
+    
+    if (!validStates.includes(state)) {
+        return {
+            valid: false,
+            error: `"${state}" is not a valid state abbreviation.`,
+            allowContinue: true
+        };
+    }
+    
+    // Step 3: Check if city exists in state using a predefined list or API
+    const isRealCityInState = checkCityStateDatabase(city, state);
+    
+    if (!isRealCityInState) {
+        return {
+            valid: false,
+            error: `We couldn't verify "${city}, ${state}" as a valid location. Please double-check your spelling or choose a nearby major city.`,
+            allowContinue: true,
+            showConfirmation: true,
+            confirmationMessage: `Are you sure "${city}, ${state}" is correct?`,
+            confirmationOptions: ["Yes, this is correct", "No, I'll edit it"]
+        };
+    }
+    
+    return {
+        valid: true,
+        cityName: city,
+        stateCode: state
+    };
+}
+
+function checkCityStateDatabase(city, state) {
+    // Option 1: Use a local database of major cities
+    const cityStateDB = {
+        "CO": ["Denver", "Colorado Springs", "Aurora", "Fort Collins", "Lakewood", "Boulder", "Greeley", "Longmont", "Loveland", "Pueblo", "Arvada", "Westminster", "Centennial", "Grand Junction"],
+        "CA": ["Los Angeles", "San Diego", "San Jose", "San Francisco", "Oakland", "Sacramento", "Long Beach", "Fresno", "Bakersfield", "Anaheim", "Santa Ana", "Riverside", "Stockton", "Irvine"],
+        // Add more states and their major cities...
+    };
+    
+    // Check if we have this state in our database
+    if (cityStateDB[state]) {
+        // Case-insensitive search for the city
+        const normalizedCity = city.toLowerCase();
+        const citiesInState = cityStateDB[state].map(c => c.toLowerCase());
+        
+        // Check for exact match or very close match
+        if (citiesInState.includes(normalizedCity)) {
+            return true;
+        }
+        
+        // Check for partial matches (e.g., "San" might match "San Diego")
+        for (const dbCity of citiesInState) {
+            if (dbCity.includes(normalizedCity) || normalizedCity.includes(dbCity)) {
+                return true;
+            }
+        }
+    }
+    
+    // Option 2: For cities not in our database, use an external geocoding API
+    // This would be a fallback for less common cities
+    try {
+        // This is a placeholder for an API call to a geocoding service
+        // const response = await fetchGeocodingAPI(city, state);
+        // return response.isValid;
+        
+        // For simplicity, we'll return true for now and assume the API validates it
+        // In a real implementation, you'd connect to a geocoding API (Google Maps, Mapbox, etc.)
+        return true;
+    } catch (error) {
+        console.error("Error validating city/state:", error);
+        // If the API fails, we allow the user to proceed but log the error
+        return true;
+    }
+}
+```
+
+- **User Experience**:
+  - If the format is invalid, show a helpful message explaining the correct format
+  - If the state abbreviation is invalid, indicate which part is wrong
+  - If the city/state combination can't be verified, ask for confirmation but allow the user to proceed
+  - Store the normalized city and state values after validation
+- **Store Data**: Save partial data after validation passes or user confirms
+
+### Step 3: Property Address (Only for "Sell" Option)
+- **Question**: "What is the property address?"
+- **Data Type**: Text input
+- **Required**: Yes
+- **Show Only**: If user selected "Sell" in Step 1
+- **Store Data**: Save partial data after completion
+
+### Step 4: Property Type
+- **Question**: "What type of property are you looking for?"
+- **Data Type**: Single selection
+- **Options**:
+  - "Single Family"
+  - "Multi-Family (2-4 units)"
+  - "Commercial/Multifamily (5+ units)"
+  - "Townhouse/Condo"
+  - "Land"
+- **Required**: Yes
+- **Special Handling**: 
+
+```pseudocode
+SpecialHandling: () => {
+    if (SelectedOption == "Land" || SelectedOption == "Commercial/Multifamily (5+ units)") {
+        ShowPopup("We're sorry, our agents cannot help with this property type at the moment. Please select a different property type or check back later.");
+    }
+}
+```
+
+- **Store Data**: Save partial data after selection
+
+### Steps 5-11: Remaining Form Elements
+Follow the same pattern as above for the remaining form elements, including:
+
+- Timeline (When are you looking to purchase?)
+- Price Range (Min/Max with validation)
+- Loan Process (Have you started the loan process?)
+- Owner Occupied (Will this be an owner-occupied property?)
+- Existing Properties (How many investment properties do you own?)
+- Investment Strategy (Multiple selection field)
+- Contact Information (Name, Email, Phone, Address fields)
+- Terms and Consent (Checkbox with legal text)
+
+### Submit Button Behavior
+```pseudocode
+SubmitButton {
+    Text: "Submit Information",
+    Action: () => {
+        SaveToLeadInformationTable();
+        SendWebhookToEndpoint(WEBHOOK_ENDPOINT_COMPLETE);
+        RedirectTo(ThankYouPage);
+    }
+}
+```
+
+## Lender Finder Form Flow
+
+### Step 1: Finance Type
+- **Question**: "What type of financing do you need?"
+- **Data Type**: Single selection
+- **Options**:
+  - "Purchase: I'm buying a property"
+  - "Refinance: I want to refinance my existing loan"
+  - "HELOC: I need a home equity line of credit"
+  - "Construction: I need funding for a construction project"
+  - "Not Sure: I'm exploring my options"
+- **Required**: Yes
+- **Store Data**: Save partial data after selection
+
+### Step 2: Location
+- **Question**: "Where are you looking to invest?"
+- **Data Type**: Text input
+- **Format**: City, State (e.g., "Austin, TX")
+- **Validation**: Must be a valid city and state combination
+- **Required**: Yes
+- **Enhanced Validation**:
+
+```pseudocode
+function validateLocationInput(input) {
+    // Step 1: Check basic format (City, ST)
+    const formatPattern = /^([A-Za-z\s\-\.\']+),\s*([A-Z]{2})$/;
+    const formatMatch = input.match(formatPattern);
+    
+    if (!formatMatch) {
+        return {
+            valid: false,
+            error: "Please enter a city and state in the format 'City, ST' (e.g., 'Denver, CO')",
+            allowContinue: true
+        };
+    }
+    
+    const city = formatMatch[1].trim();
+    const state = formatMatch[2].trim();
+    
+    // Step 2: Check if state is valid
+    const validStates = [
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+        "DC" // Including District of Columbia
+    ];
+    
+    if (!validStates.includes(state)) {
+        return {
+            valid: false,
+            error: `"${state}" is not a valid state abbreviation.`,
+            allowContinue: true
+        };
+    }
+    
+    // Step 3: Check if city exists in state using a predefined list or API
+    const isRealCityInState = checkCityStateDatabase(city, state);
+    
+    if (!isRealCityInState) {
+        return {
+            valid: false,
+            error: `We couldn't verify "${city}, ${state}" as a valid location. Please double-check your spelling or choose a nearby major city.`,
+            allowContinue: true,
+            showConfirmation: true,
+            confirmationMessage: `Are you sure "${city}, ${state}" is correct?`,
+            confirmationOptions: ["Yes, this is correct", "No, I'll edit it"]
+        };
+    }
+    
+    return {
+        valid: true,
+        cityName: city,
+        stateCode: state
+    };
+}
+
+function checkCityStateDatabase(city, state) {
+    // Option 1: Use a local database of major cities
+    const cityStateDB = {
+        "CO": ["Denver", "Colorado Springs", "Aurora", "Fort Collins", "Lakewood", "Boulder", "Greeley", "Longmont", "Loveland", "Pueblo", "Arvada", "Westminster", "Centennial", "Grand Junction"],
+        "CA": ["Los Angeles", "San Diego", "San Jose", "San Francisco", "Oakland", "Sacramento", "Long Beach", "Fresno", "Bakersfield", "Anaheim", "Santa Ana", "Riverside", "Stockton", "Irvine"],
+        // Add more states and their major cities...
+    };
+    
+    // Check if we have this state in our database
+    if (cityStateDB[state]) {
+        // Case-insensitive search for the city
+        const normalizedCity = city.toLowerCase();
+        const citiesInState = cityStateDB[state].map(c => c.toLowerCase());
+        
+        // Check for exact match or very close match
+        if (citiesInState.includes(normalizedCity)) {
+            return true;
+        }
+        
+        // Check for partial matches (e.g., "San" might match "San Diego")
+        for (const dbCity of citiesInState) {
+            if (dbCity.includes(normalizedCity) || normalizedCity.includes(dbCity)) {
+                return true;
+            }
+        }
+    }
+    
+    // Option 2: For cities not in our database, use an external geocoding API
+    // This would be a fallback for less common cities
+    try {
+        // This is a placeholder for an API call to a geocoding service
+        // const response = await fetchGeocodingAPI(city, state);
+        // return response.isValid;
+        
+        // For simplicity, we'll return true for now and assume the API validates it
+        // In a real implementation, you'd connect to a geocoding API (Google Maps, Mapbox, etc.)
+        return true;
+    } catch (error) {
+        console.error("Error validating city/state:", error);
+        // If the API fails, we allow the user to proceed but log the error
+        return true;
+    }
+}
+```
+
+- **User Experience**:
+  - If the format is invalid, show a helpful message explaining the correct format
+  - If the state abbreviation is invalid, indicate which part is wrong
+  - If the city/state combination can't be verified, ask for confirmation but allow the user to proceed
+  - Store the normalized city and state values after validation
+- **Store Data**: Save partial data after validation passes or user confirms
+
+### Step 3: Property Type
+- **Question**: "What type of property are you looking for?"
+- **Data Type**: Single selection
+- **Options**:
+  - "Single Family"
+  - "Multi-Family (2-4 units)"
+  - "Commercial/Multifamily (5+ units)"
+  - "Townhouse/Condo"
+  - "Land"
+- **Required**: Yes
+- **Special Handling**: Same popup warning as in Agent Finder form
+- **Store Data**: Save partial data after selection
+
+### Steps 4-10: Remaining Form Elements
+Follow the same pattern for remaining form elements, including:
+- Timeline
+- Price Range
+- Owner Occupied status
+- Existing Properties
+- Credit Score range
+- Contact Information
+- Terms and Consent
+
+## Thank You Page Structure
+
+```pseudocode
+ThankYouPage {
+    Heading: "What's next?",
+    Content: [
+        "A trained BiggerPockets concierge is searching our network of licensed professionals.",
+        "We'll match you with the perfect professionals and connect you with them.",
+        "You should expect a text message shortly from 720-902-8552 and an email from concierge@biggerpockets.com"
+    ],
+    
+    ConditionalComponent_IfAgentFinderCompleted {
+        CrossSellComponent: "Would you also like to be matched with lenders?",
+        Button: {
+            Text: "Find Lenders",
+            Action: RedirectTo(LenderFinderForm)
+        }
+    },
+    
+    ConditionalComponent_IfLenderFinderCompleted {
+        CrossSellComponent: "Would you also like to be matched with agents?",
+        Button: {
+            Text: "Find Agents",
+            Action: RedirectTo(AgentFinderForm)
+        }
+    }
+}
+```
+
+## Key Functions for Data Handling
+
+### Storing Partial Data
+```pseudocode
+function StorePartialData() {
+    // Save current form state to partial_form_fills table
+    SaveToPartialFormFillsTable();
+    
+    // Send partial data to webhook endpoint
+    try {
+        SendWebhookToEndpoint(WEBHOOK_ENDPOINT_PARTIAL);
+    } catch (error) {
+        SaveToLeadSubmissionFailuresTable(error);
+    }
+}
+```
+
+### Processing Form Submissions
+```pseudocode
+function SaveToLeadInformationTable(formData) {
+    // Save complete form data to lead_information table
+    Database.insert("lead_information", formData);
+}
+```
+
+### Handling Validation Errors
+```pseudocode
+function ValidCityStateCheck(input) {
+    // Validate city and state format
+    const pattern = /^[A-Za-z\s-]+,\s*[A-Z]{2}$/;
+    return pattern.test(input) && IsRealCityState(input);
+}
+
+function NumericOnly(input) {
+    // Allow only numeric values
+    return /^\d+$/.test(input);
+}
+```
+
+### Displaying Popups
+```pseudocode
+function ShowPopup(message) {
+    // Display a popup message to the user
+    const popup = CreateElement("div", {
+        className: "popup-message",
+        innerHTML: message
+    });
+    
+    AppendToBody(popup);
+    
+    // Auto-dismiss after delay or add close button
+    setTimeout(() => {
+        RemoveElement(popup);
+    }, 5000);
+}
+```
+
+## Styling and Error Handling
+
+### Styling Guidelines
+- Match the BiggerPockets interface style
+- Ensure responsive design for all screen sizes
+- Use clear visual indicators for required fields
+- Provide back navigation to correct previous entries
+- Show progress indicators for multi-step forms
+
+### Error Handling and Edge Cases
+- Save form data at each step to prevent data loss
+- Implement field-level validation with clear error messages
+- Allow users to correct entries without losing progress
+- Handle connection issues when submitting to webhook endpoints
+- Create fallback mechanisms for webhook submission failures
+
+## Implementation Tips to Avoid Common Errors
+
+### Preventing "Invalid enum value" Errors
+```pseudocode
+// Preventing "Invalid enum value" errors in dropdown selects
+function initializeFormSelects() {
+    // For Timeline dropdown, ensure a default value is set
+    const timelineSelect = document.getElementById('timeline');
+    if (timelineSelect) {
+        // Set a hidden default value but don't show it to the user
+        timelineSelect.value = ''; // This will be validated when form is submitted
+        
+        // Add an event listener to prevent empty submissions
+        timelineSelect.addEventListener('change', (e) => {
+            if (!e.target.value || e.target.value === '') {
+                // If someone tries to select an empty value, default to "just_researching"
+                e.target.value = 'just_researching';
+            }
+        });
+    }
+    
+    // Initialize other dropdowns similarly
+    // This prevents the "Invalid enum value. Expected 'asap' | '1_3_months'..." error
+}
+```
+
+### Preventing "Cannot read properties of undefined (reading 'trim')" Error
+```pseudocode
+// Always check if a value exists before calling methods on it
+function safelyTrimString(value) {
+    // This prevents the "Cannot read properties of undefined (reading 'trim')" error
+    if (value === undefined || value === null) {
+        return "";
+    }
+    return value.trim();
+}
+
+// Example usage in a form field
+function validateCityState(input) {
+    const safeInput = safelyTrimString(input);
+    if (!safeInput) {
+        return {
+            valid: false,
+            error: "Please enter a city and state"
+        };
+    }
+    
+    // Continue with validation...
+}
+```
+
+### Handling Partial Form Submissions
+- Save form data incrementally after each step
+- Include timestamp and user identifiers with partial submissions
+- Track form completion percentage to identify drop-off points
