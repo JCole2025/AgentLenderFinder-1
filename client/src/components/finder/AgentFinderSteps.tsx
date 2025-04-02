@@ -269,6 +269,7 @@ export default function AgentFinderSteps({
                 { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
                 { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" }
               ]}
+              autoAdvance={true}
               selectedValue={formData.purchase_timeline || "asap"}
               onChange={(value) => updateFormData({ 
                 purchase_timeline: value as any,
