@@ -18,6 +18,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if there's an existing submission for this session
       const existingSubmission = await storage.getPartialSubmissionBySession(sessionId);
       
+      let submissionId;
+      
       if (existingSubmission) {
         // Update existing submission
         const updatedSubmission = await storage.updatePartialSubmission(
@@ -28,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             lastUpdated: new Date().toISOString()
           }
         );
-        return res.status(200).json({ success: true, id: updatedSubmission?.id });
+        submissionId = updatedSubmission?.id;
       } else {
         // Create new partial submission
         const submission = await storage.createPartialSubmission({
@@ -39,8 +41,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
           lastUpdated: new Date().toISOString(),
           isCompleted: false
         });
-        return res.status(201).json({ success: true, id: submission.id });
+        submissionId = submission.id;
       }
+      
+      // Send to partial webhook if available
+      const partialWebhookUrl = process.env.WEBHOOK_ENDPOINT_PARTIAL;
+      if (partialWebhookUrl) {
+        try {
+          await axios.post(partialWebhookUrl, {
+            finder_type: finderType,
+            submission_id: submissionId,
+            data: partialData,
+            current_step: currentStep,
+            session_id: sessionId,
+            timestamp: new Date().toISOString()
+          });
+        } catch (webhookError) {
+          console.error("Failed to send to partial webhook:", webhookError);
+          
+          // Attempt to log to failure webhook
+          try {
+            const failureWebhookUrl = process.env.WEBHOOK_ENDPOINT_FAILURES;
+            if (failureWebhookUrl) {
+              await axios.post(failureWebhookUrl, {
+                error: JSON.stringify(webhookError),
+                partial_submission_id: submissionId,
+                finder_type: finderType,
+                timestamp: new Date().toISOString()
+              });
+            }
+          } catch (error) {
+            console.error("Failed to log to failure webhook:", error);
+          }
+        }
+      }
+      
+      return res.status(existingSubmission ? 200 : 201).json({ success: true, id: submissionId });
     } catch (error) {
       console.error("Save progress error:", error);
       res.status(500).json({ message: "An error occurred saving your progress" });
@@ -124,18 +160,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         data: formData
       };
 
-      // Send to webhook - in a real app, this would use a proper webhook URL
-      // For demo, we'll use a test webhook or log to console
-      const webhookUrl = process.env.WEBHOOK_URL || 'https://webhook.site/your-test-id';
+      // Send to webhook using the appropriate environment variable
+      const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE || 'https://webhook.site/your-test-id';
       
       try {
-        // Would call a real webhook in production
+        // Call the webhook
         const webhookResponse = await axios.post(webhookUrl, webhookData);
         await storage.updateWebhookStatus(submission.id, "success", JSON.stringify(webhookResponse.data));
       } catch (error) {
         // Log webhook error but don't fail the submission
         console.error("Webhook error:", error);
         await storage.updateWebhookStatus(submission.id, "failed", JSON.stringify(error));
+        
+        // Also log to failures webhook if available
+        try {
+          const failureWebhookUrl = process.env.WEBHOOK_ENDPOINT_FAILURES;
+          if (failureWebhookUrl) {
+            await axios.post(failureWebhookUrl, {
+              error: JSON.stringify(error),
+              submission_id: submission.id,
+              finder_type: finderType,
+              timestamp: new Date().toISOString()
+            });
+          }
+        } catch (webhookError) {
+          console.error("Failed to log to failure webhook:", webhookError);
+        }
       }
 
       res.status(200).json({ success: true, id: submission.id });

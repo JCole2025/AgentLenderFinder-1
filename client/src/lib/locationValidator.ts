@@ -9,13 +9,19 @@ export interface City {
   state: string;
 }
 
-export function validateLocationInput(input: string): boolean {
-  // If empty or not in the format "city, state", reject
-  if (!input || !input.includes(',')) {
+export function validateLocationInput(input: string | undefined | null): boolean {
+  // If empty, undefined, or not in the format "city, state", reject
+  if (!input || typeof input !== 'string' || !input.includes(',')) {
     return false;
   }
 
-  const [cityName, stateCode] = input.split(',').map(part => part.trim());
+  const parts = input.split(',');
+  if (parts.length !== 2) {
+    return false;
+  }
+
+  const cityName = parts[0].trim();
+  const stateCode = parts[1].trim();
   
   // Check if state is valid
   const stateIsValid = usStates.sanitizeStateCode(stateCode) !== undefined;
