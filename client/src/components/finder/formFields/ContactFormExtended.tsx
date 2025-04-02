@@ -1,6 +1,15 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { validateAndFormatStateInput, getStateOptions, stateCodeToName } from "@/lib/stateValidator";
+import { useState, useEffect } from "react";
 
 interface ContactFormProps {
   first_name: string;
@@ -202,17 +211,24 @@ export default function ContactFormExtended(props: ContactFormProps) {
           <Label htmlFor="state" className="block text-gray-700 font-medium mb-2">
             State
           </Label>
-          <Input
-            id="state"
-            type="text"
-            name="address-level1"
-            autoComplete="address-level1"
-            className={`h-12 text-base ${errors.state ? "border-red-500" : "border-gray-300"}`}
-            placeholder="CO"
+          <Select
             value={state}
-            onChange={(e) => onStateChange(e.target.value)}
-            maxLength={2}
-          />
+            onValueChange={(value) => onStateChange(value)}
+          >
+            <SelectTrigger 
+              id="state" 
+              className={`h-12 text-base ${errors.state ? "border-red-500" : "border-gray-300"}`}
+            >
+              <SelectValue placeholder="Select State" />
+            </SelectTrigger>
+            <SelectContent>
+              {getStateOptions().map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {errors.state && <p className="text-sm text-red-500 mt-1">{errors.state}</p>}
         </div>
         
@@ -228,10 +244,25 @@ export default function ContactFormExtended(props: ContactFormProps) {
             className={`h-12 text-base ${errors.zip ? "border-red-500" : "border-gray-300"}`}
             placeholder="80202"
             value={zip}
-            onChange={(e) => onZipChange(e.target.value)}
+            onChange={(e) => {
+              // Only allow digits and hyphen, limit to ZIP code format
+              const zipValue = e.target.value.replace(/[^\d-]/g, '');
+              
+              // Format as XXXXX or XXXXX-XXXX
+              let formattedZip = zipValue;
+              if (zipValue.length > 5 && !zipValue.includes('-')) {
+                formattedZip = `${zipValue.slice(0, 5)}-${zipValue.slice(5, 9)}`;
+              } else if (zipValue.length > 10) {
+                formattedZip = zipValue.slice(0, 10);
+              }
+              
+              onZipChange(formattedZip);
+            }}
             inputMode="numeric"
             pattern="\d{5}(-\d{4})?"
+            maxLength={10}
           />
+          <p className="text-xs text-gray-500 mt-1">Format: 80202 or 80202-1234</p>
           {errors.zip && <p className="text-sm text-red-500 mt-1">{errors.zip}</p>}
         </div>
       </div>
