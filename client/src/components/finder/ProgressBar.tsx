@@ -1,3 +1,4 @@
+
 interface ProgressBarProps {
   currentStep: number;
   totalSteps: number;
@@ -5,11 +6,11 @@ interface ProgressBarProps {
 
 // Define the steps for agent finder
 const agentSteps = [
-  { name: "Transaction", completed: true },
-  { name: "Property", completed: false },
-  { name: "Timeline", completed: false },
-  { name: "Investment", completed: false },
-  { name: "Contact", completed: false }
+  { name: "Start", completed: true },
+  { name: "Search Criteria", completed: false },
+  { name: "Search Criteria", completed: false },
+  { name: "Search Criteria", completed: false },
+  { name: "Contact Info", completed: false }
 ];
 
 export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProps) {
