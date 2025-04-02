@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CheckboxGroup from "./formFields/CheckboxGroup";
 import ButtonCheckboxGroup from "./formFields/ButtonCheckboxGroup";
 import { 
@@ -23,6 +24,7 @@ import {
 import AgentReviewSummary from "./reviewSummary/AgentReviewSummary";
 import { getLocationInputHelperText } from "@/lib/locationValidator";
 import { formatPrice, getDefaultMinPrice } from "@/lib/priceValidator";
+import { getStateOptions } from "@/lib/stateValidator";
 
 interface AgentFinderStepsProps {
   currentStep: number;
@@ -207,19 +209,29 @@ export default function AgentFinderSteps({
               </div>
               <div>
                 <Label htmlFor="state" className="text-sm font-medium">State</Label>
-                <Input 
-                  id="state"
-                  placeholder="CO"
+                <Select
                   value={formData.location.split(',')[1]?.trim() || ''}
-                  onChange={(e) => {
+                  onValueChange={(value) => {
                     const city = formData.location.split(',')[0] || '';
                     updateFormData({ 
-                      location: `${city}${e.target.value ? `, ${e.target.value}` : ''}`
+                      location: `${city}${value ? `, ${value}` : ''}`
                     });
                   }}
-                  className={`w-full ${errors.location ? "border-red-500" : ""}`}
-                  maxLength={2}
-                />
+                >
+                  <SelectTrigger 
+                    id="state" 
+                    className={`w-full h-10 ${errors.location ? "border-red-500" : ""}`}
+                  >
+                    <SelectValue placeholder="Select State" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getStateOptions().map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             {errors.location && (

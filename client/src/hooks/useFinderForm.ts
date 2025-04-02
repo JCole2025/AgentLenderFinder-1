@@ -6,24 +6,25 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { validateLocationInput } from "@/lib/locationValidator";
 import { validatePrice, validatePriceRange, getDefaultMinPrice } from "@/lib/priceValidator";
+import { getAllStateNames, isValidStateName } from "@/lib/stateValidator";
 
 export function useFinderForm() {
   const { toast } = useToast();
   
   // Initial form state for agent finder
   const initialAgentFormData: AgentFormData = {
-    transaction_type: undefined,
+    transaction_type: "buy" as AgentTransactionType, // Default to buy
     location: "",
-    property_type: undefined,
-    purchase_timeline: undefined,
+    property_type: "", // Empty string
+    purchase_timeline: "asap" as AgentTimeline, // Default to ASAP
     property_address: "",
     price_min: "",
     price_max: "",
     loan_started: false,
-    owner_occupied: undefined,
-    investment_properties_count: undefined,
+    owner_occupied: false, // Default to false
+    investment_properties_count: "",
     strategy: [],
-    timeline: undefined,
+    timeline: "asap" as AgentTimeline, // Default to ASAP
     contact: {
       first_name: "",
       last_name: "",
@@ -67,6 +68,15 @@ export function useFinderForm() {
       if (data.location && !validateLocationInput(data.location)) {
         customErrors.location = "Please enter a valid city, state format (e.g., 'Austin, TX')";
         isFormValid = false;
+      }
+      
+      // Validate state in contact information
+      if (data.contact?.state) {
+        const validStates = getAllStateNames();
+        if (!validStates.includes(data.contact.state)) {
+          customErrors['contact.state'] = "Please select a valid state";
+          isFormValid = false;
+        }
       }
       
       // Only validate prices if transaction type is 'buy'
