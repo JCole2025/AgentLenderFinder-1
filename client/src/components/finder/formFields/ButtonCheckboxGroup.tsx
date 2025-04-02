@@ -10,6 +10,9 @@ interface ButtonCheckboxGroupProps {
   options: CheckboxOption[];
   selectedValues: string[];
   onChange: (value: string, checked: boolean) => void;
+  autoAdvance?: boolean;
+  onNext?: () => void;
+  minSelected?: number;
 }
 
 // Map of icons to use for different types of options
@@ -22,8 +25,39 @@ const iconMap: Record<string, JSX.Element> = {
 export default function ButtonCheckboxGroup({ 
   options, 
   selectedValues,
-  onChange 
+  onChange,
+  autoAdvance = false,
+  onNext,
+  minSelected = 1
 }: ButtonCheckboxGroupProps) {
+  
+  const handleOptionClick = (value: string, isCurrentlySelected: boolean) => {
+    // Calculate what the new selected values array will be
+    let newSelectedValues: string[] = [];
+    
+    if (isCurrentlySelected) {
+      // If it was already selected, we're removing it
+      newSelectedValues = selectedValues.filter(v => v !== value);
+    } else {
+      // If it wasn't selected, we're adding it
+      newSelectedValues = [...selectedValues, value];
+    }
+    
+    // Make the change
+    onChange(value, !isCurrentlySelected);
+    
+    // Auto advance if:
+    // 1. Auto advance is enabled
+    // 2. We have an onNext function
+    // 3. We've just selected something (not unselected)
+    // 4. We meet the minimum selection requirement
+    if (autoAdvance && onNext && !isCurrentlySelected && newSelectedValues.length >= minSelected) {
+      setTimeout(() => {
+        onNext();
+      }, 400); // Small delay for visual feedback
+    }
+  };
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {options.map((option) => {
@@ -40,7 +74,7 @@ export default function ButtonCheckboxGroup({
                 ? 'border-blue-500 bg-blue-50 shadow-md transform scale-[1.02]' 
                 : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'}
             `}
-            onClick={() => onChange(option.value, !isSelected)}
+            onClick={() => handleOptionClick(option.value, isSelected)}
           >
             <div className={`
               mb-4 rounded-full p-3 

@@ -17,14 +17,8 @@ export default function FinderForm({
   } = useFinderForm();
 
   const handleNext = () => {
-    // Get max steps based on transaction type
-    let maxSteps = 13; // Default for agent buy
-    
-    // Need to cast to access transaction_type
-    const agentData = formData as any;
-    if (agentData.transaction_type === 'sell') {
-      maxSteps = 11;
-    }
+    // Simplified form has the same number of steps for both buy and sell
+    const maxSteps = 10; // Total steps for both transaction types
     
     if (currentStep < maxSteps) {
       setCurrentStep(currentStep + 1);

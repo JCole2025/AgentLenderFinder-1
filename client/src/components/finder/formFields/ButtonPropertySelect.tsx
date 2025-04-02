@@ -48,12 +48,16 @@ interface ButtonPropertySelectProps {
   selectedValue: string;
   onChange: (value: string) => void;
   error?: string;
+  autoAdvance?: boolean;
+  onNext?: () => void;
 }
 
 export default function ButtonPropertySelect({
   selectedValue,
   onChange,
-  error
+  error,
+  autoAdvance = false,
+  onNext
 }: ButtonPropertySelectProps) {
   const [showUnsupportedDialog, setShowUnsupportedDialog] = useState(false);
   const [previousValue, setPreviousValue] = useState(selectedValue);
@@ -77,6 +81,13 @@ export default function ButtonPropertySelect({
       onChange(value);
     } else {
       onChange(value);
+      
+      // Auto advance to next step if enabled and value isn't an unsupported type
+      if (autoAdvance && onNext && !UNSUPPORTED_PROPERTY_TYPES.includes(value)) {
+        setTimeout(() => {
+          onNext();
+        }, 400); // Small delay for visual feedback
+      }
     }
   };
 

@@ -191,15 +191,16 @@ export default function ContactFormExtended(props: ContactFormProps) {
             className="mt-1"
           />
           <div>
-            <Label 
-              htmlFor="terms_accepted"
-              className={`${errors.terms_accepted ? "text-red-500" : "text-gray-700"}`}
-            >
-              I agree to the terms and conditions
-            </Label>
-            <p className="text-sm text-gray-500">
-              By checking this box, I agree to share my contact information with relevant real estate professionals who may contact me about my request.
-            </p>
+            <div className="space-y-1">
+              <p 
+                className={`${errors.terms_accepted ? "text-red-500" : "text-gray-700"}`}
+              >
+                <span className="font-semibold">By entering your information and submitting this form, you agree to BiggerPockets <a href="#" className="text-blue-600 hover:underline">Terms of Service</a>.</span>
+              </p>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services.
+              </p>
+            </div>
             {errors.terms_accepted && (
               <p className="text-sm text-red-500 mt-1">{errors.terms_accepted}</p>
             )}

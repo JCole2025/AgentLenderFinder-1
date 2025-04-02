@@ -13,6 +13,8 @@ interface ButtonRadioGroupProps {
   selectedValue: string;
   onChange: (value: string) => void;
   name: string;
+  autoAdvance?: boolean;
+  onNext?: () => void;
 }
 
 // Map of icons to use for different types of options
@@ -39,8 +41,23 @@ export default function ButtonRadioGroup({
   options, 
   selectedValue, 
   onChange,
-  name 
+  name,
+  autoAdvance = false,
+  onNext
 }: ButtonRadioGroupProps) {
+  
+  const handleOptionClick = (value: string) => {
+    onChange(value);
+    
+    // If autoAdvance is enabled and the onNext function is provided,
+    // automatically go to the next step after a small delay
+    if (autoAdvance && onNext) {
+      setTimeout(() => {
+        onNext();
+      }, 400); // Small delay for visual feedback
+    }
+  };
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {options.map((option) => {
@@ -57,7 +74,7 @@ export default function ButtonRadioGroup({
                 ? 'border-blue-500 bg-blue-50 shadow-md transform scale-[1.02]' 
                 : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'}
             `}
-            onClick={() => onChange(option.value)}
+            onClick={() => handleOptionClick(option.value)}
           >
             <div className={`
               mb-4 rounded-full p-3 

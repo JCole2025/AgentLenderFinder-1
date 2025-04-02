@@ -82,18 +82,20 @@ export default function AgentFinderSteps({
           selectedValue={formData.transaction_type}
           onChange={(value) => updateFormData({ 
             transaction_type: value as any,
-            // Set default timeline to 'just_researching' to prevent enum errors
-            timeline: 'just_researching' as any,
-            purchase_timeline: 'just_researching' as any
+            // Set default timeline to '3_6_months' instead of 'just_researching'
+            timeline: '3_6_months' as any,
+            purchase_timeline: '3_6_months' as any
           })}
           name="agent_transaction_type"
+          autoAdvance={true}
+          onNext={onNext}
         />
         {errors.transaction_type && (
           <p className="text-red-500 text-sm mt-2">{errors.transaction_type}</p>
         )}
       </FormStep>
 
-      {/* Step 2: Location */}
+      {/* Step 2: Property Type */}
       <FormStep
         isActive={currentStep === 2}
         onNext={onNext}
@@ -102,82 +104,10 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={2}
         
-        isValid={Boolean(formData.location && formData.location.trim() !== '')}
-        errors={errors}
-        title="Where are you looking to invest?"
-        subtitle="Enter the city and state of your target location"
-      >
-        <div className="space-y-6">
-          <div className="mb-4">
-            <Label htmlFor="location" className="font-medium">
-              {formData.transaction_type === 'buy' 
-                ? "Where are you looking to invest?" 
-                : "What city/region is your property located in?"}
-            </Label>
-            <Input 
-              id="location"
-              placeholder="City, ST (e.g. Denver, CO)"
-              value={formData.location}
-              onChange={(e) => updateFormData({ location: e.target.value })}
-              className={`w-full ${errors.location ? "border-red-500" : ""}`}
-            />
-            {errors.location ? (
-              <p className="text-red-500 text-sm mt-2">{errors.location}</p>
-            ) : (
-              <p className="text-gray-500 text-sm mt-2">{getLocationInputHelperText()}</p>
-            )}
-          </div>
-        </div>
-      </FormStep>
-
-      {/* Step 3: Property Address (Only for Sell) */}
-      {formData.transaction_type === 'sell' && (
-        <FormStep
-          isActive={currentStep === 3}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={3}
-          
-          isValid={Boolean(formData.property_address && formData.property_address.trim() !== '')}
-          errors={errors}
-          title="What is the property address?"
-          subtitle="Enter the full address of the property you want to sell"
-        >
-          <div className="space-y-6">
-            <div className="mb-4">
-              <Label htmlFor="property_address" className="font-medium">
-                What is the property address?
-              </Label>
-              <Input 
-                id="property_address"
-                placeholder="Full property address"
-                value={formData.property_address || ''}
-                onChange={(e) => updateFormData({ property_address: e.target.value })}
-                className={`w-full ${errors.property_address ? "border-red-500" : ""}`}
-              />
-              {errors.property_address && (
-                <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
-              )}
-            </div>
-          </div>
-        </FormStep>
-      )}
-
-      {/* Step 4: Property Type */}
-      <FormStep
-        isActive={currentStep === (formData.transaction_type === 'sell' ? 4 : 3)}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'sell' ? 4 : 3}
-        
         isValid={Boolean(formData.property_type && formData.property_type.trim() !== '')}
         errors={errors}
-        title="What type of property are you looking for?"
-        subtitle="Select the property type that best matches your investment goals"
+        title={formData.transaction_type === 'buy' ? "What type of property are you looking for?" : "What type of property are you selling?"}
+        subtitle="Select the property type"
       >
         <div className="space-y-6">
           <div className="mt-4">
@@ -185,167 +115,26 @@ export default function AgentFinderSteps({
               selectedValue={formData.property_type}
               onChange={(value) => updateFormData({ property_type: value })}
               error={errors.property_type}
+              autoAdvance={true}
+              onNext={onNext}
             />
           </div>
         </div>
       </FormStep>
 
-      {/* Step 5: Timeline (Only for Buy) */}
-      {formData.transaction_type === 'buy' && (
-        <FormStep
-          isActive={currentStep === 4}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={4}
-          
-          isValid={Boolean(formData.purchase_timeline)}
-          errors={errors}
-          title={`When are you looking to purchase in ${formData.location}?`}
-          subtitle="Select the timeline that best matches your investment plans"
-        >
-          <div>
-            <ButtonRadioGroup
-              options={[
-                { value: "asap", label: "ASAP", description: "I'm ready to make a move now" },
-                { value: "1_3_months", label: "1-3 Months", description: "I'm planning to invest in the next 1-3 months" },
-                { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
-                { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" },
-                { value: "just_researching", label: "Just Researching", description: "I'm just exploring my options" }
-              ]}
-              selectedValue={formData.purchase_timeline}
-              onChange={(value) => updateFormData({ 
-                purchase_timeline: value as any,
-                timeline: value as any
-              })}
-              name="agent_purchase_timeline"
-            />
-            {errors.purchase_timeline && (
-              <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
-            )}
-          </div>
-        </FormStep>
-      )}
-
-      {/* Step 6: Price Range */}
+      {/* Step 3: Owner Occupied */}
       <FormStep
-        isActive={currentStep === (formData.transaction_type === 'buy' ? 5 : 4)}
+        isActive={currentStep === 3}
         onNext={onNext}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'buy' ? 5 : 4}
-        
-        isValid={Boolean(
-          formData.price_min && formData.price_min.trim() !== '' && 
-          formData.price_max && formData.price_max.trim() !== ''
-        )}
-        errors={errors}
-        title="What is your price range?"
-        subtitle="Enter your minimum and maximum price range"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="price-min" className="font-medium">
-              {formData.transaction_type === 'buy' ? 'Minimum Purchase Price' : 'Minimum Sale Price'}
-            </Label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
-              <Input
-                id="price-min"
-                type="text"
-                className={`pl-7 ${errors.price_min ? "border-red-500" : ""}`}
-                placeholder="100,000"
-                value={formData.price_min}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9,]/g, '');
-                  const formattedPrice = formatPrice(value);
-                  updateFormData({ price_min: formattedPrice });
-                }}
-                onFocus={(e) => {
-                  // If empty, auto-populate with the minimum value
-                  if (!formData.price_min) {
-                    updateFormData({ price_min: getDefaultMinPrice() });
-                  }
-                }}
-              />
-            </div>
-            {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="price-max" className="font-medium">
-              {formData.transaction_type === 'buy' ? 'Maximum Purchase Price' : 'Maximum Sale Price'}
-            </Label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
-              <Input
-                id="price-max"
-                type="text"
-                className={`pl-7 ${errors.price_max ? "border-red-500" : ""}`}
-                placeholder="350,000"
-                value={formData.price_max}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9,]/g, '');
-                  const formattedPrice = formatPrice(value);
-                  updateFormData({ price_max: formattedPrice });
-                }}
-              />
-            </div>
-            {errors.price_max && <p className="text-sm text-red-500">{errors.price_max}</p>}
-          </div>
-        </div>
-      </FormStep>
-
-      {/* Step 7: Loan Process (Only for Buy) */}
-      {formData.transaction_type === 'buy' && (
-        <FormStep
-          isActive={currentStep === 6}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={6}
-          
-          isValid={true} // Not required field
-          errors={errors}
-          title="Have you started the loan process?"
-          subtitle="Let us know if you've already begun working with a lender (this is optional)"
-          showNext={true} // Explicitly show the Next button
-        >
-          <div className="space-y-6">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="loan-started"
-                checked={formData.loan_started}
-                onCheckedChange={(checked) => updateFormData({ loan_started: checked })}
-              />
-              <Label htmlFor="loan-started" className="font-medium">
-                I have already started the loan process
-              </Label>
-            </div>
-            
-            <p className="text-sm text-gray-500 italic mt-4">
-              This field is optional. Click Next to continue.
-            </p>
-          </div>
-        </FormStep>
-      )}
-
-      {/* Step 8: Owner Occupied */}
-      <FormStep
-        isActive={currentStep === (formData.transaction_type === 'buy' ? 7 : 5)}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'buy' ? 7 : 5}
+        stepNumber={3}
         
         isValid={true} // Not a required field
         errors={errors}
         title="Will this be an owner-occupied property?"
-        subtitle="Let us know if you plan to live in this property (this is optional)"
+        subtitle="Let us know if you plan to live in this property"
         showNext={true} // Explicitly show the Next button
       >
         <div className="space-y-6">
@@ -366,85 +155,223 @@ export default function AgentFinderSteps({
         </div>
       </FormStep>
 
-      {/* Step 9: Existing Properties */}
+      {/* Step 4: Location */}
       <FormStep
-        isActive={currentStep === (formData.transaction_type === 'buy' ? 8 : 6)}
+        isActive={currentStep === 4}
         onNext={onNext}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'buy' ? 8 : 6}
+        stepNumber={4}
         
-        isValid={true} // Not a required field
+        isValid={Boolean(formData.location && formData.location.trim() !== '')}
         errors={errors}
-        title="How many investment properties do you currently own?"
-        subtitle="This helps us find the right agent for your experience level (this is optional)"
-        showNext={true} // Explicitly show the Next button
+        title={formData.transaction_type === 'buy' ? "Where are you looking to invest?" : "Where is your property located?"}
+        subtitle="Enter the city and state"
       >
         <div className="space-y-6">
-          <div className="space-y-2">
-            <Input
-              id="property-count"
-              type="text"
-              className={errors.investment_properties_count ? "border-red-500" : ""}
-              placeholder="0"
-              value={formData.investment_properties_count}
-              onChange={(e) => {
-                // Only allow numbers
-                const value = e.target.value;
-                if (/^[0-9]*$/.test(value) || value === '') {
-                  updateFormData({ investment_properties_count: value });
-                }
-              }}
+          <div className="mb-4">
+            <Label htmlFor="location" className="font-medium">
+              {formData.transaction_type === 'buy' 
+                ? "Target location" 
+                : "Property location"}
+            </Label>
+            <Input 
+              id="location"
+              placeholder="City, ST (e.g. Denver, CO)"
+              value={formData.location}
+              onChange={(e) => updateFormData({ location: e.target.value })}
+              className={`w-full ${errors.location ? "border-red-500" : ""}`}
             />
-            {errors.investment_properties_count && (
-              <p className="text-sm text-red-500">{errors.investment_properties_count}</p>
+            {errors.location ? (
+              <p className="text-red-500 text-sm mt-2">{errors.location}</p>
+            ) : (
+              <p className="text-gray-500 text-sm mt-2">{getLocationInputHelperText()}</p>
             )}
           </div>
-          
-          <p className="text-sm text-gray-500 italic mt-4">
-            This field is optional. Click Next to continue. If you leave it blank, we'll assume you own 0 properties.
-          </p>
         </div>
       </FormStep>
 
-      {/* Step 10: Investment Strategy */}
+      {/* Step 5: Property Address (Only for Sell) */}
+      {formData.transaction_type === 'sell' && (
+        <FormStep
+          isActive={currentStep === 5}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={5}
+          
+          isValid={Boolean(formData.property_address && formData.property_address.trim() !== '')}
+          errors={errors}
+          title="What is the property address?"
+          subtitle="Enter the full address of the property you want to sell"
+        >
+          <div className="space-y-6">
+            <div className="mb-4">
+              <Label htmlFor="property_address" className="font-medium">
+                Full property address
+              </Label>
+              <Input 
+                id="property_address"
+                placeholder="123 Main St"
+                value={formData.property_address || ''}
+                onChange={(e) => updateFormData({ property_address: e.target.value })}
+                className={`w-full ${errors.property_address ? "border-red-500" : ""}`}
+              />
+              {errors.property_address && (
+                <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
+              )}
+            </div>
+          </div>
+        </FormStep>
+      )}
+
+      {/* Step 6: Timeline (Only for Buy) */}
+      {formData.transaction_type === 'buy' && (
+        <FormStep
+          isActive={currentStep === 5}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={5}
+          
+          isValid={Boolean(formData.purchase_timeline)}
+          errors={errors}
+          title={`When are you looking to purchase in ${formData.location}?`}
+          subtitle="Select your timeline"
+        >
+          <div>
+            <ButtonRadioGroup
+              options={[
+                { value: "asap", label: "ASAP", description: "I'm ready to make a move now" },
+                { value: "1_3_months", label: "1-3 Months", description: "I'm planning to invest in the next 1-3 months" },
+                { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
+                { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" }
+              ]}
+              selectedValue={formData.purchase_timeline}
+              onChange={(value) => updateFormData({ 
+                purchase_timeline: value as any,
+                timeline: value as any
+              })}
+              name="agent_purchase_timeline"
+              autoAdvance={true}
+              onNext={onNext}
+            />
+            {errors.purchase_timeline && (
+              <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
+            )}
+          </div>
+        </FormStep>
+      )}
+
+      {/* Step 7: Price Range and Investment Strategy */}
       <FormStep
-        isActive={currentStep === (formData.transaction_type === 'buy' ? 9 : 7)}
+        isActive={currentStep === 6}
         onNext={onNext}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'buy' ? 9 : 7}
+        stepNumber={6}
         
-        isValid={formData.strategy.length > 0}
-        errors={errors}
-        title="What is your investment strategy?"
-        subtitle="Select all that apply"
-      >
-        <ButtonCheckboxGroup
-          options={[
-            { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
-            { value: "short_term_rental", label: "Short-term rental or MTR", description: "I plan to list on Airbnb/VRBO" },
-            { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
-          ]}
-          selectedValues={formData.strategy}
-          onChange={handleStrategyChange}
-        />
-        {errors.strategy && (
-          <p className="text-red-500 text-sm mt-2">{errors.strategy}</p>
+        isValid={Boolean(
+          formData.price_min && formData.price_min.trim() !== '' && 
+          formData.price_max && formData.price_max.trim() !== '' &&
+          (formData.transaction_type === 'sell' || formData.strategy.length > 0)
         )}
-        <p className="text-sm text-gray-500 mt-4">Note: We do not yet support Fix and Flip strategies or commercial.</p>
+        errors={errors}
+        title="Price range and investment strategy"
+        subtitle="Tell us about your budget and plans"
+      >
+        <div className="space-y-8">
+          {/* Price Range Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">What is your price range?</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="price-min" className="font-medium">
+                  {formData.transaction_type === 'buy' ? 'Minimum Purchase Price' : 'Minimum Sale Price'}
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
+                  <Input
+                    id="price-min"
+                    type="text"
+                    className={`pl-7 ${errors.price_min ? "border-red-500" : ""}`}
+                    placeholder="100,000"
+                    value={formData.price_min}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9,]/g, '');
+                      const formattedPrice = formatPrice(value);
+                      updateFormData({ price_min: formattedPrice });
+                    }}
+                    onFocus={(e) => {
+                      // If empty, auto-populate with the minimum value
+                      if (!formData.price_min) {
+                        updateFormData({ price_min: getDefaultMinPrice() });
+                      }
+                    }}
+                  />
+                </div>
+                {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="price-max" className="font-medium">
+                  {formData.transaction_type === 'buy' ? 'Maximum Purchase Price' : 'Maximum Sale Price'}
+                </Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
+                  <Input
+                    id="price-max"
+                    type="text"
+                    className={`pl-7 ${errors.price_max ? "border-red-500" : ""}`}
+                    placeholder="350,000"
+                    value={formData.price_max}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9,]/g, '');
+                      const formattedPrice = formatPrice(value);
+                      updateFormData({ price_max: formattedPrice });
+                    }}
+                  />
+                </div>
+                {errors.price_max && <p className="text-sm text-red-500">{errors.price_max}</p>}
+              </div>
+            </div>
+          </div>
+          
+          {/* Investment Strategy Section - Only for Buy */}
+          {formData.transaction_type === 'buy' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">What is your investment strategy?</h3>
+              <ButtonCheckboxGroup
+                options={[
+                  { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
+                  { value: "short_term_rental", label: "Short-term rental or MTR", description: "I plan to list on Airbnb/VRBO" },
+                  { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
+                ]}
+                selectedValues={formData.strategy}
+                onChange={handleStrategyChange}
+                minSelected={1}
+              />
+              {errors.strategy && (
+                <p className="text-red-500 text-sm mt-2">{errors.strategy}</p>
+              )}
+              <p className="text-sm text-gray-500 mt-4">Note: We do not yet support Fix and Flip strategies or commercial.</p>
+            </div>
+          )}
+        </div>
       </FormStep>
 
-      {/* Step 11: Contact Information */}
+      {/* Step 8: Contact Information */}
       <FormStep
-        isActive={currentStep === (formData.transaction_type === 'buy' ? 10 : 8)}
+        isActive={currentStep === 7}
         onNext={onNext}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'buy' ? 10 : 8}
+        stepNumber={7}
         
         isValid={Boolean(
           formData.contact && 
@@ -510,14 +437,14 @@ export default function AgentFinderSteps({
         </div>
       </FormStep>
       
-      {/* Step 12: Terms and Consent */}
+      {/* Step 9: Terms and Consent */}
       <FormStep
-        isActive={currentStep === (formData.transaction_type === 'buy' ? 11 : 9)}
+        isActive={currentStep === 8}
         onNext={onNext}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'buy' ? 11 : 9}
+        stepNumber={8}
         
         isValid={formData.terms_accepted}
         errors={errors}
@@ -544,55 +471,20 @@ export default function AgentFinderSteps({
         </div>
       </FormStep>
       
-      {/* Step 13: Loan Assistance (only for Buy) */}
-      {formData.transaction_type === 'buy' && (
-        <FormStep
-          isActive={currentStep === 12}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={12}
-          
-          isValid={true} // Not required field
-          errors={errors}
-          title="Would you like loan assistance?"
-          subtitle="We can connect you with lenders who can help finance your investment property"
-          showNext={true} // Explicitly show the Next button
-        >
-          <div className="space-y-6">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="loan-assistance"
-                checked={formData.loan_assistance}
-                onCheckedChange={(checked) => updateFormData({ loan_assistance: checked })}
-              />
-              <Label htmlFor="loan-assistance" className="font-medium">
-                Yes, connect me with lenders who can help me finance this property
-              </Label>
-            </div>
-            
-            <p className="text-sm text-gray-500 italic mt-4">
-              This field is optional. Click Next to continue.
-            </p>
-          </div>
-        </FormStep>
-      )}
-
-      {/* Final Step: Review and Submit */}
+      {/* Step 10: Review and Submit */}
       <FormStep
-        isActive={currentStep === (formData.transaction_type === 'buy' ? 13 : 10)}
+        isActive={currentStep === 9}
         onNext={onSubmit}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={formData.transaction_type === 'buy' ? 13 : 10}
+        stepNumber={9}
         
         isValid={true}
         errors={errors}
         title="Review your information"
-        subtitle="Please verify that everything is correct"
-        nextLabel="Submit Information"
+        subtitle="Please verify that everything is correct before submitting to our network of agents"
+        nextLabel="Submit to Agents"
         showSubmit={true}
       >
         <AgentReviewSummary formData={formData} />
