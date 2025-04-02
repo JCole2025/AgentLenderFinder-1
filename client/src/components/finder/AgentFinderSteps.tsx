@@ -45,6 +45,15 @@ export default function AgentFinderSteps({
   errors,
   isValid
 }: AgentFinderStepsProps) {
+  
+  console.log('AgentFinderSteps - rendered with currentStep:', currentStep);
+  console.log('AgentFinderSteps - onNext function available:', !!onNext);
+  
+  // Wrapped onNext function with debugging
+  const handleNext = () => {
+    console.log('AgentFinderSteps - handleNext called, calling parent onNext');
+    onNext();
+  };
 
   const handleStrategyChange = (value: string, checked: boolean) => {
     if (checked) {
@@ -89,7 +98,7 @@ export default function AgentFinderSteps({
           })}
           name="agent_transaction_type"
           autoAdvance={true}
-          onNext={onNext}
+          onNext={handleNext}
         />
         {errors.transaction_type && (
           <p className="text-red-500 text-sm mt-2">{errors.transaction_type}</p>
@@ -118,7 +127,7 @@ export default function AgentFinderSteps({
               onChange={(value) => updateFormData({ property_type: value })}
               error={errors.property_type}
               autoAdvance={true}
-              onNext={onNext}
+              onNext={handleNext}
             />
           </div>
         </div>
@@ -143,7 +152,7 @@ export default function AgentFinderSteps({
           <OwnerOccupiedButtons 
             isOwnerOccupied={formData.owner_occupied}
             onChange={(value) => updateFormData({ owner_occupied: value })}
-            onNext={onNext}
+            onNext={handleNext}
           />
         </div>
       </FormStep>
@@ -275,7 +284,7 @@ export default function AgentFinderSteps({
               })}
               name="agent_purchase_timeline"
               autoAdvance={true}
-              onNext={onNext}
+              onNext={handleNext}
             />
             {errors.purchase_timeline && (
               <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
@@ -372,7 +381,7 @@ export default function AgentFinderSteps({
                 selectedValues={formData.strategy || []}
                 onChange={handleStrategyChange}
                 autoAdvance={true}
-                onNext={onNext}
+                onNext={handleNext}
                 minSelected={1}
               />
               {errors.strategy && (

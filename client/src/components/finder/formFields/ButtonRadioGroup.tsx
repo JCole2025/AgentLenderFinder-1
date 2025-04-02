@@ -54,16 +54,25 @@ export default function ButtonRadioGroup({
     const newValue = value;
     onChange(newValue);
     
-    console.log('Button clicked:', value);
-    console.log('Auto advance enabled:', autoAdvance);
-    console.log('onNext available:', !!onNext);
+    console.log('ButtonRadioGroup - Button clicked:', value);
+    console.log('ButtonRadioGroup - Auto advance enabled:', autoAdvance);
+    console.log('ButtonRadioGroup - onNext available:', !!onNext);
+    console.log('ButtonRadioGroup - onNext function:', onNext);
+    
+    // Check if the value changed
+    const valueChanged = selectedValue !== value;
+    console.log('ButtonRadioGroup - Value changed:', valueChanged);
 
     // Always auto-advance if enabled, regardless of value
     if (autoAdvance && onNext) {
-      console.log('Auto advancing after selection');
+      console.log('ButtonRadioGroup - Auto advancing after selection');
       setTimeout(() => {
+        console.log('ButtonRadioGroup - Executing onNext()');
         onNext();
       }, 400);
+    } else {
+      console.log('ButtonRadioGroup - Not auto-advancing. Conditions not met:', 
+        { autoAdvance, onNextExists: !!onNext });
     }
   };
 

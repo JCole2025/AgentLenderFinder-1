@@ -71,10 +71,20 @@ export default function ButtonPropertySelect({
       onChange(value);
       
       // Auto advance to next step if enabled and value isn't an unsupported type
+      console.log('ButtonPropertySelect - Property selected:', value);
+      console.log('ButtonPropertySelect - Auto advance enabled:', autoAdvance);
+      console.log('ButtonPropertySelect - onNext available:', !!onNext);
+      
       if (autoAdvance && onNext && value && !UNSUPPORTED_PROPERTY_TYPES.includes(value)) {
+        console.log('ButtonPropertySelect - Setting timeout to auto-advance');
         setTimeout(() => {
+          console.log('ButtonPropertySelect - Executing onNext()');
           onNext();
         }, 400);
+      } else {
+        console.log('ButtonPropertySelect - Not auto-advancing. Conditions not met:', 
+          { autoAdvance, onNextExists: !!onNext, valueNotEmpty: !!value, 
+            isSupported: !UNSUPPORTED_PROPERTY_TYPES.includes(value) });
       }
     }
   };

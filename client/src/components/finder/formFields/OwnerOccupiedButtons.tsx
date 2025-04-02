@@ -15,11 +15,20 @@ export default function OwnerOccupiedButtons({
 }: OwnerOccupiedButtonsProps) {
   
   const handleClick = (value: boolean) => {
+    console.log('OwnerOccupiedButtons - Button clicked with value:', value);
     onChange(value);
+    
+    console.log('OwnerOccupiedButtons - onNext available:', !!onNext);
     
     // Auto advance to next step after selection
     if (onNext) {
-      setTimeout(onNext, 300); // Small delay for better UX
+      console.log('OwnerOccupiedButtons - Setting timeout to auto-advance');
+      setTimeout(() => {
+        console.log('OwnerOccupiedButtons - Executing onNext()');
+        onNext();
+      }, 300); // Small delay for better UX
+    } else {
+      console.log('OwnerOccupiedButtons - Cannot auto-advance: onNext is not available');
     }
   };
 

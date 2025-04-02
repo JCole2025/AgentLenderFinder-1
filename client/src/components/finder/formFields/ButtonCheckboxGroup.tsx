@@ -51,10 +51,24 @@ export default function ButtonCheckboxGroup({
     // 2. We have an onNext function
     // 3. We've just selected something (not unselected)
     // 4. We meet the minimum selection requirement
+    console.log('ButtonCheckboxGroup - Option clicked:', value);
+    console.log('ButtonCheckboxGroup - Is currently selected:', isCurrentlySelected);
+    console.log('ButtonCheckboxGroup - New selected values:', newSelectedValues);
+    console.log('ButtonCheckboxGroup - Auto advance enabled:', autoAdvance);
+    console.log('ButtonCheckboxGroup - onNext available:', !!onNext);
+    console.log('ButtonCheckboxGroup - Min selections required:', minSelected);
+    console.log('ButtonCheckboxGroup - Current selection count:', newSelectedValues.length);
+    
     if (autoAdvance && onNext && !isCurrentlySelected && newSelectedValues.length >= minSelected) {
+      console.log('ButtonCheckboxGroup - Setting timeout to auto-advance');
       setTimeout(() => {
+        console.log('ButtonCheckboxGroup - Executing onNext()');
         onNext();
       }, 400); // Small delay for visual feedback
+    } else {
+      console.log('ButtonCheckboxGroup - Not auto-advancing. Conditions not met:', 
+        { autoAdvance, onNextExists: !!onNext, isAdd: !isCurrentlySelected, 
+          minSelectionsMet: newSelectedValues.length >= minSelected });
     }
   };
   

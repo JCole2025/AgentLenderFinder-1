@@ -17,11 +17,18 @@ export default function FinderForm({
   } = useFinderForm();
 
   const handleNext = () => {
-    // Simplified form has the same number of steps for both buy and sell
-    const maxSteps = 5; // Total steps for both transaction types
+    // The form has 7 steps - some conditional based on transaction type
+    const maxSteps = 7; // Total steps for the form
+    
+    console.log('FinderForm - handleNext called');
+    console.log('FinderForm - Current step:', currentStep);
+    console.log('FinderForm - Max steps:', maxSteps);
     
     if (currentStep < maxSteps) {
+      console.log('FinderForm - Advancing to next step:', currentStep + 1);
       setCurrentStep(currentStep + 1);
+    } else {
+      console.log('FinderForm - Already at max step, not advancing');
     }
   };
 
