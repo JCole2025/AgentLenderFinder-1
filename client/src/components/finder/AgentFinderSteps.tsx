@@ -353,6 +353,8 @@ export default function AgentFinderSteps({
                     setTimeout(onNext, 300);
                   }
                 }}
+                autoAdvance={true}
+                onNext={onNext}
                 minSelected={1}
               />
               {errors.strategy && (
