@@ -65,6 +65,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
           <Input
             id="first_name"
             type="text"
+            name="given-name"
+            autoComplete="given-name"
             className={`h-12 text-base ${errors.first_name ? "border-red-500" : "border-gray-300"}`}
             placeholder="Joseph"
             value={first_name}
@@ -80,6 +82,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
           <Input
             id="last_name"
             type="text"
+            name="family-name"
+            autoComplete="family-name"
             className={`h-12 text-base ${errors.last_name ? "border-red-500" : "border-gray-300"}`}
             placeholder="Coleman"
             value={last_name}
@@ -103,6 +107,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
           <Input
             id="email"
             type="email"
+            name="email"
+            autoComplete="email"
             className={`h-12 text-base pl-10 ${errors.email ? "border-red-500" : "border-gray-300"}`}
             placeholder="joseph@biggerpockets.com"
             value={email}
@@ -125,6 +131,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
           <Input
             id="phone"
             type="tel"
+            name="tel"
+            autoComplete="tel"
             className={`h-12 text-base pl-10 ${errors.phone ? "border-red-500" : "border-gray-300"}`}
             placeholder="(612) 790-5259"
             value={phone}
@@ -142,6 +150,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
           <Input
             id="city"
             type="text"
+            name="address-level2"
+            autoComplete="address-level2"
             className={`h-12 text-base ${errors.city ? "border-red-500" : "border-gray-300"}`}
             placeholder="Denver"
             value={city}
@@ -157,6 +167,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
           <Input
             id="state"
             type="text"
+            name="address-level1"
+            autoComplete="address-level1"
             className={`h-12 text-base ${errors.state ? "border-red-500" : "border-gray-300"}`}
             placeholder="CO"
             value={state}
@@ -172,6 +184,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
           <Input
             id="zip"
             type="text"
+            name="postal-code"
+            autoComplete="postal-code"
             className={`h-12 text-base ${errors.zip ? "border-red-500" : "border-gray-300"}`}
             placeholder="80202"
             value={zip}
