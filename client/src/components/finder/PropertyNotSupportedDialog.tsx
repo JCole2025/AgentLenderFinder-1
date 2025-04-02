@@ -23,9 +23,8 @@ export default function PropertyNotSupportedDialog({
         <DialogHeader>
           <DialogTitle className="text-primary">Property Type Not Supported</DialogTitle>
           <DialogDescription className="py-4">
-            We apologize, but our agent network is not currently able to assist with land, commercial, 
-            or other specialty property types at this time. We're focused on residential properties 
-            to ensure we provide you with the best service possible.
+            We're sorry, our agents cannot help with this property type at the moment. 
+            Please select a different property type or check back later.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -14,11 +14,12 @@ const propertyTypes = [
   { value: "multi_family_2_4", label: "Multi-Family (2-4 units)" },
   { value: "multi_family_5plus", label: "Multi-Family (5+ units)" },
   { value: "townhouse_condo", label: "Townhouse/Condo" },
-  { value: "land_commercial_other", label: "Land, Commercial, Other" }
+  { value: "land", label: "Land" },
+  { value: "commercial", label: "Commercial/Multifamily (5+ units)" }
 ];
 
-// This is the property type that will trigger the notification dialog
-const UNSUPPORTED_PROPERTY_TYPE = "land_commercial_other";
+// These are the property types that will trigger the notification dialog
+const UNSUPPORTED_PROPERTY_TYPES = ["land", "commercial"];
 
 interface PropertyTypeSelectProps {
   selectedValue: string;
@@ -34,18 +35,18 @@ export default function PropertyTypeSelect({
   const [showUnsupportedDialog, setShowUnsupportedDialog] = useState(false);
   const [previousValue, setPreviousValue] = useState(selectedValue);
 
-  // Check if the current value is "land_commercial_other" and show dialog if needed
+  // Check if the current value is in the unsupported list and show dialog if needed
   useEffect(() => {
-    if (selectedValue === UNSUPPORTED_PROPERTY_TYPE) {
+    if (UNSUPPORTED_PROPERTY_TYPES.includes(selectedValue)) {
       setShowUnsupportedDialog(true);
     }
   }, [selectedValue]);
 
   // Handle property type change and trigger dialog if necessary
   const handlePropertyTypeChange = (value: string) => {
-    if (value === UNSUPPORTED_PROPERTY_TYPE) {
+    if (UNSUPPORTED_PROPERTY_TYPES.includes(value)) {
       // Save the previous value so we can restore it when dialog is closed
-      if (selectedValue !== UNSUPPORTED_PROPERTY_TYPE) {
+      if (!UNSUPPORTED_PROPERTY_TYPES.includes(selectedValue)) {
         setPreviousValue(selectedValue);
       }
       setShowUnsupportedDialog(true);

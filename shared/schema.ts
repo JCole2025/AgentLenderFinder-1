@@ -61,6 +61,7 @@ export const agentFinderSchema = z.object({
   price_min: z.string().min(1, "Please specify minimum price"),
   price_max: z.string().min(1, "Please specify maximum price"),
   loan_started: z.boolean().optional(),
+  owner_occupied: z.boolean().optional(), // Added for step 8
   investment_properties_count: z.string().min(1, "Please specify how many properties you have"),
   strategy: agentStrategySchema,
   timeline: agentTimelineSchema,

@@ -36,6 +36,7 @@ export interface AgentFormData {
   price_min: string;
   price_max: string;
   loan_started: boolean;
+  owner_occupied: boolean; // Added for step 8
   investment_properties_count: string;
   strategy: AgentStrategy[];
   timeline: AgentTimeline;

@@ -8,13 +8,15 @@ interface ProgressBarProps {
 
 // Define the steps for agent finder
 const agentSteps = [
-  { name: "Interest", completed: true },
+  { name: "Transaction", completed: true },
+  { name: "Location", completed: false },
   { name: "Property", completed: false },
   { name: "Timeline", completed: false },
   { name: "Price", completed: false },
-  { name: "Loan", completed: false },
-  { name: "Experience", completed: false },
-  { name: "Contact", completed: false }
+  { name: "Details", completed: false },
+  { name: "Strategy", completed: false },
+  { name: "Contact", completed: false },
+  { name: "Review", completed: false }
 ];
 
 // Define the steps for lender finder

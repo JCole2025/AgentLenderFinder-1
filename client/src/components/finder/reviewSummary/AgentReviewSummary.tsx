@@ -63,6 +63,13 @@ export default function AgentReviewSummary({ formData }: AgentReviewSummaryProps
       )}
       
       <div>
+        <h3 className="font-medium text-neutral-darker">Owner Occupied:</h3>
+        <p className="mt-1 text-sm">
+          {formData.owner_occupied ? 'Yes' : 'No'}
+        </p>
+      </div>
+      
+      <div>
         <h3 className="font-medium text-neutral-darker">Investment Properties Owned:</h3>
         <p className="mt-1 text-sm">{formData.investment_properties_count}</p>
       </div>

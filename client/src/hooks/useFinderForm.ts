@@ -28,6 +28,7 @@ export function useFinderForm(finderType: FinderType) {
     price_min: getDefaultMinPrice(), // Start with $100,000 as minimum price
     price_max: "",
     loan_started: false,
+    owner_occupied: false, // Added for step 8
     investment_properties_count: "",
     strategy: [],
     timeline: "" as any,

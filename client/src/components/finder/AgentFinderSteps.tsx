@@ -7,6 +7,7 @@ import ContactFormExtended from "./formFields/ContactFormExtended";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import CheckboxGroup from "./formFields/CheckboxGroup";
 import { 
   agentTransactionTypeLabels,
@@ -16,6 +17,8 @@ import {
   agentTimelineLabels
 } from "@/types/finder";
 import AgentReviewSummary from "./reviewSummary/AgentReviewSummary";
+import { getLocationInputHelperText } from "@/lib/locationValidator";
+import { formatPrice, getDefaultMinPrice } from "@/lib/priceValidator";
 
 interface AgentFinderStepsProps {
   currentStep: number;
@@ -64,17 +67,22 @@ export default function AgentFinderSteps({
         finderType="agent"
         isValid={!!formData.transaction_type}
         errors={errors}
-        title="What are you looking to do?"
+        title="What would you like to do?"
         subtitle="Select your real estate transaction goal"
         showPrevious={false}
       >
         <RadioGroup
           options={[
-            { value: "buy", label: agentTransactionTypeLabels.buy, description: agentTransactionTypeDescriptions.buy },
-            { value: "sell", label: agentTransactionTypeLabels.sell, description: agentTransactionTypeDescriptions.sell }
+            { value: "buy", label: "Buy: I'm looking to buy", description: agentTransactionTypeDescriptions.buy },
+            { value: "sell", label: "Sell: I'm looking to sell", description: agentTransactionTypeDescriptions.sell }
           ]}
           selectedValue={formData.transaction_type}
-          onChange={(value) => updateFormData({ transaction_type: value as any })}
+          onChange={(value) => updateFormData({ 
+            transaction_type: value as any,
+            // Set default timeline to 'just_researching' to prevent enum errors
+            timeline: 'just_researching' as any,
+            purchase_timeline: 'just_researching' as any
+          })}
           name="agent_transaction_type"
         />
         {errors.transaction_type && (
@@ -82,7 +90,7 @@ export default function AgentFinderSteps({
         )}
       </FormStep>
 
-      {/* Step 2: Location and Property Type */}
+      {/* Step 2: Location */}
       <FormStep
         isActive={currentStep === 2}
         onNext={onNext}
@@ -91,12 +99,10 @@ export default function AgentFinderSteps({
         updateFormData={updateFormData}
         stepNumber={2}
         finderType="agent"
-        isValid={Boolean(formData.location && formData.location.trim() !== '' && 
-          formData.property_type && formData.property_type.trim() !== '' && 
-          (formData.transaction_type !== 'sell' || (formData.property_address && formData.property_address.trim() !== '')))}
+        isValid={Boolean(formData.location && formData.location.trim() !== '')}
         errors={errors}
-        title={formData.transaction_type === 'buy' ? "Property Location & Type" : "Property Details"}
-        subtitle={formData.transaction_type === 'buy' ? "Where & what are you looking to invest in?" : "Tell us about the property you want to sell"}
+        title="Where are you looking to invest?"
+        subtitle="Enter the city and state of your target location"
       >
         <div className="space-y-6">
           <div className="mb-4">
@@ -107,17 +113,36 @@ export default function AgentFinderSteps({
             </Label>
             <Input 
               id="location"
-              placeholder="City, state, or zip code (e.g. Colorado Springs, CO)"
+              placeholder="City, ST (e.g. Denver, CO)"
               value={formData.location}
               onChange={(e) => updateFormData({ location: e.target.value })}
               className={`w-full ${errors.location ? "border-red-500" : ""}`}
             />
-            {errors.location && (
+            {errors.location ? (
               <p className="text-red-500 text-sm mt-2">{errors.location}</p>
+            ) : (
+              <p className="text-gray-500 text-sm mt-2">{getLocationInputHelperText()}</p>
             )}
           </div>
-          
-          {formData.transaction_type === 'sell' && (
+        </div>
+      </FormStep>
+
+      {/* Step 3: Property Address (Only for Sell) */}
+      {formData.transaction_type === 'sell' && (
+        <FormStep
+          isActive={currentStep === 3}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={3}
+          finderType="agent"
+          isValid={Boolean(formData.property_address && formData.property_address.trim() !== '')}
+          errors={errors}
+          title="What is the property address?"
+          subtitle="Enter the full address of the property you want to sell"
+        >
+          <div className="space-y-6">
             <div className="mb-4">
               <Label htmlFor="property_address" className="font-medium">
                 What is the property address?
@@ -133,8 +158,25 @@ export default function AgentFinderSteps({
                 <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
               )}
             </div>
-          )}
-          
+          </div>
+        </FormStep>
+      )}
+
+      {/* Step 4: Property Type */}
+      <FormStep
+        isActive={currentStep === (formData.transaction_type === 'sell' ? 4 : 3)}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        formData={formData}
+        updateFormData={updateFormData}
+        stepNumber={formData.transaction_type === 'sell' ? 4 : 3}
+        finderType="agent"
+        isValid={Boolean(formData.property_type && formData.property_type.trim() !== '')}
+        errors={errors}
+        title="What type of property are you looking for?"
+        subtitle="Select the property type that best matches your investment goals"
+      >
+        <div className="space-y-6">
           <div className="mt-4">
             <PropertyTypeSelect
               selectedValue={formData.property_type}
@@ -142,82 +184,214 @@ export default function AgentFinderSteps({
               error={errors.property_type}
             />
           </div>
-          
         </div>
       </FormStep>
 
-      {/* Step 3: Timeline and Purchase/Sale Details */}
+      {/* Step 5: Timeline (Only for Buy) */}
+      {formData.transaction_type === 'buy' && (
+        <FormStep
+          isActive={currentStep === 4}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={4}
+          finderType="agent"
+          isValid={Boolean(formData.purchase_timeline)}
+          errors={errors}
+          title={`When are you looking to purchase in ${formData.location}?`}
+          subtitle="Select the timeline that best matches your investment plans"
+        >
+          <div>
+            <RadioGroup
+              options={[
+                { value: "asap", label: "ASAP: I'm ready to make a move now" },
+                { value: "1_3_months", label: "1-3 Months: I'm planning to invest in the next 1-3 months" },
+                { value: "3_6_months", label: "3-6 Months: I'm planning to invest in the next 3-6 months" },
+                { value: "6_12_months", label: "6-12 Months: I'm planning to invest in the next 6-12 months" },
+                { value: "just_researching", label: "Just Researching: I'm just exploring my options" }
+              ]}
+              selectedValue={formData.purchase_timeline}
+              onChange={(value) => updateFormData({ 
+                purchase_timeline: value as any,
+                timeline: value as any
+              })}
+              name="agent_purchase_timeline"
+            />
+            {errors.purchase_timeline && (
+              <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
+            )}
+          </div>
+        </FormStep>
+      )}
+
+      {/* Step 6: Price Range */}
       <FormStep
-        isActive={currentStep === 3}
+        isActive={currentStep === (formData.transaction_type === 'buy' ? 5 : 4)}
         onNext={onNext}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={3}
+        stepNumber={formData.transaction_type === 'buy' ? 5 : 4}
         finderType="agent"
         isValid={Boolean(
-          (formData.transaction_type === 'buy' ? !!formData.purchase_timeline : true) && 
           formData.price_min && formData.price_min.trim() !== '' && 
-          formData.price_max && formData.price_max.trim() !== '' &&
-          formData.investment_properties_count && formData.investment_properties_count.trim() !== ''
+          formData.price_max && formData.price_max.trim() !== ''
         )}
         errors={errors}
-        title={formData.transaction_type === 'buy' ? "Purchase Details" : "Sale Details"}
-        subtitle={formData.transaction_type === 'buy' 
-          ? "Tell us about your investment timeline and budget" 
-          : "Tell us about your property sale expectations"}
+        title="What is your price range?"
+        subtitle="Enter your minimum and maximum price range"
       >
-        <div className="space-y-6">
-          {formData.transaction_type === 'buy' && (
-            <div>
-              <Label className="font-medium mb-2 block">
-                When are you looking to purchase in {formData.location}?
-              </Label>
-              <RadioGroup
-                options={[
-                  { value: "asap", label: agentTimelineLabels.asap },
-                  { value: "1_3_months", label: agentTimelineLabels["1_3_months"] },
-                  { value: "3_6_months", label: agentTimelineLabels["3_6_months"] },
-                  { value: "6_12_months", label: agentTimelineLabels["6_12_months"] },
-                  { value: "just_researching", label: agentTimelineLabels.just_researching }
-                ]}
-                selectedValue={formData.purchase_timeline}
-                onChange={(value) => updateFormData({ purchase_timeline: value as any })}
-                name="agent_purchase_timeline"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="price-min" className="font-medium">
+              {formData.transaction_type === 'buy' ? 'Minimum Purchase Price' : 'Minimum Sale Price'}
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
+              <Input
+                id="price-min"
+                type="text"
+                className={`pl-7 ${errors.price_min ? "border-red-500" : ""}`}
+                placeholder="100,000"
+                value={formData.price_min}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9,]/g, '');
+                  const formattedPrice = formatPrice(value);
+                  updateFormData({ price_min: formattedPrice });
+                }}
+                onFocus={(e) => {
+                  // If empty, auto-populate with the minimum value
+                  if (!formData.price_min) {
+                    updateFormData({ price_min: getDefaultMinPrice() });
+                  }
+                }}
               />
-              {errors.purchase_timeline && (
-                <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
-              )}
             </div>
-          )}
+            {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
+          </div>
           
-          <InvestmentDetailsFields
-            priceMin={formData.price_min}
-            priceMax={formData.price_max}
-            loanStarted={formData.loan_started}
-            propertyCount={formData.investment_properties_count}
-            onPriceMinChange={(value) => updateFormData({ price_min: value })}
-            onPriceMaxChange={(value) => updateFormData({ price_max: value })}
-            onLoanStartedChange={(value) => updateFormData({ loan_started: value })}
-            onPropertyCountChange={(value) => updateFormData({ investment_properties_count: value })}
-            errors={{
-              priceMin: errors.price_min,
-              priceMax: errors.price_max,
-              propertyCount: errors.investment_properties_count
-            }}
-            transactionType={formData.transaction_type}
-          />
+          <div className="space-y-2">
+            <Label htmlFor="price-max" className="font-medium">
+              {formData.transaction_type === 'buy' ? 'Maximum Purchase Price' : 'Maximum Sale Price'}
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
+              <Input
+                id="price-max"
+                type="text"
+                className={`pl-7 ${errors.price_max ? "border-red-500" : ""}`}
+                placeholder="350,000"
+                value={formData.price_max}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9,]/g, '');
+                  const formattedPrice = formatPrice(value);
+                  updateFormData({ price_max: formattedPrice });
+                }}
+              />
+            </div>
+            {errors.price_max && <p className="text-sm text-red-500">{errors.price_max}</p>}
+          </div>
         </div>
       </FormStep>
 
-      {/* Step 4: Investment Strategy */}
+      {/* Step 7: Loan Process (Only for Buy) */}
+      {formData.transaction_type === 'buy' && (
+        <FormStep
+          isActive={currentStep === 6}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={6}
+          finderType="agent"
+          isValid={true} // Not required field
+          errors={errors}
+          title="Have you started the loan process?"
+          subtitle="Let us know if you've already begun working with a lender"
+        >
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="loan-started"
+              checked={formData.loan_started}
+              onCheckedChange={(checked) => updateFormData({ loan_started: checked })}
+            />
+            <Label htmlFor="loan-started" className="font-medium">
+              I have already started the loan process
+            </Label>
+          </div>
+        </FormStep>
+      )}
+
+      {/* Step 8: Owner Occupied */}
       <FormStep
-        isActive={currentStep === 4}
+        isActive={currentStep === (formData.transaction_type === 'buy' ? 7 : 5)}
         onNext={onNext}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={4}
+        stepNumber={formData.transaction_type === 'buy' ? 7 : 5}
+        finderType="agent"
+        isValid={true} // Not a required field
+        errors={errors}
+        title="Will this be an owner-occupied property?"
+        subtitle="Let us know if you plan to live in this property"
+      >
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="owner-occupied"
+            checked={formData.owner_occupied}
+            onCheckedChange={(checked) => updateFormData({ owner_occupied: checked })}
+          />
+          <Label htmlFor="owner-occupied" className="font-medium">
+            Yes, I plan to live in this property
+          </Label>
+        </div>
+      </FormStep>
+
+      {/* Step 9: Existing Properties */}
+      <FormStep
+        isActive={currentStep === (formData.transaction_type === 'buy' ? 8 : 6)}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        formData={formData}
+        updateFormData={updateFormData}
+        stepNumber={formData.transaction_type === 'buy' ? 8 : 6}
+        finderType="agent"
+        isValid={true} // Not a required field
+        errors={errors}
+        title="How many investment properties do you currently own?"
+        subtitle="This helps us find the right agent for your experience level"
+      >
+        <div className="space-y-2">
+          <Input
+            id="property-count"
+            type="text"
+            className={errors.investment_properties_count ? "border-red-500" : ""}
+            placeholder="0"
+            value={formData.investment_properties_count}
+            onChange={(e) => {
+              // Only allow numbers
+              const value = e.target.value;
+              if (/^[0-9]*$/.test(value) || value === '') {
+                updateFormData({ investment_properties_count: value });
+              }
+            }}
+          />
+          {errors.investment_properties_count && (
+            <p className="text-sm text-red-500">{errors.investment_properties_count}</p>
+          )}
+        </div>
+      </FormStep>
+
+      {/* Step 10: Investment Strategy */}
+      <FormStep
+        isActive={currentStep === (formData.transaction_type === 'buy' ? 9 : 7)}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        formData={formData}
+        updateFormData={updateFormData}
+        stepNumber={formData.transaction_type === 'buy' ? 9 : 7}
         finderType="agent"
         isValid={formData.strategy.length > 0}
         errors={errors}
@@ -226,9 +400,9 @@ export default function AgentFinderSteps({
       >
         <CheckboxGroup
           options={[
-            { value: "buy_and_hold_brrrr", label: agentStrategyLabels.buy_and_hold_brrrr, description: agentStrategyDescriptions.buy_and_hold_brrrr },
-            { value: "short_term_rental", label: agentStrategyLabels.short_term_rental, description: agentStrategyDescriptions.short_term_rental },
-            { value: "not_sure", label: agentStrategyLabels.not_sure, description: agentStrategyDescriptions.not_sure }
+            { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
+            { value: "short_term_rental", label: "Short-term rental or MTR", description: "I plan to list on Airbnb/VRBO" },
+            { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
           ]}
           selectedValues={formData.strategy}
           onChange={handleStrategyChange}
@@ -236,32 +410,29 @@ export default function AgentFinderSteps({
         {errors.strategy && (
           <p className="text-red-500 text-sm mt-2">{errors.strategy}</p>
         )}
+        <p className="text-sm text-gray-500 mt-4">Note: We do not yet support Fix and Flip strategies or commercial.</p>
       </FormStep>
 
-      {/* Step 5: Contact Information */}
+      {/* Step 11: Contact Information */}
       <FormStep
-        isActive={currentStep === 5}
+        isActive={currentStep === (formData.transaction_type === 'buy' ? 10 : 8)}
         onNext={onNext}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={5}
+        stepNumber={formData.transaction_type === 'buy' ? 10 : 8}
         finderType="agent"
         isValid={Boolean(
           formData.contact && 
           formData.contact.first_name && !!formData.contact.first_name.trim() && 
           formData.contact.last_name && !!formData.contact.last_name.trim() && 
           formData.contact.email && !!formData.contact.email.trim() && 
-          formData.contact.phone && !!formData.contact.phone.trim() &&
-          formData.contact.city && !!formData.contact.city.trim() &&
-          formData.contact.state && !!formData.contact.state.trim() &&
-          formData.contact.zip && !!formData.contact.zip.trim() &&
-          formData.terms_accepted
+          formData.contact.phone && !!formData.contact.phone.trim()
+          // City, state, and zip are not required per the specifications
         )}
         errors={errors}
         title="What's your contact info?"
-        subtitle="On the next page you will see your agent matches & bios to be able to select who, if anyone, gets your investment answers and contact details."
-        nextLabel="Review"
+        subtitle="Please provide your contact information so agents can reach you"
       >
         <div className="space-y-6">
           <ContactFormExtended
@@ -303,46 +474,57 @@ export default function AgentFinderSteps({
               zip: errors['contact.zip']
             }}
           />
-          
-          <div className="pt-2">
-            <div className="flex items-start">
-              <Checkbox
-                id="agent_terms"
-                checked={formData.terms_accepted}
-                onCheckedChange={(checked) => 
-                  updateFormData({ terms_accepted: checked as boolean })
-                }
-                className="mt-1"
-              />
-              <Label htmlFor="agent_terms" className="ml-3 text-sm">
-                By entering your information and submitting this form, you agree to BiggerPockets <a href="#" className="text-blue-500 hover:text-blue-700">terms of service</a> and <a href="#" className="text-blue-500 hover:text-blue-700">privacy policy</a>. 
-                
-                <p className="mt-2 text-xs text-gray-600">
-                  You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services.
-                </p>
-              </Label>
-            </div>
-            {errors.terms_accepted && (
-              <p className="text-red-500 text-sm mt-1">{errors.terms_accepted}</p>
-            )}
+        </div>
+      </FormStep>
+      
+      {/* Step 12: Terms and Consent */}
+      <FormStep
+        isActive={currentStep === (formData.transaction_type === 'buy' ? 11 : 9)}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        formData={formData}
+        updateFormData={updateFormData}
+        stepNumber={formData.transaction_type === 'buy' ? 11 : 9}
+        finderType="agent"
+        isValid={formData.terms_accepted}
+        errors={errors}
+        title="Terms and Consent"
+        subtitle="Please review and accept our terms to continue"
+      >
+        <div className="pt-2">
+          <div className="flex items-start">
+            <Checkbox
+              id="agent_terms"
+              checked={formData.terms_accepted}
+              onCheckedChange={(checked) => 
+                updateFormData({ terms_accepted: checked as boolean })
+              }
+              className="mt-1"
+            />
+            <Label htmlFor="agent_terms" className="ml-3 text-sm">
+              By entering your information and submitting this form, you agree to BiggerPockets <a href="#" className="text-blue-500 hover:text-blue-700">terms of service</a>. You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services.
+            </Label>
           </div>
+          {errors.terms_accepted && (
+            <p className="text-red-500 text-sm mt-1">{errors.terms_accepted}</p>
+          )}
         </div>
       </FormStep>
 
-      {/* Step 6: Review and Submit */}
+      {/* Final Step: Review and Submit */}
       <FormStep
-        isActive={currentStep === 6}
+        isActive={currentStep === (formData.transaction_type === 'buy' ? 12 : 10)}
         onNext={onSubmit}
         onPrevious={onPrevious}
         formData={formData}
         updateFormData={updateFormData}
-        stepNumber={6}
+        stepNumber={formData.transaction_type === 'buy' ? 12 : 10}
         finderType="agent"
         isValid={true}
         errors={errors}
         title="Review your information"
         subtitle="Please verify that everything is correct"
-        nextLabel="Find Agents"
+        nextLabel="Submit Information"
         showSubmit={true}
       >
         <AgentReviewSummary formData={formData} />
