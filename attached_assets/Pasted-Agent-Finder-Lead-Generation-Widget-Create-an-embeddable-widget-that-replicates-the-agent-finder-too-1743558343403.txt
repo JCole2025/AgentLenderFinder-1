@@ -1,0 +1,389 @@
+Agent Finder Lead Generation Widget
+Create an embeddable widget that replicates the agent finder tool from BiggerPockets.com. The interface captures user information through a multi-step form, stores data in tables, and sends it to configurable webhook endpoints.
+Technical Requirements
+The application should include:
+
+Agent Finder Form
+Thank You Page
+Error Handling System
+
+For data storage, create three tables:
+
+"agent_lead_information" - Stores complete form submissions
+"agent_partial_form_fills" - Stores incomplete form data
+"agent_lead_submission_failures" - Logs failed webhook submissions
+
+Create variables for webhook endpoints that will be defined later:
+
+AGENT_WEBHOOK_ENDPOINT_COMPLETE
+AGENT_WEBHOOK_ENDPOINT_PARTIAL
+AGENT_WEBHOOK_ENDPOINT_FAILURES
+
+State Management Implementation
+To ensure proper flow throughout the form, implement this state management system:
+javascriptCopy// Create a state manager to track form progress
+const agentFormState = {
+  currentStep: 1,
+  totalSteps: 12,
+  formData: {},
+  
+  saveStep: function(stepData) {
+    this.formData = {...this.formData, ...stepData};
+    localStorage.setItem('agentFormProgress', JSON.stringify(this.formData));
+    
+    // Send partial data to webhook
+    this.sendPartialData();
+  },
+  
+  sendPartialData: async function() {
+    try {
+      const response = await fetch(AGENT_WEBHOOK_ENDPOINT_PARTIAL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(this.formData)
+      });
+      console.log('Partial data saved');
+    } catch (error) {
+      console.error('Error saving partial data', error);
+      logAgentSubmissionFailure(error, this.formData);
+    }
+  },
+  
+  submitForm: async function() {
+    try {
+      if (!this.validateRequiredFields()) {
+        return false;
+      }
+      
+      const response = await fetch(AGENT_WEBHOOK_ENDPOINT_COMPLETE, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(this.formData)
+      });
+      
+      localStorage.removeItem('agentFormProgress');
+      return true;
+    } catch (error) {
+      console.error('Error submitting form', error);
+      logAgentSubmissionFailure(error, this.formData);
+      return false;
+    }
+  },
+  
+  validateRequiredFields: function() {
+    const requiredFields = ['transactionType', 'location'];
+    // Add other required fields based on the form type and user selections
+    for (const field of requiredFields) {
+      if (!this.formData[field]) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
+CRITICAL: Fixing the "Invalid enum value" Error
+To prevent the "Invalid enum value" error, especially for the timeline dropdown, implement this initialization code that MUST run when the page loads:
+javascriptCopy// IMPORTANT: This must run immediately when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Pre-initialize ALL select elements with default values
+  // This MUST happen BEFORE any validation runs
+  initializeAgentFormFields();
+});
+
+function initializeAgentFormFields() {
+  // Set safe default values for all dropdown menus to prevent invalid enum errors
+  const dropdowns = [
+    {id: 'timeline', defaultValue: 'just_researching'},
+    {id: 'propertyType', defaultValue: 'singleFamily'},
+    {id: 'investmentStrategy', defaultValue: 'notSureYet'},
+    {id: 'ownerOccupied', defaultValue: 'no'},
+    {id: 'loanProcess', defaultValue: 'no'}
+  ];
+  
+  // Initialize all dropdowns immediately
+  dropdowns.forEach(dropdown => {
+    const element = document.getElementById(dropdown.id);
+    if (element) {
+      // Assign default value immediately to prevent validation errors
+      element.value = dropdown.defaultValue;
+      
+      // Add change event listener as a fallback
+      element.addEventListener('change', function() {
+        if (!this.value || this.value === '') {
+          this.value = dropdown.defaultValue;
+        }
+      });
+    }
+  });
+  
+  // Initialize any other fields that need defaults
+  const minPriceInput = document.getElementById('minPrice');
+  if (minPriceInput && !minPriceInput.value) {
+    minPriceInput.value = '100000';
+  }
+  
+  // IMPORTANT: For select elements, set hidden initial values
+  document.querySelectorAll('select').forEach(select => {
+    // Create and add a hidden option that won't show in the dropdown
+    const hiddenOption = document.createElement('option');
+    hiddenOption.value = select.getAttribute('data-default') || 
+                        (select.id === 'timeline' ? 'just_researching' : '');
+    hiddenOption.style.display = 'none';
+    hiddenOption.selected = true;
+    select.prepend(hiddenOption);
+  });
+}
+Form Submission Flow
+Implement this code to handle form submission and ensure direct navigation to the thank you page:
+javascriptCopyfunction completeAgentForm() {
+  // Disable the submit button to prevent double-clicks
+  document.getElementById('agentSubmitButton').disabled = true;
+  
+  // Show a loading indicator
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.className = 'loading-spinner';
+  document.getElementById('agentFormContainer').appendChild(loadingIndicator);
+  
+  // Submit the form
+  agentFormState.submitForm().then(success => {
+    if (success) {
+      // Direct navigation to thank you page without any verification step
+      window.location.href = 'agent-thank-you.html';
+    } else {
+      // Re-enable the button if there was an error
+      document.getElementById('agentSubmitButton').disabled = false;
+      
+      // Show error message
+      const errorMessage = document.createElement('div');
+      errorMessage.className = 'error-message';
+      errorMessage.textContent = 'There was an error submitting your form. Please try again.';
+      document.getElementById('agentFormContainer').appendChild(errorMessage);
+      
+      // Remove loading indicator
+      loadingIndicator.remove();
+    }
+  });
+}
+
+// Attach this function to the submit button
+document.getElementById('agentSubmitButton').addEventListener('click', function(e) {
+  e.preventDefault();
+  completeAgentForm();
+});
+Agent Finder Form Steps
+Step 1: Transaction Type
+Ask "What would you like to do?" with options:
+
+"Buy: I'm looking to buy"
+"Sell: I'm looking to sell"
+This is a required field.
+
+Step 2: Location
+Ask "Where are you looking to invest?" as a text input field.
+
+Format must be "City, ST" (e.g., "Austin, TX")
+This is a required field
+
+For location validation:
+javascriptCopyfunction validateLocationInput(input) {
+    // Prevent trim errors by safely handling the input
+    if (input === undefined || input === null) {
+        input = '';
+    }
+    
+    input = input.trim();
+    
+    // Format validation (City, ST)
+    const formatPattern = /^([A-Za-z\s\-\.\']+),\s*([A-Z]{2})$/;
+    const formatMatch = input.match(formatPattern);
+    
+    if (!formatMatch) {
+        return {
+            valid: false,
+            error: "Please enter a city and state in the format 'City, ST' (e.g., 'Denver, CO')",
+            allowContinue: true
+        };
+    }
+    
+    const city = formatMatch[1].trim();
+    const state = formatMatch[2].trim();
+    
+    // Check if state is valid
+    const validStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", /* include all states */];
+    
+    if (!validStates.includes(state)) {
+        return {
+            valid: false,
+            error: `"${state}" is not a valid state abbreviation.`,
+            allowContinue: true
+        };
+    }
+    
+    // Verify city-state combination with confirmation if needed
+    // Show dialogue but allow continuation
+}
+Step 3: Property Address (Only for "Sell" Option)
+If the user selected "Sell" in Step 1, ask "What is the property address?"
+This is a required field.
+Step 4: Property Type
+Ask "What type of property are you looking for?" with options:
+
+"Single Family"
+"Multi-Family (2-4 units)"
+"Commercial/Multifamily (5+ units)"
+"Townhouse/Condo"
+"Land"
+This is a required field.
+
+IMPORTANT: If the user selects "Land" or "Commercial/Multifamily (5+ units)", show a popup message:
+"We're sorry, our agents cannot help with this property type at the moment. Please select a different property type or check back later."
+Step 5: Timeline
+If the user selected "Buy" in Step 1, ask "When are you looking to purchase in [City], [State]?" with options:
+
+"ASAP: I'm ready to make a move now" (value: "asap")
+"1-3 Months: I'm planning to invest in the next 1-3 months" (value: "1_3_months")
+"3-6 Months: I'm planning to invest in the next 3-6 months" (value: "3_6_months")
+"6-12 Months: I'm planning to invest in the next 6-12 months" (value: "6_12_months")
+"Just Researching: I'm just exploring my options" (value: "just_researching")
+This is a required field.
+
+HTML implementation to prevent the "Invalid enum value" error:
+htmlCopy<select id="timeline" name="timeline" required data-default="just_researching">
+  <!-- Hidden default option that won't show but prevents the error -->
+  <option value="just_researching" style="display: none;" selected>Select when you plan to purchase</option>
+  
+  <option value="asap">ASAP: I'm ready to make a move now</option>
+  <option value="1_3_months">1-3 Months: I'm planning to invest in the next 1-3 months</option>
+  <option value="3_6_months">3-6 Months: I'm planning to invest in the next 3-6 months</option>
+  <option value="6_12_months">6-12 Months: I'm planning to invest in the next 6-12 months</option>
+  <option value="just_researching">Just Researching: I'm just exploring my options</option>
+</select>
+Step 6: Price Range
+Ask "What is your price range?" with two fields:
+
+Minimum Price: Default to $100,000, don't accept lower values
+Maximum Price: Must be greater than minimum price
+Both fields are required.
+
+Step 7: Loan Process
+If the user selected "Buy" in Step 1, ask "Have you started the loan process?" with Yes/No options.
+This is a required field.
+Step 8: Owner Occupied
+Ask "Will this be an owner-occupied property?" with Yes/No options.
+This is a required field.
+Step 9: Existing Properties
+Ask "How many investment properties do you currently own?" as a numeric input.
+This is NOT a required field.
+Step 10: Investment Strategy
+Ask "What is your investment strategy?" with these options (multiple selection allowed):
+
+"Long Term Rental: I plan to buy and rent out long-term"
+"Short-term rental or MTR: I plan to list on Airbnb/VRBO"
+"Not sure yet: I'm still exploring my options"
+Include this text: "Note: We do not yet support Fix and Flip strategies or commercial."
+This is a required field.
+
+Step 11: Contact Information
+Ask for the following contact information:
+
+First Name (required)
+Last Name (required)
+Email (required, must be valid format)
+Phone (required, must be valid format xxx-xxx-xxxx)
+City (not required)
+State (not required)
+Zip (not required)
+
+Step 12: Terms and Consent
+Include a checkbox for consent with this exact text:
+"By entering your information and submitting this form, you agree to BiggerPockets terms of service. You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services."
+This is a required field.
+Submit Button
+Label the button "Submit Information". When clicked, it should:
+
+Save complete data to the agent_lead_information table
+Send data to the webhook endpoint
+Redirect directly to the Thank You page WITHOUT a verification step
+
+Thank You Page Implementation
+Create a standalone thank you page for agent leads:
+htmlCopy<!DOCTYPE html>
+<html>
+<head>
+  <title>Thank You - BiggerPockets Agent Finder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Add styling to match your design */
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .thank-you-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #0063b1;
+    }
+    .button {
+      display: inline-block;
+      background: #0063b1;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="thank-you-container">
+    <h1>What's next?</h1>
+    <p>A trained BiggerPockets concierge is searching our network of licensed real estate agents.</p>
+    <p>We'll match you with the perfect agents and connect you with them.</p>
+    <p>You should expect a text message shortly from 720-902-8552 and an email from concierge@biggerpockets.com</p>
+    
+    <div id="crossSellContainer">
+      <div class="cross-sell">
+        <p>Would you also like to be matched with lenders?</p>
+        <a href="lender-finder.html" class="button">Find Lenders</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+Additional Implementation Tips
+
+Prevent Errors with Default Values
+
+Always initialize form fields with default values
+Use hidden default options for dropdown menus
+Handle undefined or null values before processing
+
+
+Simplify the Form Structure
+
+Break the form into smaller modules
+Keep each step in a separate file or function
+Use event delegation for dynamic content
+
+
+Implement Error Recovery
+
+Save form progress at each step
+Allow users to resume incomplete forms
+Provide clear error messages if something goes wrong
+
+
+Optimize for Mobile
+
+Ensure responsive design
+Simplify the interface for small screens
+Test on multiple devices
+
+
