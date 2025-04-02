@@ -195,7 +195,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
               <p 
                 className={`${errors.terms_accepted ? "text-red-500" : "text-gray-700"}`}
               >
-                <span className="font-semibold">By entering your information and submitting this form, you agree to BiggerPockets <a href="#" className="text-blue-600 hover:underline">Terms of Service</a>.</span>
+                <span className="font-semibold text-blue-600">By entering your information and submitting this form, you agree to BiggerPockets <a href="#" className="text-blue-600 hover:underline">Terms of Service</a>.</span>
               </p>
               <p className="text-xs text-gray-500 leading-relaxed">
                 You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services.
