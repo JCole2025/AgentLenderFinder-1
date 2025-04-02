@@ -1,0 +1,197 @@
+# Real Estate Lead Generation Interface
+
+## Project Overview
+Create an embeddable widget that replicates the agent finder and lender finder tools from BiggerPockets.com. Users will input their information through multi-step forms, and the system will store this data in tables and send it to webhook endpoints.
+
+## Technical Requirements
+
+The application should include:
+- Agent Finder Form
+- Lender Finder Form
+- Thank You Page
+- Error Handling System
+
+For data storage, create three tables:
+- "lead_information" - Stores complete form submissions
+- "partial_form_fills" - Stores incomplete form data
+- "lead_submission_failures" - Logs failed webhook submissions
+
+Create variables for webhook endpoints that will be defined later:
+- WEBHOOK_ENDPOINT_COMPLETE
+- WEBHOOK_ENDPOINT_PARTIAL
+- WEBHOOK_ENDPOINT_FAILURES
+
+The widget should be:
+- An embedded iFrame or widget
+- Hosted on a Virtual Machine (not local server)
+- Embeddable with a simple HTML code snippet
+
+## Validation Rules
+
+All forms must follow these validation rules:
+- City/State combinations must be in the format "City, ST" (e.g., "Denver, CO")
+- Price fields must only accept numeric input
+- Minimum purchase price must be at least $100,000 (auto-populated)
+- Maximum price must be greater than minimum price
+- Phone numbers must follow xxx-xxx-xxxx format
+- Email addresses must be valid format
+
+## Agent Finder Form
+
+### Step 1: Transaction Type
+Ask "What would you like to do?" with options:
+- "Buy: I'm looking to buy"
+- "Sell: I'm looking to sell"
+This is a required field.
+
+### Step 2: Location
+Ask "Where are you looking to invest?" as a text input field.
+- Format must be "City, ST" (e.g., "Austin, TX")
+- This is a required field
+
+When validating the location:
+1. Check that it follows the City, ST format
+2. Verify the state is a valid US state abbreviation
+3. Check if city exists in that state
+4. If the city/state can't be verified, show a confirmation dialog: "Are you sure [City], [State] is correct?"
+5. Always allow users to proceed, even with unverified locations
+
+Here's the code needed for city/state validation:
+
+```pseudocode
+function validateLocationInput(input) {
+    // Format validation (City, ST)
+    const formatPattern = /^([A-Za-z\s\-\.\']+),\s*([A-Z]{2})$/;
+    const formatMatch = input.match(formatPattern);
+    
+    if (!formatMatch) {
+        return {
+            valid: false,
+            error: "Please enter a city and state in the format 'City, ST' (e.g., 'Denver, CO')",
+            allowContinue: true
+        };
+    }
+    
+    const city = formatMatch[1].trim();
+    const state = formatMatch[2].trim();
+    
+    // Check if state is valid
+    const validStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", /* include all states */];
+    
+    if (!validStates.includes(state)) {
+        return {
+            valid: false,
+            error: `"${state}" is not a valid state abbreviation.`,
+            allowContinue: true
+        };
+    }
+    
+    // Verify city-state combination with confirmation if needed
+    // Show dialogue but allow continuation
+}
+```
+
+### Step 3: Property Address (Only for "Sell" Option)
+If the user selected "Sell" in Step 1, ask "What is the property address?"
+This is a required field.
+
+### Step 4: Property Type
+Ask "What type of property are you looking for?" with options:
+- "Single Family"
+- "Multi-Family (2-4 units)"
+- "Commercial/Multifamily (5+ units)"
+- "Townhouse/Condo"
+- "Land"
+This is a required field.
+
+IMPORTANT: If the user selects "Land" or "Commercial/Multifamily (5+ units)", show a popup message:
+"We're sorry, our agents cannot help with this property type at the moment. Please select a different property type or check back later."
+
+### Step 5: Timeline
+If the user selected "Buy" in Step 1, ask "When are you looking to purchase in [City], [State]?" with options:
+- "ASAP: I'm ready to make a move now" (value: "asap")
+- "1-3 Months: I'm planning to invest in the next 1-3 months" (value: "1_3_months")
+- "3-6 Months: I'm planning to invest in the next 3-6 months" (value: "3_6_months")
+- "6-12 Months: I'm planning to invest in the next 6-12 months" (value: "6_12_months")
+- "Just Researching: I'm just exploring my options" (value: "just_researching")
+This is a required field.
+
+IMPORTANT: To prevent the "Invalid enum value" error, initialize the dropdown with this code:
+
+```pseudocode
+function initializeTimelineDropdown() {
+    const timelineSelect = document.getElementById('timeline');
+    if (timelineSelect) {
+        timelineSelect.addEventListener('change', (e) => {
+            if (!e.target.value || e.target.value === '') {
+                e.target.value = 'just_researching';
+            }
+        });
+    }
+}
+```
+
+### Step 6: Price Range
+Ask "What is your price range?" with two fields:
+- Minimum Price: Default to $100,000, don't accept lower values
+- Maximum Price: Must be greater than minimum price
+Both fields are required.
+
+### Step 7: Loan Process
+If the user selected "Buy" in Step 1, ask "Have you started the loan process?" with Yes/No options.
+This is a required field.
+
+### Step 8: Owner Occupied
+Ask "Will this be an owner-occupied property?" with Yes/No options.
+This is a required field.
+
+### Step 9: Existing Properties
+Ask "How many investment properties do you currently own?" as a numeric input.
+This is NOT a required field.
+
+### Step 10: Investment Strategy
+Ask "What is your investment strategy?" with these options (multiple selection allowed):
+- "Long Term Rental: I plan to buy and rent out long-term"
+- "Short-term rental or MTR: I plan to list on Airbnb/VRBO"
+- "Not sure yet: I'm still exploring my options"
+Include this text: "Note: We do not yet support Fix and Flip strategies or commercial."
+This is a required field.
+
+### Step 11: Contact Information
+Ask for the following contact information:
+- First Name (required)
+- Last Name (required)
+- Email (required, must be valid format)
+- Phone (required, must be valid format xxx-xxx-xxxx)
+- City (not required)
+- State (not required)
+- Zip (not required)
+
+### Step 12: Terms and Consent
+Include a checkbox for consent with this exact text:
+"By entering your information and submitting this form, you agree to BiggerPockets terms of service. You also expressly consent to having BiggerPockets and its featured real estate professionals call or text you about your inquiry (including automatic telephone dialing system or an artificial or prerecorded voice) to the telephone number provided, even if that number is on a corporate, state, or national Do Not Call Registry. Message frequency varies, and message/data rates may apply. Text STOP to cancel. You don't need to consent as a condition of buying any property, goods or services."
+This is a required field.
+
+### Submit Button
+Label the button "Submit Information". When clicked, it should:
+1. Save complete data to the lead_information table
+2. Send data to the webhook endpoint
+3. Redirect directly to the Thank You page WITHOUT a verification step
+
+## Lender Finder Form
+The Lender Finder form follows the same structure as the Agent Finder form, with these key differences:
+
+### Step 1: Finance Type
+Ask "What type of financing do you need?" with these options:
+- "Purchase: I'm buying a property"
+- "Refinance: I want to refinance my existing loan"
+- "HELOC: I need a home equity line of credit"
+- "Construction: I need funding for a construction project"
+- "Not Sure: I'm exploring my options"
+
+### Step 8: Credit Score
+Ask "What is your credit score range?" with these options:
+- "Excellent (740+): Prime borrowing rates"
+- "Good (700-739): Very good loan options"
+- "Fair (650-699): Most loan programs available"
+- "Below 650: Some loan options available
