@@ -308,17 +308,24 @@ export default function AgentFinderSteps({
           isValid={true} // Not required field
           errors={errors}
           title="Have you started the loan process?"
-          subtitle="Let us know if you've already begun working with a lender"
+          subtitle="Let us know if you've already begun working with a lender (this is optional)"
+          showNext={true} // Explicitly show the Next button
         >
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="loan-started"
-              checked={formData.loan_started}
-              onCheckedChange={(checked) => updateFormData({ loan_started: checked })}
-            />
-            <Label htmlFor="loan-started" className="font-medium">
-              I have already started the loan process
-            </Label>
+          <div className="space-y-6">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="loan-started"
+                checked={formData.loan_started}
+                onCheckedChange={(checked) => updateFormData({ loan_started: checked })}
+              />
+              <Label htmlFor="loan-started" className="font-medium">
+                I have already started the loan process
+              </Label>
+            </div>
+            
+            <p className="text-sm text-gray-500 italic mt-4">
+              This field is optional. Click Next to continue.
+            </p>
           </div>
         </FormStep>
       )}
@@ -335,17 +342,24 @@ export default function AgentFinderSteps({
         isValid={true} // Not a required field
         errors={errors}
         title="Will this be an owner-occupied property?"
-        subtitle="Let us know if you plan to live in this property"
+        subtitle="Let us know if you plan to live in this property (this is optional)"
+        showNext={true} // Explicitly show the Next button
       >
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="owner-occupied"
-            checked={formData.owner_occupied}
-            onCheckedChange={(checked) => updateFormData({ owner_occupied: checked })}
-          />
-          <Label htmlFor="owner-occupied" className="font-medium">
-            Yes, I plan to live in this property
-          </Label>
+        <div className="space-y-6">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="owner-occupied"
+              checked={formData.owner_occupied}
+              onCheckedChange={(checked) => updateFormData({ owner_occupied: checked })}
+            />
+            <Label htmlFor="owner-occupied" className="font-medium">
+              Yes, I plan to live in this property
+            </Label>
+          </div>
+          
+          <p className="text-sm text-gray-500 italic mt-4">
+            This field is optional. Click Next to continue.
+          </p>
         </div>
       </FormStep>
 
@@ -361,26 +375,33 @@ export default function AgentFinderSteps({
         isValid={true} // Not a required field
         errors={errors}
         title="How many investment properties do you currently own?"
-        subtitle="This helps us find the right agent for your experience level"
+        subtitle="This helps us find the right agent for your experience level (this is optional)"
+        showNext={true} // Explicitly show the Next button
       >
-        <div className="space-y-2">
-          <Input
-            id="property-count"
-            type="text"
-            className={errors.investment_properties_count ? "border-red-500" : ""}
-            placeholder="0"
-            value={formData.investment_properties_count}
-            onChange={(e) => {
-              // Only allow numbers
-              const value = e.target.value;
-              if (/^[0-9]*$/.test(value) || value === '') {
-                updateFormData({ investment_properties_count: value });
-              }
-            }}
-          />
-          {errors.investment_properties_count && (
-            <p className="text-sm text-red-500">{errors.investment_properties_count}</p>
-          )}
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Input
+              id="property-count"
+              type="text"
+              className={errors.investment_properties_count ? "border-red-500" : ""}
+              placeholder="0"
+              value={formData.investment_properties_count}
+              onChange={(e) => {
+                // Only allow numbers
+                const value = e.target.value;
+                if (/^[0-9]*$/.test(value) || value === '') {
+                  updateFormData({ investment_properties_count: value });
+                }
+              }}
+            />
+            {errors.investment_properties_count && (
+              <p className="text-sm text-red-500">{errors.investment_properties_count}</p>
+            )}
+          </div>
+          
+          <p className="text-sm text-gray-500 italic mt-4">
+            This field is optional. Click Next to continue. If you leave it blank, we'll assume you own 0 properties.
+          </p>
         </div>
       </FormStep>
 

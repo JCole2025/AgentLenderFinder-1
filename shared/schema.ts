@@ -62,7 +62,7 @@ export const agentFinderSchema = z.object({
   price_max: z.string().min(1, "Please specify maximum price"),
   loan_started: z.boolean().optional(),
   owner_occupied: z.boolean().optional(), // Added for step 8
-  investment_properties_count: z.string().min(1, "Please specify how many properties you have"),
+  investment_properties_count: z.string().optional(), // Made optional as per form design
   strategy: agentStrategySchema,
   timeline: agentTimelineSchema,
   contact: z.object({
