@@ -1,15 +1,14 @@
 import FormStep from "./FormStep";
 import { LenderFormData } from "@/types/finder";
 import RadioGroup from "./formFields/RadioGroup";
+import LenderPropertyTypeSelector from "./formFields/LenderPropertyTypeSelector";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { 
   lenderLoanPurposeLabels,
-  lenderLoanPurposeDescriptions, 
-  lenderPropertyTypeLabels,
-  lenderPropertyTypeDescriptions,
+  lenderLoanPurposeDescriptions,
   lenderCreditScoreLabels
 } from "@/types/finder";
 import LenderReviewSummary from "./reviewSummary/LenderReviewSummary";
@@ -84,21 +83,11 @@ export default function LenderFinderSteps({
         title="What type of property?"
         subtitle="Select the property type"
       >
-        <RadioGroup
-          options={[
-            { value: "single_family", label: lenderPropertyTypeLabels.single_family, description: lenderPropertyTypeDescriptions.single_family },
-            { value: "multi_family_2_4", label: lenderPropertyTypeLabels.multi_family_2_4, description: lenderPropertyTypeDescriptions.multi_family_2_4 },
-            { value: "multi_family_5plus", label: lenderPropertyTypeLabels.multi_family_5plus, description: lenderPropertyTypeDescriptions.multi_family_5plus },
-            { value: "commercial", label: lenderPropertyTypeLabels.commercial, description: lenderPropertyTypeDescriptions.commercial },
-            { value: "land", label: lenderPropertyTypeLabels.land, description: lenderPropertyTypeDescriptions.land }
-          ]}
+        <LenderPropertyTypeSelector 
           selectedValue={formData.property_type}
           onChange={(value) => updateFormData({ property_type: value as any })}
-          name="lender_property_type"
+          error={errors.property_type}
         />
-        {errors.property_type && (
-          <p className="text-red-500 text-sm mt-2">{errors.property_type}</p>
-        )}
       </FormStep>
 
       {/* Step 3: Property Location */}
