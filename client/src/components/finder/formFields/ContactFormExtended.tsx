@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ContactFormProps {
   first_name: string;
@@ -9,6 +10,8 @@ interface ContactFormProps {
   city: string;
   state: string;
   zip: string;
+  terms_accepted: boolean;
+  loan_assistance: boolean;
   onFirstNameChange: (value: string) => void;
   onLastNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
@@ -16,6 +19,8 @@ interface ContactFormProps {
   onCityChange: (value: string) => void;
   onStateChange: (value: string) => void;
   onZipChange: (value: string) => void;
+  onTermsAcceptedChange: (value: boolean) => void;
+  onLoanAssistanceChange: (value: boolean) => void;
   errors: {
     first_name?: string;
     last_name?: string;
@@ -24,6 +29,7 @@ interface ContactFormProps {
     city?: string;
     state?: string;
     zip?: string;
+    terms_accepted?: string;
   };
 }
 
@@ -36,6 +42,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
     city,
     state,
     zip,
+    terms_accepted,
+    loan_assistance,
     onFirstNameChange,
     onLastNameChange,
     onEmailChange,
@@ -43,6 +51,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
     onCityChange,
     onStateChange,
     onZipChange,
+    onTermsAcceptedChange,
+    onLoanAssistanceChange,
     errors
   } = props;
   return (
@@ -168,6 +178,49 @@ export default function ContactFormExtended(props: ContactFormProps) {
             onChange={(e) => onZipChange(e.target.value)}
           />
           {errors.zip && <p className="text-sm text-red-500 mt-1">{errors.zip}</p>}
+        </div>
+      </div>
+      
+      {/* Consent Checkboxes */}
+      <div className="space-y-4 pt-4">
+        <div className="flex items-start space-x-3">
+          <Checkbox 
+            id="terms_accepted" 
+            checked={terms_accepted}
+            onCheckedChange={(checked) => onTermsAcceptedChange(!!checked)}
+            className="mt-1"
+          />
+          <div>
+            <Label 
+              htmlFor="terms_accepted"
+              className={`${errors.terms_accepted ? "text-red-500" : "text-gray-700"}`}
+            >
+              I agree to the terms and conditions
+            </Label>
+            <p className="text-sm text-gray-500">
+              By checking this box, I agree to share my contact information with relevant real estate professionals who may contact me about my request.
+            </p>
+            {errors.terms_accepted && (
+              <p className="text-sm text-red-500 mt-1">{errors.terms_accepted}</p>
+            )}
+          </div>
+        </div>
+        
+        <div className="flex items-start space-x-3">
+          <Checkbox 
+            id="loan_assistance" 
+            checked={loan_assistance}
+            onCheckedChange={(checked) => onLoanAssistanceChange(!!checked)}
+            className="mt-1"
+          />
+          <div>
+            <Label htmlFor="loan_assistance" className="text-gray-700">
+              I'd like loan assistance (Optional)
+            </Label>
+            <p className="text-sm text-gray-500">
+              I would like to be contacted about financing options available for this property purchase.
+            </p>
+          </div>
         </div>
       </div>
     </div>

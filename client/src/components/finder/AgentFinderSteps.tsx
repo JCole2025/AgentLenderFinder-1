@@ -1,7 +1,9 @@
 import FormStep from "./FormStep";
 import { AgentFormData, AgentTransactionType } from "@/types/finder";
 import RadioGroup from "./formFields/RadioGroup";
+import ButtonRadioGroup from "./formFields/ButtonRadioGroup";
 import PropertyTypeSelect from "./formFields/PropertyTypeSelect";
+import ButtonPropertySelect from "./formFields/ButtonPropertySelect";
 import InvestmentDetailsFields from "./formFields/InvestmentDetailsFields";
 import ContactFormExtended from "./formFields/ContactFormExtended";
 import { Input } from "@/components/ui/input";
@@ -9,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import CheckboxGroup from "./formFields/CheckboxGroup";
+import ButtonCheckboxGroup from "./formFields/ButtonCheckboxGroup";
 import { 
   agentTransactionTypeLabels,
   agentTransactionTypeDescriptions,
@@ -71,10 +74,10 @@ export default function AgentFinderSteps({
         subtitle="Select your real estate transaction goal"
         showPrevious={false}
       >
-        <RadioGroup
+        <ButtonRadioGroup
           options={[
-            { value: "buy", label: "Buy: I'm looking to buy", description: agentTransactionTypeDescriptions.buy },
-            { value: "sell", label: "Sell: I'm looking to sell", description: agentTransactionTypeDescriptions.sell }
+            { value: "buy", label: "Buy Property", description: agentTransactionTypeDescriptions.buy },
+            { value: "sell", label: "Sell Property", description: agentTransactionTypeDescriptions.sell }
           ]}
           selectedValue={formData.transaction_type}
           onChange={(value) => updateFormData({ 
@@ -178,7 +181,7 @@ export default function AgentFinderSteps({
       >
         <div className="space-y-6">
           <div className="mt-4">
-            <PropertyTypeSelect
+            <ButtonPropertySelect
               selectedValue={formData.property_type}
               onChange={(value) => updateFormData({ property_type: value })}
               error={errors.property_type}
@@ -203,13 +206,13 @@ export default function AgentFinderSteps({
           subtitle="Select the timeline that best matches your investment plans"
         >
           <div>
-            <RadioGroup
+            <ButtonRadioGroup
               options={[
-                { value: "asap", label: "ASAP: I'm ready to make a move now" },
-                { value: "1_3_months", label: "1-3 Months: I'm planning to invest in the next 1-3 months" },
-                { value: "3_6_months", label: "3-6 Months: I'm planning to invest in the next 3-6 months" },
-                { value: "6_12_months", label: "6-12 Months: I'm planning to invest in the next 6-12 months" },
-                { value: "just_researching", label: "Just Researching: I'm just exploring my options" }
+                { value: "asap", label: "ASAP", description: "I'm ready to make a move now" },
+                { value: "1_3_months", label: "1-3 Months", description: "I'm planning to invest in the next 1-3 months" },
+                { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
+                { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" },
+                { value: "just_researching", label: "Just Researching", description: "I'm just exploring my options" }
               ]}
               selectedValue={formData.purchase_timeline}
               onChange={(value) => updateFormData({ 
@@ -419,7 +422,7 @@ export default function AgentFinderSteps({
         title="What is your investment strategy?"
         subtitle="Select all that apply"
       >
-        <CheckboxGroup
+        <ButtonCheckboxGroup
           options={[
             { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
             { value: "short_term_rental", label: "Short-term rental or MTR", description: "I plan to list on Airbnb/VRBO" },
@@ -464,6 +467,8 @@ export default function AgentFinderSteps({
             city={formData.contact.city}
             state={formData.contact.state}
             zip={formData.contact.zip}
+            terms_accepted={formData.terms_accepted}
+            loan_assistance={formData.loan_assistance}
             onFirstNameChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, first_name: value } 
             })}
@@ -485,6 +490,12 @@ export default function AgentFinderSteps({
             onZipChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, zip: value } 
             })}
+            onTermsAcceptedChange={(value: boolean) => updateFormData({ 
+              terms_accepted: value 
+            })}
+            onLoanAssistanceChange={(value: boolean) => updateFormData({ 
+              loan_assistance: value 
+            })}
             errors={{
               first_name: errors['contact.first_name'],
               last_name: errors['contact.last_name'],
@@ -492,7 +503,8 @@ export default function AgentFinderSteps({
               phone: errors['contact.phone'],
               city: errors['contact.city'],
               state: errors['contact.state'],
-              zip: errors['contact.zip']
+              zip: errors['contact.zip'],
+              terms_accepted: errors.terms_accepted
             }}
           />
         </div>
