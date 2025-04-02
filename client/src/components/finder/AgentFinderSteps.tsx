@@ -25,6 +25,7 @@ import AgentReviewSummary from "./reviewSummary/AgentReviewSummary";
 import { getLocationInputHelperText } from "@/lib/locationValidator";
 import { formatPrice, getDefaultMinPrice } from "@/lib/priceValidator";
 import { getStateOptions } from "@/lib/stateValidator";
+import { useToast } from "@/hooks/use-toast";
 
 interface AgentFinderStepsProps {
   currentStep: number;
@@ -50,6 +51,9 @@ export default function AgentFinderSteps({
   
   console.log('AgentFinderSteps - rendered with currentStep:', currentStep);
   console.log('AgentFinderSteps - onNext function available:', !!onNext);
+  
+  // Initialize toast hook
+  const { toast } = useToast();
   
   // Wrapped onNext function with debugging
   const handleNext = () => {
@@ -266,6 +270,20 @@ export default function AgentFinderSteps({
                         updateFormData({ price_min: getDefaultMinPrice() });
                       }
                     }}
+                    onBlur={(e) => {
+                      // Check if the value is below minimum when leaving the field
+                      const numericValue = parseInt(e.target.value.replace(/[^0-9]/g, ''));
+                      if (numericValue < 100000) {
+                        updateFormData({ price_min: getDefaultMinPrice() });
+                        if (numericValue > 0) {
+                          toast({
+                            title: "Minimum Price",
+                            description: "The minimum purchase price is $100,000",
+                            variant: "default"
+                          });
+                        }
+                      }
+                    }}
                   />
                 </div>
                 {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
@@ -287,6 +305,18 @@ export default function AgentFinderSteps({
                       const value = e.target.value.replace(/[^0-9,]/g, '');
                       const formattedPrice = formatPrice(value);
                       updateFormData({ price_max: formattedPrice });
+                    }}
+                    onBlur={(e) => {
+                      // Check if the value is below minimum when leaving the field
+                      const numericValue = parseInt(e.target.value.replace(/[^0-9]/g, ''));
+                      if (numericValue < 100000 && numericValue > 0) {
+                        updateFormData({ price_max: "500,000" });
+                        toast({
+                          title: "Minimum Price",
+                          description: "The minimum price is $100,000",
+                          variant: "default"
+                        });
+                      }
                     }}
                   />
                 </div>
