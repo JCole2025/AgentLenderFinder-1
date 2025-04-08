@@ -153,21 +153,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         submittedAt: new Date().toISOString(),
       });
 
-      // Prepare webhook data
+      // Prepare webhook data - format specifically for HubSpot webhook
       const webhookData = {
         finder_type: finderType,
         timestamp: submission.submittedAt,
-        data: formData
+        first_name: formData.contact.first_name,
+        last_name: formData.contact.last_name,
+        email: formData.contact.email,
+        phone: formData.contact.phone,
+        state: formData.contact.state,
+        transaction_type: formData.transaction_type,
+        property_type: formData.property_type, 
+        property_address: formData.property_address || "",
+        purchase_timeline: formData.purchase_timeline || "",
+        price_min: formData.price_min,
+        price_max: formData.price_max,
+        investment_properties_count: formData.investment_properties_count || "0",
+        investment_strategy: Array.isArray(formData.strategy) ? formData.strategy.join(', ') : "",
+        timeline: formData.timeline || "",
+        owner_occupied: formData.owner_occupied ? "Yes" : "No",
+        loan_started: formData.loan_started ? "Yes" : "No",
+        loan_assistance: formData.loan_assistance ? "Yes" : "No"
       };
 
       // Send to webhook using the appropriate environment variable
-      const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE || 'https://webhook.site/your-test-id';
+      const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE;
       
       try {
         // Call the webhook
+        console.log('Sending data to HubSpot webhook:', webhookUrl);
+        console.log('Webhook payload:', JSON.stringify(webhookData, null, 2));
         const webhookResponse = await axios.post(webhookUrl, webhookData);
         console.log('Webhook Response:', webhookResponse.data);
+        
+        // Also create contact in HubSpot via API client
+        console.log('Creating HubSpot contact via API client');
         console.log('HubSpot Response:', await createHubSpotContact(formData));
+        
         await storage.updateWebhookStatus(submission.id, "success", JSON.stringify(webhookResponse.data));
       } catch (error) {
         // Log webhook error but don't fail the submission
