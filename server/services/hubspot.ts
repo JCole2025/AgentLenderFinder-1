@@ -1,7 +1,10 @@
 
 import { Client } from '@hubspot/api-client';
 
-const hubspotClient = new Client({ accessToken: process.env.HUBSPOT_ACCESS_TOKEN });
+const hubspotClient = new Client({ 
+  accessToken: process.env.HUBSPOT_ACCESS_TOKEN,
+  scopes: ['contacts', 'crm.objects.contacts.write']
+});
 
 export async function createHubSpotContact(contactData: any) {
   try {
@@ -36,6 +39,14 @@ export async function createHubSpotContact(contactData: any) {
       response: error.response?.data,
       status: error.response?.status
     });
+    if (error.response) {
+      console.error('HubSpot API Error Details:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data,
+        headers: error.response.headers
+      });
+    }
     throw error;
   }
 }
