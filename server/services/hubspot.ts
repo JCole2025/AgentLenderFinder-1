@@ -19,11 +19,13 @@ export async function createHubSpotContact(contactData: any) {
       price_range: `${contactData.price_min} - ${contactData.price_max}`
     };
 
+    console.log('Creating HubSpot contact with properties:', properties);
     const response = await hubspotClient.crm.contacts.basicApi.create({ properties });
     console.log('HubSpot API Response:', {
       status: response.status,
       statusText: response.statusText,
-      data: response.body
+      data: response.body,
+      contact: response.properties
     });
     return response;
   } catch (error) {
