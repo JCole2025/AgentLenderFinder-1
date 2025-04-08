@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { agentFinderSchema } from "@shared/schema";
 import axios from "axios";
+import { createHubSpotContact } from "./services/hubspot";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint for partial form submissions (saving progress)
