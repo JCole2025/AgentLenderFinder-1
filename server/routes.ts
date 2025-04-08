@@ -163,10 +163,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE || 'https://webhook.site/your-test-id';
       
       try {
+        console.log('Received form submission:', formData);
         // Call the webhook
         const webhookResponse = await axios.post(webhookUrl, webhookData);
         console.log('Webhook Response:', webhookResponse.data);
-        console.log('HubSpot Response:', await createHubSpotContact(formData));
+        
+        // Create HubSpot contact
+        console.log('Attempting HubSpot contact creation...');
+        const hubspotResponse = await createHubSpotContact(formData);
+        console.log('HubSpot Contact Created:', hubspotResponse);
+        
         await storage.updateWebhookStatus(submission.id, "success", JSON.stringify(webhookResponse.data));
       } catch (error) {
         // Log webhook error but don't fail the submission
