@@ -20,9 +20,18 @@ export async function createHubSpotContact(contactData: any) {
     };
 
     const response = await hubspotClient.crm.contacts.basicApi.create({ properties });
+    console.log('HubSpot API Response:', {
+      status: response.status,
+      statusText: response.statusText,
+      data: response.body
+    });
     return response;
   } catch (error) {
-    console.error('Error creating HubSpot contact:', error);
+    console.error('Error creating HubSpot contact:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
     throw error;
   }
 }
