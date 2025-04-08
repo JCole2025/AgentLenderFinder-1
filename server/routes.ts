@@ -165,6 +165,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         // Call the webhook
         const webhookResponse = await axios.post(webhookUrl, webhookData);
+        console.log('Webhook Response:', webhookResponse.data);
+        console.log('HubSpot Response:', await createHubSpotContact(formData));
         await storage.updateWebhookStatus(submission.id, "success", JSON.stringify(webhookResponse.data));
       } catch (error) {
         // Log webhook error but don't fail the submission

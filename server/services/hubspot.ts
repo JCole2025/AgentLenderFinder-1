@@ -5,6 +5,7 @@ const hubspotClient = new Client({ accessToken: process.env.HUBSPOT_ACCESS_TOKEN
 
 export async function createHubSpotContact(contactData: any) {
   try {
+    console.log('Attempting to create HubSpot contact with data:', contactData);
     const properties = {
       firstname: contactData.contact.first_name,
       lastname: contactData.contact.last_name,
