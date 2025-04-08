@@ -1,0 +1,100 @@
+ },
+  response: {
+    status: 404,
+    statusText: 'Not Found',
+    headers: Object [AxiosHeaders] {
+      server: 'nginx',
+      'content-type': 'application/json',
+      'transfer-encoding': 'chunked',
+      'cache-control': 'no-cache, private',
+      date: 'Tue, 08 Apr 2025 00:39:44 GMT'
+    },
+    config: {
+      transitional: [Object],
+      adapter: [Array],
+      transformRequest: [Array],
+      transformResponse: [Array],
+      timeout: 0,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+      maxContentLength: -1,
+      maxBodyLength: -1,
+      env: [Object],
+      validateStatus: [Function: validateStatus],
+      headers: [Object [AxiosHeaders]],
+      method: 'post',
+      url: 'https://webhook.site/your-test-id',
+      data: '{"finder_type":"agent","timestamp":"2025-04-08T00:39:44.304Z","data":{"transaction_type":"buy","location":"TEst, Colorado","property_type":"single_family","purchase_timeline":"asap","property_address":"","price_min":"$100,000","price_max":"$500,000","loan_started":false,"owner_occupied":false,"investment_properties_count":"","strategy":["buy_and_hold_brrrr"],"timeline":"asap","contact":{"first_name":"Test","last_name":"Testerson","email":"joseph@biggerpockets.com","phone":"(612) 790-5259","city":"","state":"California","zip":""},"terms_accepted":true,"loan_assistance":true}}',
+      allowAbsoluteUrls: true
+    },
+    request: <ref *1> ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 7,
+      _maxListeners: undefined,
+      outputData: [],
+      outputSize: 0,
+      writable: true,
+      destroyed: true,
+      _last: false,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: true,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      strictContentLength: false,
+      _contentLength: '581',
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: true,
+      socket: [TLSSocket],
+      _header: 'POST /your-test-id HTTP/1.1\r\n' +
+        'Accept: application/json, text/plain, */*\r\n' +
+        'Content-Type: application/json\r\n' +
+        'User-Agent: axios/1.8.4\r\n' +
+        'Content-Length: 581\r\n' +
+        'Accept-Encoding: gzip, compress, deflate, br\r\n' +
+        'Host: webhook.site\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'POST',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: undefined,
+      joinDuplicateHeaders: undefined,
+      path: '/your-test-id',
+      _ended: true,
+      res: [IncomingMessage],
+      aborted: false,
+      timeoutCb: null,
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'webhook.site',
+      protocol: 'https:',
+      _redirectable: [Writable],
+      [Symbol(shapeMode)]: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(kBytesWritten)]: 0,
+      [Symbol(kNeedDrain)]: false,
+      [Symbol(corked)]: 0,
+      [Symbol(kOutHeaders)]: [Object: null prototype],
+      [Symbol(errored)]: null,
+      [Symbol(kHighWaterMark)]: 16384,
+      [Symbol(kRejectNonStandardBodyWrites)]: false,
+      [Symbol(kUniqueHeaders)]: null
+    },
+    data: { success: false, error: [Object] }
+  },
+  status: 404
+}
+12:39:44 AM [express] POST /api/submit-finder 200 in 366ms :: {"success":true,"id":1}
