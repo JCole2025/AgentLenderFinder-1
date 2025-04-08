@@ -176,8 +176,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         loan_assistance: formData.loan_assistance ? "Yes" : "No"
       };
 
-      // Send to webhook using the appropriate environment variable
-      const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE;
+      // Send to webhook using a hardcoded URL (from .env)
+      const webhookUrl = "https://api-na1.hubapi.com/automation/v4/webhook-triggers/8894931/snEzvdv";
       
       try {
         // Call the webhook
@@ -186,9 +186,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const webhookResponse = await axios.post(webhookUrl, webhookData);
         console.log('Webhook Response:', webhookResponse.data);
         
-        // Also create contact in HubSpot via API client
-        console.log('Creating HubSpot contact via API client');
-        console.log('HubSpot Response:', await createHubSpotContact(formData));
+        // Skip HubSpot API client for now as it's having auth issues
+        // console.log('Creating HubSpot contact via API client');
+        // console.log('HubSpot Response:', await createHubSpotContact(formData));
         
         await storage.updateWebhookStatus(submission.id, "success", JSON.stringify(webhookResponse.data));
       } catch (error) {
