@@ -177,11 +177,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       // Send to webhook using a hardcoded URL (from .env)
-      const webhookUrl = "https://api-na1.hubapi.com/automation/v4/webhook-triggers/8894931/snEzvdv";
+      const webhookUrl = "https://hooks.zapier.com/hooks/catch/17924917/20259dz/";
       
       try {
         // Call the webhook
-        console.log('Sending data to HubSpot webhook:', webhookUrl);
+        console.log('Sending data to Zapier webhook:', webhookUrl);
         console.log('Webhook payload:', JSON.stringify(webhookData, null, 2));
         const webhookResponse = await axios.post(webhookUrl, webhookData);
         console.log('Webhook Response:', webhookResponse.data);
