@@ -185,10 +185,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const formattedLocation = state && city ? `${state},${city}` : formData.location;
       
       // Prepare webhook data according to specified field requirements
+      // Ensure all fields are sent with "NA" as fallback for empty values
       const webhookData = {
-        // Lead information
-        finder_type: finderType,
-        lead_partner: formData.lead_partner || "unknown", // Default value
+        // Lead information (always include these)
+        finder_type: finderType || "agent",
+        lead_partner: formData.lead_partner || "unknown", // Default value as requested
         timestamp: submission.submittedAt,
         timeofday: timeOfDayMST,
         dayofweek: dayOfWeekMST,
@@ -196,24 +197,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         year: yearMST.toString(),
         
         // Contact information
-        first_name: formData.contact.first_name?.trim(),
-        last_name: formData.contact.last_name?.trim(),
-        email: formData.contact.email?.trim().toLowerCase(),
-        phone: formData.contact.phone?.trim(),
-        notes: formData.contact.notes?.trim() || "",
+        first_name: formData.contact.first_name?.trim() || "NA",
+        last_name: formData.contact.last_name?.trim() || "NA",
+        email: formData.contact.email?.trim().toLowerCase() || "NA",
+        phone: formData.contact.phone?.trim() || "NA",
+        notes: formData.contact.notes?.trim() || "NA",
         
         // Transaction details
-        buy_vs_sell: formData.transaction_type,
-        property_type: formData.property_type?.trim(),
-        location: formattedLocation,
-        state: state,
-        city: city,
-        property_address: formData.property_address?.trim() || "",
-        price_min: formData.price_min?.replace(/[^0-9]/g, ''),
-        price_max: formData.price_max?.replace(/[^0-9]/g, ''),
-        investment_properties_count: parseInt(formData.investment_properties_count || "0", 10),
-        investment_strategy: Array.isArray(formData.strategy) ? formData.strategy.filter(Boolean).join(', ') : "",
-        timeline: formData.timeline || "",
+        buy_vs_sell: formData.transaction_type || "NA",
+        property_type: formData.property_type?.trim() || "NA",
+        location: formattedLocation || "NA",
+        state: state || "NA",
+        city: city || "NA",
+        property_address: formData.property_address?.trim() || "NA",
+        price_min: formData.price_min?.replace(/[^0-9]/g, '') || "NA",
+        price_max: formData.price_max?.replace(/[^0-9]/g, '') || "NA",
+        investment_properties_count: formData.investment_properties_count || "NA",
+        investment_strategy: Array.isArray(formData.strategy) && formData.strategy.length > 0 
+          ? formData.strategy.filter(Boolean).join(', ') 
+          : "NA",
+        timeline: formData.timeline || "NA",
         owner_occupied: formData.owner_occupied ? "Yes" : "No",
         loan_started: formData.loan_started ? "Yes" : "No",
         loan_assistance: formData.loan_assistance ? "Yes" : "No"
