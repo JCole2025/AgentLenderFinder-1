@@ -21,13 +21,12 @@ export default function OwnerOccupiedButtons({
     
     console.log('OwnerOccupiedButtons - onNext available:', !!onNext);
     
-    // Auto advance to next step after selection
     if (onNext) {
       console.log('OwnerOccupiedButtons - Setting timeout to auto-advance');
       setTimeout(() => {
         console.log('OwnerOccupiedButtons - Executing onNext()');
         onNext();
-      }, 300); // Small delay for better UX
+      }, 300);
     } else {
       console.log('OwnerOccupiedButtons - Cannot auto-advance: onNext is not available');
     }
@@ -38,30 +37,30 @@ export default function OwnerOccupiedButtons({
       <Button
         type="button"
         variant="outline"
-        className={`flex-1 h-auto py-8 px-6 flex flex-col items-center justify-center text-center gap-4 rounded-xl ${
+        className={`flex-1 h-auto py-8 px-6 flex flex-col items-center justify-center text-center gap-4 rounded-xl hover:border-primary hover:bg-primary/5 transition-all ${
           isOwnerOccupied === true ? 'border-2 border-primary bg-primary/5' : ''
         }`}
         onClick={() => handleClick(true)}
       >
-        <Home className="w-16 h-16 text-primary" />
+        <Home className="w-16 h-16 text-gray-600" />
         <div>
-          <p className="font-semibold text-lg">Yes</p>
-          <p className="text-sm mt-2">I plan to live in this property</p>
+          <p className="font-semibold text-lg">Primary Residence</p>
+          <p className="text-sm mt-2">I will live in this property</p>
         </div>
       </Button>
       
       <Button
         type="button"
         variant="outline"
-        className={`flex-1 h-auto py-8 px-6 flex flex-col items-center justify-center text-center gap-4 rounded-xl ${
+        className={`flex-1 h-auto py-8 px-6 flex flex-col items-center justify-center text-center gap-4 rounded-xl hover:border-primary hover:bg-primary/5 transition-all ${
           isOwnerOccupied === false ? 'border-2 border-primary bg-primary/5' : ''
         }`}
         onClick={() => handleClick(false)}
       >
-        <Building2 className="w-16 h-16 text-primary" />
+        <Building2 className="w-16 h-16 text-gray-600" />
         <div>
-          <p className="font-semibold text-lg">No</p>
-          <p className="text-sm mt-2">This is an investment property</p>
+          <p className="font-semibold text-lg">Investment Property</p>
+          <p className="text-sm mt-2">I will not live in this property</p>
         </div>
       </Button>
     </div>
