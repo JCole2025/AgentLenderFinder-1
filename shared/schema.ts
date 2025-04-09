@@ -53,6 +53,7 @@ export const agentTimelineSchema = z.enum([
 });
 
 export const agentFinderSchema = z.object({
+  lead_partner: z.string().optional(),
   transaction_type: agentTransactionTypeSchema,
   location: z.string().min(1, "Please enter a location"),
   property_type: z.string().min(1, "Please specify property type"),

@@ -156,6 +156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Prepare webhook data - format specifically for HubSpot webhook
       const webhookData = {
         finder_type: finderType,
+        lead_partner: formData.lead_partner || 'direct',
         timestamp: submission.submittedAt,
         first_name: formData.contact.first_name?.trim(),
         last_name: formData.contact.last_name?.trim(),
