@@ -22,7 +22,7 @@ export default function FinderApp() {
               <img 
                 src="/images/BPlogo.png" 
                 alt="BiggerPockets Logo" 
-                className="h-8"
+                className="h-6"
               />
               <span className="ml-3 text-xl font-semibold">Agent Finder</span>
             </div>
