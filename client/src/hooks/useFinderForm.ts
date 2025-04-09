@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AgentFormData } from "@/types/finder";
+import { AgentFormData, AgentTransactionType, AgentTimeline } from "@/types/finder";
 import { apiRequest } from "@/lib/queryClient";
 import { agentFinderSchema } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -13,10 +13,10 @@ export function useFinderForm() {
   
   // Initial form state for agent finder
   const initialAgentFormData: AgentFormData = {
-    transaction_type: "buy" as AgentTransactionType, // Default to buy
+    transaction_type: "buy", // Default to buy
     location: "",
     property_type: "", // Empty string
-    purchase_timeline: "asap" as AgentTimeline, // Default to ASAP
+    purchase_timeline: "asap", // Default to ASAP
     property_address: "",
     price_min: "",
     price_max: "",
@@ -24,7 +24,7 @@ export function useFinderForm() {
     owner_occupied: false, // Default to false
     investment_properties_count: "",
     strategy: [],
-    timeline: "asap" as AgentTimeline, // Default to ASAP
+    timeline: "asap", // Default to ASAP
     contact: {
       first_name: "",
       last_name: "",
@@ -70,14 +70,7 @@ export function useFinderForm() {
         isFormValid = false;
       }
       
-      // Validate state in contact information
-      if (data.contact?.state) {
-        const validStates = getAllStateNames();
-        if (!validStates.includes(data.contact.state)) {
-          customErrors['contact.state'] = "Please select a valid state";
-          isFormValid = false;
-        }
-      }
+      // State validation removed as it's no longer required
       
       // Only validate prices if transaction type is 'buy'
       if (data.transaction_type === 'buy') {

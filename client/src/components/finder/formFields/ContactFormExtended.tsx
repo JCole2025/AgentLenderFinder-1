@@ -1,14 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { validateAndFormatStateInput, getStateOptions, stateCodeToName } from "@/lib/stateValidator";
 import { useState, useEffect } from "react";
 
 interface ContactFormProps {
@@ -16,7 +8,6 @@ interface ContactFormProps {
   last_name: string;
   email: string;
   phone: string;
-  state: string;
   city?: string; // Optional now
   zip?: string; // Optional now
   terms_accepted: boolean;
@@ -25,7 +16,6 @@ interface ContactFormProps {
   onLastNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
-  onStateChange: (value: string) => void;
   onCityChange?: (value: string) => void; // Optional now
   onZipChange?: (value: string) => void; // Optional now 
   onTermsAcceptedChange: (value: boolean) => void;
@@ -35,7 +25,6 @@ interface ContactFormProps {
     last_name?: string;
     email?: string;
     phone?: string;
-    state?: string;
     city?: string;
     zip?: string;
     terms_accepted?: string;
@@ -48,14 +37,12 @@ export default function ContactFormExtended(props: ContactFormProps) {
     last_name,
     email,
     phone,
-    state,
     terms_accepted,
     loan_assistance,
     onFirstNameChange,
     onLastNameChange,
     onEmailChange,
     onPhoneChange,
-    onStateChange,
     onTermsAcceptedChange,
     onLoanAssistanceChange,
     errors
@@ -185,30 +172,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
         {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
       </div>
 
-      <div>
-            <Label htmlFor="state" className="block text-gray-700 font-medium mb-2">
-              State
-            </Label>
-            <Select
-              value={state}
-              onValueChange={(value) => onStateChange(value)}
-            >
-              <SelectTrigger 
-                id="state" 
-                className={`h-12 text-base ${errors.state ? "border-red-500" : "border-gray-300"}`}
-              >
-                <SelectValue placeholder="Select State" />
-              </SelectTrigger>
-              <SelectContent>
-                {getStateOptions().map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.state && <p className="text-sm text-red-500 mt-1">{errors.state}</p>}
-          </div>
+{/* State field removed as requested */}
 
       {/* Consent Checkboxes */}
       <div className="space-y-4 pt-4">

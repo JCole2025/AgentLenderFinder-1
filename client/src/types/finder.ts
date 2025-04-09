@@ -45,7 +45,7 @@ export interface AgentFormData {
     email: string;
     phone: string;
     city: string;
-    state: string;
+    state: string; // Still keeping field but will be empty/unused
     zip: string;
   };
   terms_accepted: boolean;

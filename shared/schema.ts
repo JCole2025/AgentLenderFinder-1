@@ -70,7 +70,7 @@ export const agentFinderSchema = z.object({
     last_name: z.string().min(1, "Last name is required"),
     email: z.string().email("Please enter a valid email"),
     phone: z.string().min(1, "Phone number is required"),
-    state: z.string().min(1, "State is required"),
+    state: z.string().optional(), // Made optional as requested
   }),
   terms_accepted: z.literal(true, {
     errorMap: () => ({ message: "You must accept the terms to continue" })
