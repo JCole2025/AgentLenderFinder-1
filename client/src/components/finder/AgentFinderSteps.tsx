@@ -104,48 +104,42 @@ export default function AgentFinderSteps({
           ]}
           selectedValue={formData.transaction_type}
           onChange={(value) => {
-            // Set default value for owner_occupied if switching to sell
+            // Set the transaction type and clear unrelated fields
             const newData: Partial<AgentFormData> = { 
               transaction_type: value as any,
-              timeline: undefined,
-              purchase_timeline: undefined
+              timeline: "asap", // Default to ASAP for all submission types
+              purchase_timeline: "asap" // Default to ASAP for all submission types
             };
             
-            // For sell path, set defaults and skip property type step
+            // Handle the sell path differently
             if (value === 'sell') {
+              // Set all required defaults for sell transaction type
               newData.owner_occupied = false;
-              
-              // Set a default property type for the sell flow
               newData.property_type = "single_family"; // Default to single family
+              newData.location = "Denver, CO"; // Default location
+              newData.price_min = "250,000"; // Default price
+              newData.price_max = "500,000"; // Default price
               
-              // Set additional defaults for location
-              if (!formData.location) {
-                newData.location = "Denver, CO"; // Default location
-              }
+              // Apply all the form updates at once
+              updateFormData(newData);
               
-              // Default prices
-              if (!formData.price_min) {
-                newData.price_min = "250,000";
-              }
-              if (!formData.price_max) {
-                newData.price_max = "500,000";
-              }
-            }
-            
-            updateFormData(newData);
-            
-            // If sell is selected, we'll jump directly to the property address step
-            // This happens after a short delay to allow the form state to update
-            if (value === 'sell') {
+              // IMPORTANT! Use direct step navigation for sell flow
+              // For sell, we need to directly set the current step in FinderForm component
+              // We'll use a global approach by dispatching a custom event
               setTimeout(() => {
-                // Jump to property address step (step 5)
-                // We use the step after location/price since we're providing defaults
-                onNext(); // Step 1 → 2 (hidden)
-                onNext(); // Step 2 → 3 (hidden)
-                onNext(); // Step 3 → 4 (location)
-                onNext(); // Step 4 → 5 (property address)
-              }, 100);
+                // Dispatch custom event to set step to 5 directly
+                // This is more reliable than multiple onNext() calls
+                const event = new CustomEvent('agentFinder:setStep', { 
+                  detail: { step: 5 } 
+                });
+                window.dispatchEvent(event);
+              }, 200);
+              
+              return; // Exit early for sell path
             }
+            
+            // Apply updates for buy path
+            updateFormData(newData);
           }}
           name="agent_transaction_type"
           autoAdvance={formData.transaction_type === 'buy'} // Only auto-advance for buy path
