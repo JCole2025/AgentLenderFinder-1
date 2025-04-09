@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 
 interface ContactFormProps {
@@ -8,6 +9,7 @@ interface ContactFormProps {
   last_name: string;
   email: string;
   phone: string;
+  notes?: string; // Optional notes field
   city?: string; // Optional now
   zip?: string; // Optional now
   terms_accepted: boolean;
@@ -16,6 +18,7 @@ interface ContactFormProps {
   onLastNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
+  onNotesChange?: (value: string) => void; // Optional notes change handler
   onCityChange?: (value: string) => void; // Optional now
   onZipChange?: (value: string) => void; // Optional now 
   onTermsAcceptedChange: (value: boolean) => void;
@@ -25,6 +28,7 @@ interface ContactFormProps {
     last_name?: string;
     email?: string;
     phone?: string;
+    notes?: string; // Optional notes field errors
     city?: string;
     zip?: string;
     terms_accepted?: string;
@@ -37,12 +41,14 @@ export default function ContactFormExtended(props: ContactFormProps) {
     last_name,
     email,
     phone,
+    notes,
     terms_accepted,
     loan_assistance,
     onFirstNameChange,
     onLastNameChange,
     onEmailChange,
     onPhoneChange,
+    onNotesChange,
     onTermsAcceptedChange,
     onLoanAssistanceChange,
     errors
@@ -170,6 +176,21 @@ export default function ContactFormExtended(props: ContactFormProps) {
         </div>
         <p className="text-xs text-gray-500 mt-1">Format: (123) 456-7890</p>
         {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
+      </div>
+
+      <div>
+        <Label htmlFor="notes" className="block text-gray-700 font-medium mb-2">
+          Notes (Optional)
+        </Label>
+        <Textarea
+          id="notes"
+          placeholder="Add any additional information that might help the agent understand your needs better"
+          className={`min-h-[100px] text-base ${errors.notes ? "border-red-500" : "border-gray-300"}`}
+          value={notes || ""}
+          onChange={(e) => onNotesChange && onNotesChange(e.target.value)}
+        />
+        {errors.notes && <p className="text-sm text-red-500 mt-1">{errors.notes}</p>}
+        <p className="text-xs text-gray-500 mt-1">Share any specific requirements, questions, or preferences you have</p>
       </div>
 
       {/* Consent Checkboxes */}

@@ -60,7 +60,8 @@ export function useFinderForm() {
       phone: "",
       city: "",
       state: "",
-      zip: ""
+      zip: "",
+      notes: ""
     },
     terms_accepted: false,
     loan_assistance: false // Field for loan assistance checkbox

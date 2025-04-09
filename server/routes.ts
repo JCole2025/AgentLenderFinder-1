@@ -162,6 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: formData.contact.email,
         phone: formData.contact.phone,
         state: formData.contact.state,
+        notes: formData.contact.notes || "", // Added notes field
         transaction_type: formData.transaction_type,
         property_type: formData.property_type, 
         property_address: formData.property_address || "",

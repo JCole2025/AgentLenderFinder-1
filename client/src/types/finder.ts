@@ -47,6 +47,7 @@ export interface AgentFormData {
     city: string;
     state: string; // Still keeping field but will be empty/unused
     zip: string;
+    notes?: string; // Optional notes field
   };
   terms_accepted: boolean;
   loan_assistance: boolean; // Added for optional loan assistance checkbox

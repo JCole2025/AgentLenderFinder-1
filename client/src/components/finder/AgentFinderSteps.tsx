@@ -483,6 +483,7 @@ export default function AgentFinderSteps({
             last_name={formData.contact.last_name}
             email={formData.contact.email}
             phone={formData.contact.phone}
+            notes={formData.contact.notes}
             terms_accepted={formData.terms_accepted}
             loan_assistance={formData.loan_assistance}
             onFirstNameChange={(value: string) => updateFormData({ 
@@ -497,6 +498,9 @@ export default function AgentFinderSteps({
             onPhoneChange={(value: string) => updateFormData({ 
               contact: { ...formData.contact, phone: value } 
             })}
+            onNotesChange={(value: string) => updateFormData({ 
+              contact: { ...formData.contact, notes: value } 
+            })}
             onTermsAcceptedChange={(value: boolean) => updateFormData({ 
               terms_accepted: value 
             })}
@@ -508,6 +512,7 @@ export default function AgentFinderSteps({
               last_name: errors['contact.last_name'],
               email: errors['contact.email'],
               phone: errors['contact.phone'],
+              notes: errors['contact.notes'],
               terms_accepted: errors.terms_accepted
             }}
           />
