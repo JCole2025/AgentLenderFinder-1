@@ -103,11 +103,22 @@ export default function AgentFinderSteps({
             { value: "sell", label: "Sell Property", description: agentTransactionTypeDescriptions.sell }
           ]}
           selectedValue={formData.transaction_type}
-          onChange={(value) => updateFormData({ 
-            transaction_type: value as any,
-            timeline: undefined,
-            purchase_timeline: undefined
-          })}
+          onChange={(value) => {
+            // Set default value for owner_occupied if switching to sell
+            const newData: Partial<AgentFormData> = { 
+              transaction_type: value as any,
+              timeline: undefined,
+              purchase_timeline: undefined
+            };
+            
+            // If changing to sell transaction, set a default for owner_occupied
+            // This fixes the blank screen issue by ensuring required fields have values
+            if (value === 'sell') {
+              newData.owner_occupied = false;
+            }
+            
+            updateFormData(newData);
+          }}
           name="agent_transaction_type"
           autoAdvance={true}
           onNext={handleNext}
