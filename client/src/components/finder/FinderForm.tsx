@@ -19,11 +19,11 @@ export default function FinderForm({
   const handleNext = () => {
     // The form has 7 steps - some conditional based on transaction type
     const maxSteps = 7; // Total steps for the form
-    
+
     console.log('FinderForm - handleNext called');
     console.log('FinderForm - Current step:', currentStep);
     console.log('FinderForm - Max steps:', maxSteps);
-    
+
     if (currentStep < maxSteps) {
       console.log('FinderForm - Advancing to next step:', currentStep + 1);
       setCurrentStep(currentStep + 1);
@@ -40,12 +40,12 @@ export default function FinderForm({
 
   const handleSubmit = async () => {
     console.log('FinderForm - handleSubmit called');
-    
+
     try {
       console.log('FinderForm - Calling submitForm');
       const success = await submitForm();
       console.log('FinderForm - submitForm result:', success);
-      
+
       if (success) {
         console.log('FinderForm - Calling onSuccess to display success message');
         onSuccess();
@@ -58,17 +58,19 @@ export default function FinderForm({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      <AgentFinderSteps
-        currentStep={currentStep}
-        formData={formData as any} // Use type assertion to avoid TS errors
-        updateFormData={updateFormData}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-        onSubmit={handleSubmit}
-        errors={errors}
-        isValid={isValid}
-      />
-    </div>
+    <>
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden mx-auto max-w-[95%] md:max-w-3xl">
+        <AgentFinderSteps
+          currentStep={currentStep}
+          formData={formData as any} // Use type assertion to avoid TS errors
+          updateFormData={updateFormData}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          onSubmit={handleSubmit}
+          errors={errors}
+          isValid={isValid}
+        />
+      </div>
+    </>
   );
 }

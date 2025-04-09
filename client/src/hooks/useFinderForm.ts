@@ -11,6 +11,34 @@ import { getAllStateNames, isValidStateName } from "@/lib/stateValidator";
 export function useFinderForm() {
   const { toast } = useToast();
   
+  // Function to get user's location
+  const getUserLocation = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        try {
+          const response = await fetch(
+            `https://api.biggerpockets.com/geocode?lat=${position.coords.latitude}&lng=${position.coords.longitude}`
+          );
+          const data = await response.json();
+          if (data.city && data.state) {
+            setFormData(prev => ({
+              ...prev,
+              location: `${data.city}, ${data.state}`,
+              contact: {
+                ...prev.contact,
+                city: data.city,
+                state: data.state,
+                zip: data.zip || prev.contact.zip
+              }
+            }));
+          }
+        } catch (error) {
+          console.error('Error getting location details:', error);
+        }
+      });
+    }
+  };
+
   // Initial form state for agent finder
   const initialAgentFormData: AgentFormData = {
     transaction_type: "buy", // Default to buy

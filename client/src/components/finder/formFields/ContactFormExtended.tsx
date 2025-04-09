@@ -172,8 +172,6 @@ export default function ContactFormExtended(props: ContactFormProps) {
         {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
       </div>
 
-{/* State field removed as requested */}
-
       {/* Consent Checkboxes */}
       <div className="space-y-4 pt-4">
         <div className="flex items-start space-x-3">
