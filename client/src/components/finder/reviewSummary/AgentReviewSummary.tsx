@@ -85,12 +85,15 @@ export default function AgentReviewSummary({ formData }: AgentReviewSummaryProps
       {formData.transaction_type === 'buy' && (
         <>
           <div>
-            <h3 className="font-medium text-neutral-darker">Your investment strategy:</h3>
-            <ul className="mt-1 list-disc list-inside text-sm pl-2">
+            <h3 className="font-medium text-neutral-darker">Your investment strategies:</h3>
+            <div className="mt-2 space-y-2">
               {formData.strategy.map((strategy) => (
-                <li key={strategy}>{agentStrategyLabels[strategy]}</li>
+                <div key={strategy} className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                  <span className="text-sm">{agentStrategyLabels[strategy]}</span>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
           
           <div>
@@ -107,9 +110,15 @@ export default function AgentReviewSummary({ formData }: AgentReviewSummaryProps
         <p className="mt-1 text-sm whitespace-pre-line">
           {formData.contact.first_name} {formData.contact.last_name}<br/>
           {formData.contact.email}<br/>
-          {formData.contact.phone}<br/>
-          {formData.contact.state}
+          {formData.contact.phone}
         </p>
+        
+        {formData.contact.notes && (
+          <div className="mt-2">
+            <h4 className="font-medium text-neutral-darker text-sm">Additional notes:</h4>
+            <p className="mt-1 text-sm whitespace-pre-line">{formData.contact.notes}</p>
+          </div>
+        )}
       </div>
     </div>
   );

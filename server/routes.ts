@@ -153,26 +153,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
         submittedAt: new Date().toISOString(),
       });
 
-      // Prepare webhook data - format specifically for HubSpot webhook
+      // Get current date/time in MST
+      const now = new Date();
+      // Adjust to MST timezone (GMT-7)
+      const mstTime = new Date(now.getTime() - (7 * 60 * 60 * 1000));
+      const hours = mstTime.getUTCHours();
+      const minutes = mstTime.getUTCMinutes();
+      const timeOfDayMST = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      
+      // Day of week in MST
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const dayOfWeekMST = daysOfWeek[mstTime.getUTCDay()];
+      
+      // Month and year in MST
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const monthMST = months[mstTime.getUTCMonth()];
+      const yearMST = mstTime.getUTCFullYear();
+      
+      // Location handling: extract state and city
+      let state = "";
+      let city = "";
+      if (formData.location && formData.location.includes(',')) {
+        const parts = formData.location.split(',');
+        if (parts.length >= 2) {
+          state = parts[1].trim();
+          city = parts[0].trim();
+        }
+      }
+      
+      // Prepare webhook data according to specified field requirements
       const webhookData = {
+        // Lead information
         finder_type: finderType,
-        lead_partner: formData.lead_partner || 'direct',
+        lead_partner: formData.lead_partner || "unknown", // Default value
         timestamp: submission.submittedAt,
+        timeofday: timeOfDayMST,
+        dayofweek: dayOfWeekMST,
+        month: monthMST,
+        year: yearMST.toString(),
+        
+        // Contact information
         first_name: formData.contact.first_name?.trim(),
         last_name: formData.contact.last_name?.trim(),
         email: formData.contact.email?.trim().toLowerCase(),
         phone: formData.contact.phone?.trim(),
-        state: formData.contact.state?.trim() || null,
-        notes: formData.contact.notes?.trim() || null,
-        transaction_type: formData.transaction_type,
-        property_type: formData.property_type?.trim(), 
-        property_address: formData.property_address?.trim() || null,
-        purchase_timeline: formData.purchase_timeline || null,
+        notes: formData.contact.notes?.trim() || "",
+        
+        // Transaction details
+        buy_vs_sell: formData.transaction_type,
+        property_type: formData.property_type?.trim(),
+        location: formData.location,
+        state: state || formData.contact.state?.trim() || "",
+        city: city || "",
+        property_address: formData.property_address?.trim() || "",
         price_min: formData.price_min?.replace(/[^0-9]/g, ''),
         price_max: formData.price_max?.replace(/[^0-9]/g, ''),
         investment_properties_count: parseInt(formData.investment_properties_count || "0", 10),
-        investment_strategy: Array.isArray(formData.strategy) ? formData.strategy.filter(Boolean).join(', ') : null,
-        timeline: formData.timeline || null,
+        investment_strategy: Array.isArray(formData.strategy) ? formData.strategy.filter(Boolean).join(', ') : "",
+        timeline: formData.timeline || "",
         owner_occupied: formData.owner_occupied ? "Yes" : "No",
         loan_started: formData.loan_started ? "Yes" : "No",
         loan_assistance: formData.loan_assistance ? "Yes" : "No"

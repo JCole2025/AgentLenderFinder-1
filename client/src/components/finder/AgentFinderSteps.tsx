@@ -426,18 +426,30 @@ export default function AgentFinderSteps({
         >
           <div className="space-y-8">
             <div>
-              <ButtonCheckboxGroup
-                options={[
-                  { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
-                  { value: "short_term_rental", label: "Short-term rental or MTR", description: "I plan to list on Airbnb/VRBO" },
-                  { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
-                ]}
-                selectedValues={formData.strategy || []}
-                onChange={handleStrategyChange}
-                autoAdvance={true}
-                onNext={handleNext}
-                minSelected={1}
-              />
+              <div>
+                <h3 className="text-lg font-medium mb-3">Select all that apply:</h3>
+                <ButtonCheckboxGroup
+                  options={[
+                    { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
+                    { value: "short_term_rental", label: "Short-term rental or MTR", description: "I plan to list on Airbnb/VRBO" },
+                    { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
+                  ]}
+                  selectedValues={formData.strategy || []}
+                  onChange={handleStrategyChange}
+                  autoAdvance={false}
+                  minSelected={1}
+                />
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${formData.strategy.length < 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    onClick={handleNext}
+                    disabled={formData.strategy.length < 1}
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
               {errors.strategy && (
                 <p className="text-red-500 text-sm mt-2">{errors.strategy}</p>
               )}
