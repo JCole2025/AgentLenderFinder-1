@@ -145,29 +145,36 @@ export default function AgentFinderSteps({
         </div>
       </FormStep>
 
-      {/* Step 3: Owner Occupied */}
-      <FormStep
-        isActive={currentStep === 3}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={3}
+      {/* Step 3: Owner Occupied (Only for Buy) */}
+      {formData.transaction_type === 'buy' && (
+        <FormStep
+          isActive={currentStep === 3}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={3}
 
-        isValid={formData.owner_occupied !== undefined} // Required field
-        errors={errors}
-        title="Will you live in this property?"
-        subtitle="Select if this will be your primary residence"
-        showNext={false} // Hide Next button as we auto-advance
-      >
-        <div className="space-y-6 max-w-xl mx-auto">
-          <OwnerOccupiedButtons 
-            isOwnerOccupied={formData.owner_occupied}
-            onChange={(value) => updateFormData({ owner_occupied: value })}
-            onNext={handleNext}
-          />
-        </div>
-      </FormStep>
+          isValid={formData.owner_occupied !== undefined} // Required field
+          errors={errors}
+          title="Will you live in this property?"
+          subtitle="Select if this will be your primary residence"
+          showNext={false} // Hide Next button as we auto-advance
+        >
+          <div className="space-y-6 max-w-xl mx-auto">
+            <OwnerOccupiedButtons 
+              isOwnerOccupied={formData.owner_occupied}
+              onChange={(value) => updateFormData({ owner_occupied: value })}
+              onNext={handleNext}
+            />
+          </div>
+        </FormStep>
+      )}
+      
+      {/* Skip step 3 for sell path - add empty component to maintain indexing */}
+      {formData.transaction_type === 'sell' && (
+        <div className="hidden"></div>
+      )}
 
       {/* Step 4: Location and Price Range */}
       <FormStep
