@@ -24,7 +24,7 @@ export default function FinderApp() {
                 alt="BiggerPockets Logo" 
                 className="h-6"
               />
-              <span className="ml-3 text-xl font-semibold">Agent Finder</span>
+              <span className="ml-3 text-xl font-semibold">Agent Finder powered by BiggerPockets</span>
             </div>
           </div>
         </div>
