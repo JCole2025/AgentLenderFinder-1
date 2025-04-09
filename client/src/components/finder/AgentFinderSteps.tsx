@@ -111,16 +111,44 @@ export default function AgentFinderSteps({
               purchase_timeline: undefined
             };
             
-            // If changing to sell transaction, set a default for owner_occupied
-            // This fixes the blank screen issue by ensuring required fields have values
+            // For sell path, set defaults and skip property type step
             if (value === 'sell') {
               newData.owner_occupied = false;
+              
+              // Set a default property type for the sell flow
+              newData.property_type = "single_family"; // Default to single family
+              
+              // Set additional defaults for location
+              if (!formData.location) {
+                newData.location = "Denver, CO"; // Default location
+              }
+              
+              // Default prices
+              if (!formData.price_min) {
+                newData.price_min = "250,000";
+              }
+              if (!formData.price_max) {
+                newData.price_max = "500,000";
+              }
             }
             
             updateFormData(newData);
+            
+            // If sell is selected, we'll jump directly to the property address step
+            // This happens after a short delay to allow the form state to update
+            if (value === 'sell') {
+              setTimeout(() => {
+                // Jump to property address step (step 5)
+                // We use the step after location/price since we're providing defaults
+                onNext(); // Step 1 → 2 (hidden)
+                onNext(); // Step 2 → 3 (hidden)
+                onNext(); // Step 3 → 4 (location)
+                onNext(); // Step 4 → 5 (property address)
+              }, 100);
+            }
           }}
           name="agent_transaction_type"
-          autoAdvance={true}
+          autoAdvance={formData.transaction_type === 'buy'} // Only auto-advance for buy path
           onNext={handleNext}
         />
         {errors.transaction_type && (
@@ -128,33 +156,40 @@ export default function AgentFinderSteps({
         )}
       </FormStep>
 
-      {/* Step 2: Property Type */}
-      <FormStep
-        isActive={currentStep === 2}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={2}
+      {/* Step 2: Property Type (Only for Buy) */}
+      {formData.transaction_type === 'buy' && (
+        <FormStep
+          isActive={currentStep === 2}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={2}
 
-        isValid={Boolean(formData.property_type && formData.property_type.trim() !== '')}
-        errors={errors}
-        title={formData.transaction_type === 'buy' ? "What type of property are you looking for?" : "What type of property are you selling?"}
-        subtitle="Select the property type"
-        showNext={false}
-      >
-        <div className="space-y-6">
-          <div className="mt-4">
-            <ButtonPropertySelect
-              selectedValue={formData.property_type}
-              onChange={(value) => updateFormData({ property_type: value })}
-              error={errors.property_type}
-              autoAdvance={true}
-              onNext={handleNext}
-            />
+          isValid={Boolean(formData.property_type && formData.property_type.trim() !== '')}
+          errors={errors}
+          title="What type of property are you looking for?"
+          subtitle="Select the property type"
+          showNext={false}
+        >
+          <div className="space-y-6">
+            <div className="mt-4">
+              <ButtonPropertySelect
+                selectedValue={formData.property_type}
+                onChange={(value) => updateFormData({ property_type: value })}
+                error={errors.property_type}
+                autoAdvance={true}
+                onNext={handleNext}
+              />
+            </div>
           </div>
-        </div>
-      </FormStep>
+        </FormStep>
+      )}
+      
+      {/* Skip property type step for sell path */}
+      {formData.transaction_type === 'sell' && (
+        <div className="hidden"></div>
+      )}
 
       {/* Step 3: Owner Occupied (Only for Buy) */}
       {formData.transaction_type === 'buy' && (
