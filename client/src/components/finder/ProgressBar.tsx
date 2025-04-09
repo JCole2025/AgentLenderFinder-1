@@ -4,12 +4,10 @@ interface ProgressBarProps {
   totalSteps: number;
 }
 
-// Define the steps for agent finder
+// Define the steps for agent finder - reduced to 3 key stages
 const agentSteps = [
   { name: "Start", completed: true },
-  { name: "Search Criteria", completed: false },
-  { name: "Search Criteria", completed: false },
-  { name: "Search Criteria", completed: false },
+  { name: "Property Details", completed: false },
   { name: "Contact Info", completed: false }
 ];
 
@@ -17,11 +15,20 @@ export default function ProgressBar({ currentStep, totalSteps }: ProgressBarProp
   // Use agent steps as the application only supports Agent Finder now
   const steps = agentSteps;
   
-  // Mark steps as completed based on current step
+  // Calculate the normalized step for our 3-stage progress bar
+  // Map the 7 actual form steps to our 3 progress stages
+  let normalizedStep = 1;
+  if (currentStep >= 2 && currentStep <= 5) {
+    normalizedStep = 2; // Property Details (steps 2-5)
+  } else if (currentStep >= 6) {
+    normalizedStep = 3; // Contact Info (steps 6-7)
+  }
+  
+  // Mark steps as completed based on normalized step
   const updatedSteps = steps.map((step, index) => ({
     ...step,
-    completed: index < currentStep - 1,
-    active: index === currentStep - 1
+    completed: index < normalizedStep - 1,
+    active: index === normalizedStep - 1
   }));
   
   return (

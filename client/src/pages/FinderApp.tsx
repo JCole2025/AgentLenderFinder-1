@@ -36,7 +36,7 @@ export default function FinderApp() {
             <>
               <ProgressBar 
                 currentStep={currentStep} 
-                totalSteps={5}
+                totalSteps={3}
               />
               
               <FinderForm 
