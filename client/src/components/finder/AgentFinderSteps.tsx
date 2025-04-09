@@ -156,11 +156,11 @@ export default function AgentFinderSteps({
 
         isValid={formData.owner_occupied !== undefined} // Required field
         errors={errors}
-        title="Will this be an owner-occupied property?"
-        subtitle="Let us know if you plan to live in this property"
+        title="Will you live in this property?"
+        subtitle="Select if this will be your primary residence"
         showNext={false} // Hide Next button as we auto-advance
       >
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-xl mx-auto">
           <OwnerOccupiedButtons 
             isOwnerOccupied={formData.owner_occupied}
             onChange={(value) => updateFormData({ owner_occupied: value })}

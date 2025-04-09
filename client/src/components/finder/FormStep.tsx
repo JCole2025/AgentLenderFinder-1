@@ -28,12 +28,12 @@ export default function FormStep({
 
   return (
     <div className="form-step rounded-lg overflow-hidden bg-white shadow">
-      <div className="p-8 border-b border-neutral-100">
-        <h2 className="text-2xl font-semibold mb-2 text-gray-800">{title}</h2>
+      <div className="p-5 sm:p-8 border-b border-neutral-100">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-2 text-gray-800 leading-tight">{title}</h2>
         {subtitle && <p className="text-gray-600 max-w-3xl">{subtitle}</p>}
       </div>
       
-      <div className="p-8">
+      <div className="p-4 sm:p-8">
         {children}
       </div>
       
