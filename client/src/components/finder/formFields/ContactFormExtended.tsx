@@ -70,7 +70,8 @@ export default function ContactFormExtended(props: ContactFormProps) {
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formattedPhone = formatPhoneNumber(e.target.value);
+    const numbers = e.target.value.replace(/\D/g, '').slice(0, 10);
+    const formattedPhone = formatPhoneNumber(numbers);
     onPhoneChange(formattedPhone);
   };
 
@@ -166,12 +167,12 @@ export default function ContactFormExtended(props: ContactFormProps) {
             autoComplete="tel mobile"
             className={`h-12 text-base pl-10 ${errors.phone ? "border-red-500" : "border-gray-300"}`}
             placeholder="(612) 790-5259"
-            value={phone}
+            value={formatPhoneNumber(phone)}
             onChange={handlePhoneChange}
             required
             aria-required="true"
             inputMode="tel"
-            pattern="(\(\d{3}\) \d{3}-\d{4}|\(\d{3}\) \d{3}|\d{10}|\d{3}-\d{3}-\d{4})"
+            maxLength={14}
           />
         </div>
         <p className="text-xs text-gray-500 mt-1">Format: (123) 456-7890</p>

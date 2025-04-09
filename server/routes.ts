@@ -226,7 +226,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Call the webhook
         console.log('Sending data to Zapier webhook:', webhookUrl);
         console.log('Webhook payload:', JSON.stringify(webhookData, null, 2));
-        const webhookResponse = await axios.post(webhookUrl, webhookData);
+        const MAX_RETRIES = 3;
+        let retries = 0;
+        let webhookResponse;
+        
+        while (retries < MAX_RETRIES) {
+          try {
+            webhookResponse = await axios.post(webhookUrl, webhookData);
+            break;
+          } catch (error) {
+            retries++;
+            if (retries === MAX_RETRIES) throw error;
+            await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+          }
+        }
         console.log('Webhook Response:', webhookResponse.data);
         
         // Skip HubSpot API client for now as it's having auth issues

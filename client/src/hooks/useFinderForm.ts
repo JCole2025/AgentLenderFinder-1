@@ -10,7 +10,7 @@ import { getAllStateNames, isValidStateName } from "@/lib/stateValidator";
 
 export function useFinderForm() {
   const { toast } = useToast();
-  
+
   // Function to get user's location
   const getUserLocation = () => {
     if ("geolocation" in navigator) {
@@ -72,7 +72,7 @@ export function useFinderForm() {
 
   // State for validation errors
   const [errors, setErrors] = useState<Record<string, any>>({});
-  
+
   // State for form validity
   const [isValid, setIsValid] = useState(true);
 
@@ -82,7 +82,7 @@ export function useFinderForm() {
       const updatedData = { ...prev, ...data };
       return updatedData;
     });
-    
+
     // Validate the updated data
     validateForm({ ...formData, ...data });
   };
@@ -92,15 +92,15 @@ export function useFinderForm() {
     try {
       let customErrors: Record<string, string> = {};
       let isFormValid = true;
-      
+
       // Validate location
       if (data.location && !validateLocationInput(data.location)) {
         customErrors.location = "Please enter a valid city, state format (e.g., 'Austin, TX')";
         isFormValid = false;
       }
-      
+
       // State validation removed as it's no longer required
-      
+
       // Only validate prices if transaction type is 'buy'
       if (data.transaction_type === 'buy') {
         // Validate min price
@@ -108,13 +108,13 @@ export function useFinderForm() {
           customErrors.price_min = "Minimum price must be at least $100,000";
           isFormValid = false;
         }
-        
+
         // Validate max price
         if (data.price_max && !validatePrice(data.price_max)) {
           customErrors.price_max = "Please enter a valid price";
           isFormValid = false;
         }
-        
+
         // Validate price range if both min and max are provided
         if (data.price_min && data.price_max) {
           if (!validatePriceRange(data.price_min, data.price_max)) {
@@ -123,17 +123,17 @@ export function useFinderForm() {
           }
         }
       }
-      
+
       // Run Zod schema validation
       agentFinderSchema.parse(data);
-      
+
       // If we have custom errors, set them even if Zod validation passes
       if (Object.keys(customErrors).length > 0) {
         setErrors(customErrors);
         setIsValid(false);
         return;
       }
-      
+
       // If we made it here, form is valid
       setIsValid(true);
       setErrors({});
@@ -157,10 +157,12 @@ export function useFinderForm() {
   };
 
   // Submit form to API
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const submitForm = async (): Promise<boolean> => {
     console.log('useFinderForm - submitForm called');
     console.log('useFinderForm - Form data to submit:', formData);
-    
+    setIsSubmitting(true);
     try {
       // Send data directly to API without validation on the final review step
       // This allows submissions to proceed even if there are non-critical issues
@@ -175,7 +177,7 @@ export function useFinderForm() {
       console.log('useFinderForm - API response received:', response.status);
       const data = await response.json();
       console.log('useFinderForm - API response data:', data);
-      
+
       if (!response.ok) {
         console.error('useFinderForm - API request failed:', data.message || 'Unknown error');
         toast({
@@ -192,11 +194,11 @@ export function useFinderForm() {
         description: "Your information has been submitted successfully!",
         variant: "default"
       });
-      
+
       return true;
     } catch (error) {
       let errorMessage = "Failed to submit form";
-      
+
       if (error instanceof z.ZodError) {
         const formattedErrors: Record<string, string> = {};
         error.errors.forEach(err => {
@@ -206,14 +208,16 @@ export function useFinderForm() {
         setIsValid(false);
         errorMessage = "Please fix the form errors and try again";
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
         variant: "destructive"
       });
-      
+
       return false;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -223,6 +227,7 @@ export function useFinderForm() {
     errors,
     isValid,
     resetForm,
-    submitForm
+    submitForm,
+    isSubmitting
   };
 }
