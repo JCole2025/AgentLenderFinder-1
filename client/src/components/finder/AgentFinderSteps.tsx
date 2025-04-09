@@ -116,9 +116,9 @@ export default function AgentFinderSteps({
               // Set all required defaults for sell transaction type
               newData.owner_occupied = false;
               newData.property_type = "single_family"; // Default to single family
-              newData.location = "Denver, CO"; // Default location
-              newData.price_min = "250,000"; // Default price
-              newData.price_max = "500,000"; // Default price
+              newData.location = ""; // Skip location
+              newData.price_min = ""; // Skip price
+              newData.price_max = ""; // Skip price
               
               // Apply all the form updates at once
               updateFormData(newData);

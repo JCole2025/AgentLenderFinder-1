@@ -45,18 +45,13 @@ export default function FinderForm({
       // Step 1: Transaction Type
       // Step 2: Hidden (Property Type) - Skip
       // Step 3: Hidden (Owner Occupied) - Skip
-      // Step 4: Location and Price
+      // Step 4: Hidden (Location & Price) - Skip
       // Step 5: Property Address
       // Step 6: Hidden (Timeline) - Skip
       // Step 7: Contact Info
       
-      // If at step 1, go to step 4 (skip 2, 3)
+      // If at step 1, go to step 5 (skip 2, 3, 4)
       if (currentStep === 1) {
-        return 4;
-      }
-      
-      // If at step 4, go to step 5
-      if (currentStep === 4) {
         return 5;
       }
       
