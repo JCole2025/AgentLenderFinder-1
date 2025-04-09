@@ -364,6 +364,17 @@ export default function AgentFinderSteps({
                 <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
               )}
             </div>
+            
+            <div className="flex justify-end mt-6">
+              <button
+                type="button"
+                className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${!formData.property_address ? 'opacity-50 cursor-not-allowed' : ''}`}
+                onClick={onNext}
+                disabled={!formData.property_address}
+              >
+                Continue
+              </button>
+            </div>
           </div>
         </FormStep>
       )}
