@@ -181,6 +181,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      // Format location as [state],[city] as per specification
+      const formattedLocation = state && city ? `${state},${city}` : formData.location;
+      
       // Prepare webhook data according to specified field requirements
       const webhookData = {
         // Lead information
@@ -202,9 +205,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Transaction details
         buy_vs_sell: formData.transaction_type,
         property_type: formData.property_type?.trim(),
-        location: formData.location,
-        state: state || formData.contact.state?.trim() || "",
-        city: city || "",
+        location: formattedLocation,
+        state: state,
+        city: city,
         property_address: formData.property_address?.trim() || "",
         price_min: formData.price_min?.replace(/[^0-9]/g, ''),
         price_max: formData.price_max?.replace(/[^0-9]/g, ''),
