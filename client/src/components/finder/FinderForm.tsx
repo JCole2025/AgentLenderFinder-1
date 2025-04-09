@@ -16,7 +16,7 @@ export default function FinderForm({
     resetForm,
     submitForm
   } = useFinderForm();
-  
+
   // Listen for the custom event to directly set the step (especially for sell flow)
   useEffect(() => {
     // Event handler for directly setting step
@@ -24,10 +24,10 @@ export default function FinderForm({
       console.log('FinderForm - Received setStep event:', event.detail);
       setCurrentStep(event.detail.step);
     };
-    
+
     // Add event listener
     window.addEventListener('agentFinder:setStep', handleSetStep);
-    
+
     // Clean up
     return () => {
       window.removeEventListener('agentFinder:setStep', handleSetStep);
@@ -38,30 +38,28 @@ export default function FinderForm({
   const findNextValidStep = (currentStep: number, formData: any) => {
     const maxSteps = 7;
     let nextStep = currentStep + 1;
-    
+
     // Skip logic based on transaction type
     if (formData.transaction_type === 'sell') {
-      // For sell flow, immediately go to property address (step 5)
+      // For sell flow:
+      // Step 1 -> Step 5 (Property Address)
+      // Step 5 -> Step 7 (Contact Info)
       if (currentStep === 1) {
         return 5;
-      }
-      
-      // After property address, go directly to contact info (step 7)
-      if (currentStep === 5) {
+      } else if (currentStep === 5) {
         return 7;
       }
-    } else if (formData.transaction_type === 'buy') {
-      // No skips necessary for buy flow
+      // Stay on current step if at step 7
+      return currentStep;
     }
-    
-    // Return the next step, but never exceed max steps
-    return Math.min(nextStep, maxSteps);
+    // For buy flow, proceed normally
+    return nextStep;
   };
-  
+
   // Helper function to find the previous valid step based on form state
   const findPrevValidStep = (currentStep: number, formData: any) => {
     let prevStep = currentStep - 1;
-    
+
     // Skip logic based on transaction type
     if (formData.transaction_type === 'sell') {
       // For sell flow, when going backwards:
@@ -69,18 +67,18 @@ export default function FinderForm({
       if (currentStep === 7) {
         return 5;
       }
-      
+
       // If at step 5, go to step 4
       if (currentStep === 5) {
         return 4;
       }
-      
+
       // If at step 4, go to step 1 (skip 2, 3)
       if (currentStep === 4) {
         return 1;
       }
     }
-    
+
     // Return the previous step, never go below 1
     return Math.max(prevStep, 1);
   };
