@@ -41,21 +41,12 @@ export default function FinderForm({
     
     // Skip logic based on transaction type
     if (formData.transaction_type === 'sell') {
-      // For sell flow:
-      // Step 1: Transaction Type
-      // Step 2: Hidden (Property Type) - Skip
-      // Step 3: Hidden (Owner Occupied) - Skip
-      // Step 4: Hidden (Location & Price) - Skip
-      // Step 5: Property Address
-      // Step 6: Hidden (Timeline) - Skip
-      // Step 7: Contact Info
-      
-      // If at step 1, go to step 5 (skip 2, 3, 4)
+      // For sell flow, immediately go to property address (step 5)
       if (currentStep === 1) {
         return 5;
       }
       
-      // If at step 5, go to step 7 (skip 6)
+      // After property address, go directly to contact info (step 7)
       if (currentStep === 5) {
         return 7;
       }

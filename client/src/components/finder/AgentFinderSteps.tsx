@@ -113,15 +113,8 @@ export default function AgentFinderSteps({
             
             // Handle the sell path differently
             if (value === 'sell') {
-              // Set all required defaults for sell transaction type
-              newData.owner_occupied = false;
-              newData.property_type = "single_family"; // Default to single family
-              newData.location = ""; // Skip location
-              newData.price_min = ""; // Skip price
-              newData.price_max = ""; // Skip price
-              
-              // Apply all the form updates at once
-              updateFormData(newData);
+              // Only set transaction type for sell path
+              updateFormData({ transaction_type: value as any });
               
               // IMPORTANT! Use direct step navigation for sell flow
               // For sell, we need to directly set the current step in FinderForm component
