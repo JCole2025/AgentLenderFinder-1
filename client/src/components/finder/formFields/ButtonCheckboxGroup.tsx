@@ -9,7 +9,7 @@ interface CheckboxOption {
 interface ButtonCheckboxGroupProps {
   options: CheckboxOption[];
   selectedValues: string[];
-  onChange: (value: string, checked: boolean) => void;
+  onChange: (values: string[]) => void;
   autoAdvance?: boolean;
   onNext?: () => void;
   minSelected?: number;
@@ -43,8 +43,8 @@ export default function ButtonCheckboxGroup({
       newSelectedValues = [...selectedValues, value];
     }
     
-    // Make the change
-    onChange(value, !isCurrentlySelected);
+    // Make the change by passing the entire array of new values
+    onChange(newSelectedValues);
     
     // Auto advance if:
     // 1. Auto advance is enabled

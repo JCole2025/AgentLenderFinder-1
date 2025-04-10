@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getStateOptions } from '@/lib/stateValidator';
 import { formatPrice, getDefaultMinPrice } from '@/lib/priceValidator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 import ButtonRadioGroup from './formFields/ButtonRadioGroup';
 import ButtonPropertySelect from './formFields/ButtonPropertySelect';
 import OwnerOccupiedButtons from './formFields/OwnerOccupiedButtons';
@@ -40,7 +40,7 @@ export default function AgentFinderSteps({
   errors,
   isValid
 }: AgentFinderStepsProps) {
-  const toast = useToast();
+  // Use toast directly from import
   const isMobile = useIsMobile();
 
   // Handle special skipping of steps for navigation
@@ -90,17 +90,20 @@ export default function AgentFinderSteps({
               // Only set the transaction type, don't add any default values
               // This way the user will be required to input all their information
               
-              // Apply transaction type update only
+              // Apply transaction type update only once
               updateFormData(newData);
               
-              // Update form data first, then navigate
-              updateFormData(newData);
-              
+              // Jump directly to contact information step (step 7)
               // Use setTimeout to ensure state is updated before navigation
               setTimeout(() => {
-                console.log("Setting sell path navigation to property address step");
-                onNext(); // Use the regular navigation
-              }, 0);
+                console.log("Jumping directly to contact information (step 7)");
+                onNext(); // 1 → 2
+                onNext(); // 2 → 3
+                onNext(); // 3 → 4
+                onNext(); // 4 → 5
+                onNext(); // 5 → 6
+                onNext(); // 6 → 7 (contact info)
+              }, 50);
               
               return; // Exit early for sell path
             }
