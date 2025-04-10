@@ -1,12 +1,15 @@
+import React from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { MIN_PROPERTY_PRICE } from "@/lib/priceValidator";
 
 interface PriceWarningDialogProps {
   isOpen: boolean;
@@ -17,21 +20,39 @@ interface PriceWarningDialogProps {
 export default function PriceWarningDialog({
   isOpen,
   onClose,
-  onConfirm,
+  onConfirm
 }: PriceWarningDialogProps) {
+  // Format the minimum price for display
+  const formattedMinPrice = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(MIN_PROPERTY_PRICE);
+
   return (
-    <AlertDialog open={isOpen}>
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Minimum Price Requirement</AlertDialogTitle>
+          <AlertDialogTitle>Price Requirement</AlertDialogTitle>
           <AlertDialogDescription>
-            Agents in our network require a minimum purchase price of $75,000.
-            Please enter a value that is at least $75,000.
+            <p className="mb-4">
+              The minimum price that agents can work with is {formattedMinPrice}.
+            </p>
+            <p className="mb-4">
+              Please enter a higher price value to continue.
+            </p>
+            <p className="text-sm text-gray-500">
+              Our partner agents have a minimum property value requirement of {formattedMinPrice}.
+            </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
+          <AlertDialogCancel onClick={onClose}>
+            Go Back
+          </AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm}>
-            Update Price
+            Use {formattedMinPrice}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

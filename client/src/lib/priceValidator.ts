@@ -52,5 +52,5 @@ export function formatPrice(price: string | undefined | null): string {
 }
 
 export function getDefaultMinPrice(): string {
-  return '$' + MIN_PROPERTY_PRICE.toLocaleString('en-US');
+  return MIN_PROPERTY_PRICE.toLocaleString('en-US');
 }

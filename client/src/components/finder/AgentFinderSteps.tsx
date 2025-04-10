@@ -47,6 +47,10 @@ export default function AgentFinderSteps({
 }: AgentFinderStepsProps) {
   // Use toast directly from import
   const isMobile = useIsMobile();
+  
+  // State for price warning dialog
+  const [showPriceWarning, setShowPriceWarning] = useState(false);
+  const [currentPriceField, setCurrentPriceField] = useState<'min' | 'max'>('min');
 
   // Handle special skipping of steps for navigation
   const handleNext = () => {
@@ -59,9 +63,28 @@ export default function AgentFinderSteps({
     // Cast string[] to AgentStrategy[]
     updateFormData({ strategy: values as any });
   };
+  
+  // Handle price warning dialog confirmation
+  const handlePriceWarningConfirm = () => {
+    // Update the price to the minimum value
+    if (currentPriceField === 'min') {
+      updateFormData({ price_min: getDefaultMinPrice() });
+    } else {
+      updateFormData({ price_max: getDefaultMinPrice() });
+    }
+    
+    // Close the dialog
+    setShowPriceWarning(false);
+  };
 
   return (
     <div className="pt-6 pb-8 px-6 md:px-8">
+      {/* Price Warning Dialog */}
+      <PriceWarningDialog 
+        isOpen={showPriceWarning}
+        onClose={() => setShowPriceWarning(false)}
+        onConfirm={handlePriceWarningConfirm}
+      />
       {/* Step 1: Transaction Type */}
       <FormStep
         isActive={currentStep === 1}
@@ -298,15 +321,11 @@ export default function AgentFinderSteps({
                     onBlur={(e) => {
                       // Check if the value is below minimum when leaving the field
                       const numericValue = parseInt(e.target.value.replace(/[^0-9]/g, ''));
-                      if (numericValue < 100000) {
-                        updateFormData({ price_min: getDefaultMinPrice() });
-                        if (numericValue > 0) {
-                          toast({
-                            title: "Minimum Price",
-                            description: "The minimum purchase price is $100,000",
-                            variant: "default"
-                          });
-                        }
+                      if (numericValue > 0 && numericValue < MIN_PROPERTY_PRICE) {
+                        // Set the current price field for the dialog
+                        setCurrentPriceField('min');
+                        // Show the warning dialog
+                        setShowPriceWarning(true);
                       }
                     }}
                   />
@@ -334,13 +353,11 @@ export default function AgentFinderSteps({
                     onBlur={(e) => {
                       // Check if the value is below minimum when leaving the field
                       const numericValue = parseInt(e.target.value.replace(/[^0-9]/g, ''));
-                      if (numericValue < 100000 && numericValue > 0) {
-                        updateFormData({ price_max: "500,000" });
-                        toast({
-                          title: "Minimum Price",
-                          description: "The minimum price is $100,000",
-                          variant: "default"
-                        });
+                      if (numericValue > 0 && numericValue < MIN_PROPERTY_PRICE) {
+                        // Set the current price field for the dialog
+                        setCurrentPriceField('max');
+                        // Show the warning dialog
+                        setShowPriceWarning(true);
                       }
                     }}
                   />
@@ -552,7 +569,6 @@ export default function AgentFinderSteps({
           Boolean(formData.contact?.last_name) &&
           Boolean(formData.contact?.email) &&
           Boolean(formData.contact?.phone) &&
-          Boolean(formData.contact?.zip) &&
           Boolean(formData.terms_accepted)
         }
         errors={errors}
