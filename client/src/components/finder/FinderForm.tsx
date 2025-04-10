@@ -60,7 +60,7 @@ export default function FinderForm({
         return 5;
       }
       
-      // If at step 5, go to step 7 (skip 6)
+      // If at step 5 (property address), go directly to step 7 (contact form) - skip step 6
       if (currentStep === 5) {
         return 7;
       }
