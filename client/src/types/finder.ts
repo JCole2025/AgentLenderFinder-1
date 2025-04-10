@@ -17,6 +17,7 @@ export type AgentTransactionType = "buy" | "sell";
 export type AgentStrategy = 
   | "buy_and_hold_brrrr" 
   | "short_term_rental"
+  | "mid_term_rental"
   | "not_sure";
 
 export type AgentTimeline = 
@@ -74,13 +75,15 @@ export const agentTransactionTypeDescriptions: Record<AgentTransactionType, stri
 
 export const agentStrategyLabels: Record<AgentStrategy, string> = {
   "buy_and_hold_brrrr": "Buy and Hold or BRRRR",
-  "short_term_rental": "Short-term rental",
+  "short_term_rental": "Short-Term Rental (STR)",
+  "mid_term_rental": "Mid-Term Rental (MTR)",
   "not_sure": "Not sure yet"
 };
 
 export const agentStrategyDescriptions: Record<AgentStrategy, string> = {
   "buy_and_hold_brrrr": "I plan to buy and rent out long-term",
-  "short_term_rental": "I plan to list on Airbnb/VRBO",
+  "short_term_rental": "I plan to list on platforms like Airbnb/VRBO (1-30 days)",
+  "mid_term_rental": "I plan to rent for 1-12 months at a time",
   "not_sure": "I'm still exploring my options"
 };
 

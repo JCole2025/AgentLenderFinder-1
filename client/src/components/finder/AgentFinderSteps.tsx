@@ -504,7 +504,8 @@ export default function AgentFinderSteps({
                 <ButtonCheckboxGroup
                   options={[
                     { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
-                    { value: "short_term_rental", label: "Short-term rental or MTR", description: "I plan to list on Airbnb/VRBO" },
+                    { value: "short_term_rental", label: "Short-Term Rental (STR)", description: "I plan to list on platforms like Airbnb/VRBO (1-30 days)" },
+                    { value: "mid_term_rental", label: "Mid-Term Rental (MTR)", description: "I plan to rent for 1-12 months at a time" },
                     { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
                   ]}
                   selectedValues={formData.strategy || []}

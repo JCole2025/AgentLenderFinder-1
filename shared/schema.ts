@@ -38,6 +38,7 @@ export const agentStrategySchema = z.array(
   z.enum([
     "buy_and_hold_brrrr",
     "short_term_rental",
+    "mid_term_rental",
     "not_sure"
   ])
 ).min(1, "Please select at least one option");
