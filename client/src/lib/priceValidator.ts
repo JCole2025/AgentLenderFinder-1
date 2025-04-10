@@ -1,6 +1,11 @@
 export const MIN_PROPERTY_PRICE = 100000;
 
-export function validatePrice(price: string): boolean {
+export function validatePrice(price: string | undefined | null): boolean {
+  // Check if price is defined
+  if (!price) {
+    return false;
+  }
+  
   // Remove commas and dollar signs
   const cleanedPrice = price.replace(/[$,]/g, '');
   
@@ -14,21 +19,26 @@ export function validatePrice(price: string): boolean {
   return !isNaN(numericPrice) && numericPrice >= MIN_PROPERTY_PRICE;
 }
 
-export function validatePriceRange(minPrice: string, maxPrice: string): boolean {
+export function validatePriceRange(minPrice: string | undefined | null, maxPrice: string | undefined | null): boolean {
   // First validate each price individually
   if (!validatePrice(minPrice) || !validatePrice(maxPrice)) {
     return false;
   }
   
-  // Remove non-numeric characters and convert to numbers
-  const minNumeric = Number(minPrice.replace(/[$,]/g, ''));
-  const maxNumeric = Number(maxPrice.replace(/[$,]/g, ''));
+  // At this point we know both values are non-null strings because validatePrice returned true
+  const minNumeric = Number((minPrice as string).replace(/[$,]/g, ''));
+  const maxNumeric = Number((maxPrice as string).replace(/[$,]/g, ''));
   
   // Ensure max is greater than min
   return maxNumeric > minNumeric;
 }
 
-export function formatPrice(price: string): string {
+export function formatPrice(price: string | undefined | null): string {
+  // Handle undefined or null
+  if (!price) {
+    return '';
+  }
+  
   // Remove non-numeric characters
   const numericOnly = price.replace(/[^0-9]/g, '');
   
@@ -38,7 +48,7 @@ export function formatPrice(price: string): string {
   
   // Convert to number and format with commas
   const numericPrice = Number(numericOnly);
-  return '$' + numericPrice.toLocaleString('en-US');
+  return numericPrice.toLocaleString('en-US');
 }
 
 export function getDefaultMinPrice(): string {

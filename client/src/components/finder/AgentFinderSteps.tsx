@@ -83,7 +83,10 @@ export default function AgentFinderSteps({
           selectedValue={formData.transaction_type}
           onChange={(value) => {
             // Use the centralized transaction type handler from parent
-            onTransactionTypeChange(value);
+            // Make sure value is defined before passing
+            if (value) {
+              onTransactionTypeChange(value);
+            }
           }}
           name="agent_transaction_type"
           autoAdvance={formData.transaction_type === 'buy'} // Only auto-advance for buy path
@@ -192,9 +195,9 @@ export default function AgentFinderSteps({
                 <Input 
                   id="city"
                   placeholder="Denver"
-                  value={formData.location.split(',')[0] || ''}
+                  value={(formData.location || '').split(',')[0] || ''}
                   onChange={(e) => {
-                    const state = formData.location.split(',')[1]?.trim() || '';
+                    const state = (formData.location || '').split(',')[1]?.trim() || '';
                     updateFormData({ 
                       location: `${e.target.value}${state ? `, ${state}` : ''}`
                     });
