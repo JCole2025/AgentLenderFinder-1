@@ -1,4 +1,5 @@
 import { useFinderForm } from "@/hooks/useFinderForm";
+import { useFormNavigation } from "@/hooks/useFormNavigation";
 import { FinderFormProps } from "@/types/finder";
 import AgentFinderSteps from "./AgentFinderSteps";
 
@@ -16,70 +17,11 @@ export default function FinderForm({
     submitForm
   } = useFinderForm();
 
-  // Helper function to find the next valid step based on form state
-  const findNextValidStep = (currentStep: number, formData: any) => {
-    const maxSteps = 7;
-    let nextStep = currentStep + 1;
-    
-    // Skip logic based on transaction type
-    if (formData.transaction_type === 'sell') {
-      // For sell flow:
-      // Step 1: Transaction Type
-      // Step 2: Hidden (Property Type) - Skip
-      // Step 3: Hidden (Owner Occupied) - Skip
-      // Step 4: Location and Price
-      // Step 5: Property Address
-      // Step 6: Hidden (Timeline) - Skip
-      // Step 7: Contact Info
-      
-      // If at step 1, go to step 4 (skip 2, 3)
-      if (currentStep === 1) {
-        return 4;
-      }
-      
-      // If at step 4, go to step 5
-      if (currentStep === 4) {
-        return 5;
-      }
-      
-      // If at step 5 (property address), go directly to step 7 (contact form) - skip step 6
-      if (currentStep === 5) {
-        return 7;
-      }
-    } else if (formData.transaction_type === 'buy') {
-      // No skips necessary for buy flow
-    }
-    
-    // Return the next step, but never exceed max steps
-    return Math.min(nextStep, maxSteps);
-  };
-  
-  // Helper function to find the previous valid step based on form state
-  const findPrevValidStep = (currentStep: number, formData: any) => {
-    let prevStep = currentStep - 1;
-    
-    // Skip logic based on transaction type
-    if (formData.transaction_type === 'sell') {
-      // For sell flow, when going backwards:
-      // If at step 7, go to step 5 (skip 6)
-      if (currentStep === 7) {
-        return 5;
-      }
-      
-      // If at step 5, go to step 4
-      if (currentStep === 5) {
-        return 4;
-      }
-      
-      // If at step 4, go to step 1 (skip 2, 3)
-      if (currentStep === 4) {
-        return 1;
-      }
-    }
-    
-    // Return the previous step, never go below 1
-    return Math.max(prevStep, 1);
-  };
+  // Use our navigation hook for all navigation logic
+  const {
+    findNextValidStep,
+    findPrevValidStep,
+  } = useFormNavigation();
 
   const handleNext = () => {
     // The form has 7 steps - some conditional based on transaction type
@@ -105,6 +47,13 @@ export default function FinderForm({
       const prevStep = findPrevValidStep(currentStep, formData);
       console.log('FinderForm - Going back to previous valid step:', prevStep);
       setCurrentStep(prevStep);
+    }
+  };
+
+  // Method to advance multiple steps (used for sell flow)
+  const advanceMultipleSteps = (stepsCount: number) => {
+    for (let i = 0; i < stepsCount; i++) {
+      setTimeout(() => handleNext(), i * 50);
     }
   };
 
@@ -137,6 +86,7 @@ export default function FinderForm({
           onNext={handleNext}
           onPrevious={handlePrevious}
           onSubmit={handleSubmit}
+          advanceMultipleSteps={advanceMultipleSteps}
           errors={errors}
           isValid={isValid}
         />

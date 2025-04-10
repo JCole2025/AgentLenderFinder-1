@@ -26,6 +26,7 @@ interface AgentFinderStepsProps {
   onNext: () => void;
   onPrevious: () => void;
   onSubmit: () => void;
+  advanceMultipleSteps: (stepsCount: number) => void;
   errors: Record<string, any>;
   isValid: boolean;
 }
@@ -37,6 +38,7 @@ export default function AgentFinderSteps({
   onNext,
   onPrevious,
   onSubmit,
+  advanceMultipleSteps,
   errors,
   isValid
 }: AgentFinderStepsProps) {
@@ -93,16 +95,11 @@ export default function AgentFinderSteps({
               // Apply transaction type update only once
               updateFormData(newData);
               
-              // Jump directly to contact information step (step 7)
-              // Use setTimeout to ensure state is updated before navigation
+              // Use the refactored advanceMultipleSteps function to jump directly to contact step
               setTimeout(() => {
-                console.log("Jumping directly to contact information (step 7)");
-                onNext(); // 1 → 2
-                onNext(); // 2 → 3
-                onNext(); // 3 → 4
-                onNext(); // 4 → 5
-                onNext(); // 5 → 6
-                onNext(); // 6 → 7 (contact info)
+                console.log("Using advanceMultipleSteps to jump to contact information (step 7)");
+                // Pass 6 to jump from step 1 to step 7
+                advanceMultipleSteps(6);
               }, 50);
               
               return; // Exit early for sell path
