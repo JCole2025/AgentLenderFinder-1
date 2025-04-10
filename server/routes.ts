@@ -226,21 +226,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE || "https://hooks.zapier.com/hooks/catch/17924917/20259dz/";
       
       try {
-        // Call the webhook
+        // Call the webhook with verbose logging
         console.log('Sending data to Zapier webhook:', webhookUrl);
         console.log('Webhook payload:', JSON.stringify(webhookData, null, 2));
-        // Call webhook with retries
-        const webhookResponse = await axios.post(webhookUrl, webhookData);
-        console.log('Webhook Response:', webhookResponse.data);
+        
+        // Add more detailed axios configuration and error logging
+        const axiosConfig = {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          timeout: 10000 // 10 second timeout
+        };
+        
+        console.log('WEBHOOK REQUEST STARTING with config:', JSON.stringify(axiosConfig));
+        
+        // Call webhook with detailed config
+        const webhookResponse = await axios.post(webhookUrl, webhookData, axiosConfig);
+        
+        console.log('WEBHOOK SUCCESS - Status:', webhookResponse.status);
+        console.log('WEBHOOK SUCCESS - Response:', JSON.stringify(webhookResponse.data));
+        
         await storage.updateWebhookStatus(submission.id, "success", JSON.stringify(webhookResponse.data));
         
         // Skip HubSpot API client for now as it's having auth issues
         // console.log('Creating HubSpot contact via API client');
         // console.log('HubSpot Response:', await createHubSpotContact(formData));
       } catch (error) {
-        // Log webhook error but don't fail the submission
-        console.error("Webhook error:", error);
-        await storage.updateWebhookStatus(submission.id, "failed", JSON.stringify(error));
+        // Enhanced error logging with axios error details
+        console.error("WEBHOOK ERROR OCCURRED");
+        
+        if (axios.isAxiosError(error)) {
+          console.error("Axios Error Details:");
+          console.error("- Status:", error.response?.status);
+          console.error("- Status Text:", error.response?.statusText);
+          console.error("- Response Data:", JSON.stringify(error.response?.data || {}));
+          console.error("- Request URL:", error.config?.url);
+          console.error("- Request Method:", error.config?.method);
+          console.error("- Request Headers:", JSON.stringify(error.config?.headers || {}));
+          
+          // Only stringify the relevant parts of the error
+          const errorInfo = {
+            message: error.message,
+            code: error.code,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+          };
+          
+          await storage.updateWebhookStatus(submission.id, "failed", JSON.stringify(errorInfo));
+        } else {
+          // For non-axios errors
+          console.error("Non-Axios Error:", error);
+          await storage.updateWebhookStatus(submission.id, "failed", JSON.stringify({ message: String(error) }));
+        }
         
         // Also log to failures webhook if available
         try {
