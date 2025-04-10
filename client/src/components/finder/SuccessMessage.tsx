@@ -64,13 +64,6 @@ export default function SuccessMessage({ onStartOver }: SuccessMessageProps) {
               </div>
             </li>
           </ul>
-          
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
-            <p className="text-sm text-blue-800">
-              Our concierge team will immediately text and email you to confirm we're matching you with the 
-              right {professionalType}. If you have specific requirements, please reply to their message.
-            </p>
-          </div>
         </CardContent>
         
         <CardFooter className="flex justify-center border-t pt-6">
