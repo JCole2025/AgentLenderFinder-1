@@ -78,7 +78,11 @@ export default function AgentFinderSteps({
         <ButtonRadioGroup
           options={[
             { value: "buy", label: "Buy Property", description: agentTransactionTypeDescriptions.buy },
-            { value: "sell", label: "Sell Property", description: agentTransactionTypeDescriptions.sell }
+            { 
+              value: "sell", 
+              label: "Sell Property", 
+              description: "I'm looking to sell my real estate property and need to find a qualified selling agent"
+            }
           ]}
           selectedValue={formData.transaction_type}
           onChange={(value) => {

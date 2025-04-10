@@ -74,9 +74,16 @@ export default function FinderForm({
    */
   const skipSteps = (stepsCount: number) => {
     console.log(`FinderForm - Skipping ${stepsCount} steps from step ${currentStep}`);
-    const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
-    console.log(`FinderForm - Target step: ${targetStep}`);
-    setCurrentStep(targetStep);
+    // Use fixed step number - go directly to contact page for sell transactions
+    if (formData.transaction_type === 'sell') {
+      console.log('FinderForm - Sell flow detected, going directly to contact page (step 7)');
+      setCurrentStep(FormStep.CONTACT_INFO);
+    } else {
+      // Normal step advancement for buy flow
+      const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
+      console.log(`FinderForm - Target step: ${targetStep}`);
+      setCurrentStep(targetStep);
+    }
   };
 
   /**

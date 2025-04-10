@@ -146,26 +146,29 @@ export function useFormNavigation() {
     
     // For sell transaction, set up a complete transition
     if (newType === 'sell') {
-      console.log('Sell transaction type selected, will navigate to location step');
+      console.log('Sell transaction type selected, will navigate DIRECTLY to contact page');
       
-      // Update form data before navigation
+      // Update form data before navigation with ALL required fields for form validation
       updateFormData({
         transaction_type: newType,
         timeline: "asap",
         purchase_timeline: "asap",
         // For sell path, we don't need owner_occupied, but set a default to avoid validation issues
-        owner_occupied: false, // Set a default but it won't be shown or used in sell path
-        // Add defaults for location and price to make form valid
-        location: formData.location || "Denver, Colorado",
-        price_min: formData.price_min || "300,000",
-        price_max: formData.price_max || "600,000"
+        owner_occupied: false,
+        // Add defaults for all required fields to make form valid
+        location: "Denver, Colorado",
+        price_min: "300,000",
+        price_max: "600,000",
+        property_address: "To be provided",
+        property_type: "single_family", // Default to something valid
+        strategy: ["not_sure"] // Default selection
       });
       
       // Use longer timeout to ensure state updates are applied
       setTimeout(() => {
-        console.log('Now jumping to location/price step (4)');
-        jumpToStep(FormStep.LOCATION_PRICE, setStep);
-      }, 500);
+        console.log('CRITICAL FIX: Navigating directly to contact info page (step 7)');
+        jumpToStep(FormStep.CONTACT_INFO, setStep);
+      }, 600);
     } else {
       // For buy transaction, just update the form data and let normal flow continue
       console.log('Buy transaction type selected, continuing normal flow');
@@ -178,14 +181,19 @@ export function useFormNavigation() {
   };
   
   /**
-   * Advance multiple steps at once
+   * Advance multiple steps at once - This is not used directly anymore
+   * We now use the skipSteps function in FinderForm.tsx which has better handling
    */
-  const advanceMultipleSteps = (stepsCount: number, setStep: (step: number) => void, currentStep: number): void => {
-    // Calculate target step
-    const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
-    
-    // Set the step directly
-    setStep(targetStep);
+  const advanceMultipleSteps = (stepsCount: number): ((setStep: (step: number) => void, currentStep: number) => void) => {
+    return (setStep, currentStep) => {
+      // Calculate target step
+      console.log(`[LEGACY] Advancing ${stepsCount} steps from ${currentStep}`);
+      const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
+      console.log(`[LEGACY] Target step: ${targetStep}`);
+      
+      // Set the step directly
+      setStep(targetStep);
+    };
   };
 
   return {
