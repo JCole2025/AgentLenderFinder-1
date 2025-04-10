@@ -222,8 +222,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         loan_assistance: formData.loan_assistance ? "Yes" : "No"
       };
 
-      // Send to webhook using a hardcoded URL (from .env)
-      const webhookUrl = "https://hooks.zapier.com/hooks/catch/17924917/20259dz/";
+      // Use the webhook URL from environment variable, with fallback to Zapier
+      const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE || "https://hooks.zapier.com/hooks/catch/17924917/20259dz/";
       
       try {
         // Call the webhook
