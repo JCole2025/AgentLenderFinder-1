@@ -45,9 +45,9 @@ export interface AgentFormData {
     last_name: string;
     email: string;
     phone: string;
-    city: string;
+    city?: string; // Made optional
     state: string; // Still keeping field but will be empty/unused
-    zip: string;
+    zip?: string; // Made optional
     notes?: string; // Optional notes field
   };
   terms_accepted: boolean;

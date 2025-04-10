@@ -72,7 +72,9 @@ export const agentFinderSchema = z.object({
     last_name: z.string().min(1, "Last name is required"),
     email: z.string().email("Please enter a valid email"),
     phone: z.string().min(1, "Phone number is required"),
+    city: z.string().optional(), // Made optional
     state: z.string().optional(), // Made optional as requested
+    zip: z.string().optional(), // Made optional
     notes: z.string().optional(), // Optional notes field
   }),
   terms_accepted: z.literal(true, {

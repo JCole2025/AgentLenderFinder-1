@@ -174,43 +174,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
           {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
         </div>
 
-        <div>
-          <Label htmlFor="city" className="block text-gray-700 font-medium mb-2">
-            City <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="city"
-            type="text"
-            name="city"
-            autoComplete="address-level2"
-            className={`h-12 text-base ${errors.city ? "border-red-500" : "border-gray-300"}`}
-            placeholder="Denver"
-            value={contact.city || ''}
-            onChange={(e) => updateContactField('city', e.target.value)}
-            required
-            aria-required="true"
-          />
-          {errors.city && <p className="text-sm text-red-500 mt-1">{errors.city}</p>}
-        </div>
 
-        <div>
-          <Label htmlFor="zip" className="block text-gray-700 font-medium mb-2">
-            ZIP Code <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="zip"
-            type="text"
-            name="zip"
-            autoComplete="postal-code"
-            className={`h-12 text-base ${errors.zip ? "border-red-500" : "border-gray-300"}`}
-            placeholder="80111"
-            value={contact.zip || ''}
-            onChange={(e) => updateContactField('zip', e.target.value)}
-            required
-            aria-required="true"
-          />
-          {errors.zip && <p className="text-sm text-red-500 mt-1">{errors.zip}</p>}
-        </div>
 
         {enableNotes && (
           <div>
