@@ -89,7 +89,7 @@ export default function AgentFinderSteps({
             }
           }}
           name="agent_transaction_type"
-          autoAdvance={formData.transaction_type === 'buy'} // Only auto-advance for buy path
+          autoAdvance={false} // Disable auto-advance for both paths
           onNext={handleNext}
         />
         {errors.transaction_type && (
@@ -180,6 +180,7 @@ export default function AgentFinderSteps({
         errors={errors}
         title={formData.transaction_type === 'buy' ? "Where are you looking to invest?" : "Where is your property located?"}
         subtitle="Tell us about your location and budget"
+        showNext={true} // Always show the next button
       >
         <div className="space-y-8">
           {/* Location Section */}
@@ -324,6 +325,23 @@ export default function AgentFinderSteps({
               </p>
             )}
           </div>
+          
+          {/* Special button for sell flow to go directly to contact page */}
+          {formData.transaction_type === 'sell' && (
+            <div className="flex justify-end mt-6">
+              <button
+                type="button"
+                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                onClick={() => {
+                  // Force jump to contact page for sell flow
+                  console.log('Sell flow: Clicking to jump directly to contact page');
+                  advanceMultipleSteps(3);
+                }}
+              >
+                Continue to Contact Info
+              </button>
+            </div>
+          )}
         </div>
       </FormStep>
 

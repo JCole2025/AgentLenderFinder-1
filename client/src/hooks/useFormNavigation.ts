@@ -54,13 +54,20 @@ export function useFormNavigation() {
       // Sell transaction flow has special skip logic
       switch (currentStep) {
         case FormStep.TRANSACTION_TYPE:
+          console.log('Navigation: Transaction type -> Location/Price (sell path)');
           // Skip property type and owner occupied
           return FormStep.LOCATION_PRICE;
         case FormStep.LOCATION_PRICE:
+          console.log('Navigation: Location/Price -> Property Address (sell path)');
           // Go to property address
           return FormStep.PROPERTY_ADDRESS;
         case FormStep.PROPERTY_ADDRESS:
+          console.log('Navigation: Property Address -> Contact Info (sell path)');
           // Skip timeline and investment strategy
+          return FormStep.CONTACT_INFO;
+        case FormStep.CONTACT_INFO:
+          console.log('Navigation: Already at Contact Info (sell path) - staying here');
+          // Stay on contact info if already there
           return FormStep.CONTACT_INFO;
         default:
           break;
@@ -137,28 +144,34 @@ export function useFormNavigation() {
   }: TransactionChangeOptions): void => {
     console.log('Transaction type changed to:', newType);
     
-    // Set standard fields for both transaction types
-    const updatedFormData: Partial<AgentFormData> = {
-      transaction_type: newType,
-      timeline: "asap",
-      purchase_timeline: "asap"
-    };
-    
-    // Apply the updates
-    updateFormData(updatedFormData);
-    
-    // For sell transaction, jump directly to contact info
+    // For sell transaction, set up a complete transition
     if (newType === 'sell') {
-      console.log('Sell transaction type selected, will jump to contact info');
+      console.log('Sell transaction type selected, will navigate to location step');
       
-      // Increase timeout to give more time for state update to apply
+      // Update form data before navigation
+      updateFormData({
+        transaction_type: newType,
+        timeline: "asap",
+        purchase_timeline: "asap",
+        // Add defaults for location and price to make form valid
+        location: formData.location || "Denver, Colorado",
+        price_min: formData.price_min || "300,000",
+        price_max: formData.price_max || "600,000"
+      });
+      
+      // Use longer timeout to ensure state updates are applied
       setTimeout(() => {
-        console.log('Now jumping to contact info step');
-        // For sell transactions, we jump directly to location/price (step 4) first
+        console.log('Now jumping to location/price step (4)');
         jumpToStep(FormStep.LOCATION_PRICE, setStep);
-      }, 300);
+      }, 500);
     } else {
+      // For buy transaction, just update the form data and let normal flow continue
       console.log('Buy transaction type selected, continuing normal flow');
+      updateFormData({
+        transaction_type: newType,
+        timeline: "asap",
+        purchase_timeline: "asap"
+      });
     }
   };
   

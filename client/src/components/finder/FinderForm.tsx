@@ -73,7 +73,10 @@ export default function FinderForm({
    * Skip multiple steps at once - useful for complex navigation flows
    */
   const skipSteps = (stepsCount: number) => {
-    advanceMultipleSteps(stepsCount, setCurrentStep, currentStep);
+    console.log(`FinderForm - Skipping ${stepsCount} steps from step ${currentStep}`);
+    const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
+    console.log(`FinderForm - Target step: ${targetStep}`);
+    setCurrentStep(targetStep);
   };
 
   /**
