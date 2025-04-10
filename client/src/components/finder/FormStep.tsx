@@ -54,21 +54,7 @@ export default function FormStep({
           <div></div> // Empty div to maintain flex spacing
         )}
         
-        {showNext && (
-          <Button 
-            disabled={!isValid}
-            onClick={onNext}
-            size="lg"
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-          >
-            {nextLabel}
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
-          </Button>
-        )}
-        
-        {showSubmit && (
+        {showSubmit ? (
           <Button 
             disabled={!isValid}
             onClick={() => {
@@ -84,6 +70,18 @@ export default function FormStep({
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
           >
             Match with an Agent
+          </Button>
+        ) : showNext && (
+          <Button 
+            disabled={!isValid}
+            onClick={onNext}
+            size="lg"
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            {nextLabel}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
           </Button>
         )}
       </div>
