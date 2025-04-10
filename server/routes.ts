@@ -133,7 +133,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to submit the complete finder form data
   app.post("/api/submit-finder", async (req, res) => {
     try {
+      console.log("SUBMIT FINDER API CALLED =========================");
+      console.log("Request body received:", JSON.stringify(req.body, null, 2));
+      
       const { finderType, formData } = req.body;
+      
+      console.log("Finder Type:", finderType);
+      console.log("Form Data Transaction Type:", formData?.transaction_type);
+      
+      // Log investment strategy details for debugging
+      if (formData && Array.isArray(formData.strategy)) {
+        console.log("Investment Strategy Values:", formData.strategy);
+        console.log("Investment Strategy Length:", formData.strategy.length);
+        console.log("Has mid_term_rental?", formData.strategy.includes("mid_term_rental"));
+        console.log("Has short_term_rental?", formData.strategy.includes("short_term_rental"));
+      } else {
+        console.log("Investment Strategy is not an array or is missing:", formData?.strategy);
+      }
 
       // Check finder type without strict validation to allow submission
       if (finderType !== "agent") {
