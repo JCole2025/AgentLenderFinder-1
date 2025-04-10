@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getStateOptions } from '@/lib/stateValidator';
-import { formatPrice, getDefaultMinPrice } from '@/lib/priceValidator';
+import { formatPrice, getDefaultMinPrice, MIN_PROPERTY_PRICE } from '@/lib/priceValidator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 import ButtonRadioGroup from './formFields/ButtonRadioGroup';
@@ -18,6 +18,7 @@ import OwnerOccupiedButtons from './formFields/OwnerOccupiedButtons';
 import ButtonCheckboxGroup from './formFields/ButtonCheckboxGroup';
 import ContactFormExtended from './formFields/ContactFormExtended';
 import { useIsMobile } from '@/hooks/use-mobile';
+import PriceWarningDialog from './formFields/PriceWarningDialog';
 
 interface AgentFinderStepsProps {
   currentStep: number;

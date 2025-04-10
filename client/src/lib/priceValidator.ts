@@ -1,4 +1,4 @@
-export const MIN_PROPERTY_PRICE = 100000;
+export const MIN_PROPERTY_PRICE = 75000;
 
 export function validatePrice(price: string | undefined | null): boolean {
   // Check if price is defined
