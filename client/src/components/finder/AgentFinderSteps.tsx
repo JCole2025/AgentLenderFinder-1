@@ -87,15 +87,10 @@ export default function AgentFinderSteps({
             
             // Handle the sell path differently
             if (value === 'sell') {
-              // Set all required defaults for sell transaction type
-              newData.owner_occupied = false;
-              newData.property_type = "single_family"; // Default to single family
-              newData.location = "Denver, CO"; // Default location
-              newData.price_min = "250,000"; // Default price
-              newData.price_max = "500,000"; // Default price
-              newData.strategy = ["not_sure"]; // Default strategy
+              // Only set the transaction type, don't add any default values
+              // This way the user will be required to input all their information
               
-              // Apply all the form updates at once
+              // Apply transaction type update only
               updateFormData(newData);
               
               // IMPORTANT! Set a timeout to skip directly to property address step
