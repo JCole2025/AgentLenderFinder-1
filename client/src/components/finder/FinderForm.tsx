@@ -1,13 +1,19 @@
 import { useFinderForm } from "@/hooks/useFinderForm";
-import { useFormNavigation } from "@/hooks/useFormNavigation";
+import { useFormNavigation, MAX_FORM_STEPS, FormStep } from "@/hooks/useFormNavigation";
 import { FinderFormProps } from "@/types/finder";
 import AgentFinderSteps from "./AgentFinderSteps";
 
+/**
+ * Main form container component that manages form state and navigation
+ * Uses useFinderForm for form data and validation
+ * Uses useFormNavigation for form flow control
+ */
 export default function FinderForm({ 
   currentStep, 
   setCurrentStep, 
   onSuccess 
 }: FinderFormProps) {
+  // Form data and validation
   const {
     formData,
     updateFormData,
@@ -17,59 +23,73 @@ export default function FinderForm({
     submitForm
   } = useFinderForm();
 
-  // Use our navigation hook for all navigation logic
+  // Navigation control
   const {
-    findNextValidStep,
-    findPrevValidStep,
+    goToNextStep,
+    goToPreviousStep,
+    advanceMultipleSteps,
+    handleTransactionTypeChange
   } = useFormNavigation();
 
+  /**
+   * Handle advancing to the next step with proper navigation logic
+   */
   const handleNext = () => {
-    // The form has 7 steps - some conditional based on transaction type
-    const maxSteps = 7; // Total steps for the form
-
-    console.log('FinderForm - handleNext called');
-    console.log('FinderForm - Current step:', currentStep);
-    console.log('FinderForm - Max steps:', maxSteps);
-
-    if (currentStep < maxSteps) {
-      // Find the next valid step based on the form data
-      const nextStep = findNextValidStep(currentStep, formData);
-      console.log('FinderForm - Advancing to next valid step:', nextStep);
-      setCurrentStep(nextStep);
-    } else {
-      console.log('FinderForm - Already at max step, not advancing');
-    }
+    console.log('FinderForm - Next step from current step:', currentStep);
+    
+    goToNextStep({
+      currentStep,
+      formData,
+      setStep: setCurrentStep
+    });
   };
 
+  /**
+   * Handle going back to the previous step with proper navigation logic
+   */
   const handlePrevious = () => {
-    if (currentStep > 1) {
-      // Find the previous valid step based on the form data
-      const prevStep = findPrevValidStep(currentStep, formData);
-      console.log('FinderForm - Going back to previous valid step:', prevStep);
-      setCurrentStep(prevStep);
-    }
+    console.log('FinderForm - Previous step from current step:', currentStep);
+    
+    goToPreviousStep({
+      currentStep,
+      formData,
+      setStep: setCurrentStep
+    });
   };
 
-  // Method to advance multiple steps (used for sell flow)
-  const advanceMultipleSteps = (stepsCount: number) => {
-    for (let i = 0; i < stepsCount; i++) {
-      setTimeout(() => handleNext(), i * 50);
-    }
+  /**
+   * Handle transaction type selection with special navigation for sell flow
+   */
+  const handleTypeChange = (value: string) => {
+    handleTransactionTypeChange({
+      newType: value as any,
+      formData,
+      updateFormData,
+      setStep: setCurrentStep
+    });
   };
 
+  /**
+   * Skip multiple steps at once - useful for complex navigation flows
+   */
+  const skipSteps = (stepsCount: number) => {
+    advanceMultipleSteps(stepsCount, setCurrentStep, currentStep);
+  };
+
+  /**
+   * Handle form submission with success/error handling
+   */
   const handleSubmit = async () => {
-    console.log('FinderForm - handleSubmit called');
+    console.log('FinderForm - Submitting form data');
 
     try {
-      console.log('FinderForm - Calling submitForm');
       const success = await submitForm();
-      console.log('FinderForm - submitForm result:', success);
-
+      
       if (success) {
-        console.log('FinderForm - Calling onSuccess to display success message');
+        console.log('FinderForm - Submission successful');
         onSuccess();
       } else {
-        console.error('FinderForm - Form submission was not successful');
+        console.error('FinderForm - Submission failed');
       }
     } catch (error) {
       console.error('FinderForm - Error during form submission:', error);
@@ -77,20 +97,19 @@ export default function FinderForm({
   };
 
   return (
-    <>
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden mx-auto max-w-[95%] md:max-w-3xl">
-        <AgentFinderSteps
-          currentStep={currentStep}
-          formData={formData as any} // Use type assertion to avoid TS errors
-          updateFormData={updateFormData}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          onSubmit={handleSubmit}
-          advanceMultipleSteps={advanceMultipleSteps}
-          errors={errors}
-          isValid={isValid}
-        />
-      </div>
-    </>
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden mx-auto max-w-[95%] md:max-w-3xl">
+      <AgentFinderSteps
+        currentStep={currentStep}
+        formData={formData}
+        updateFormData={updateFormData}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
+        onSubmit={handleSubmit}
+        advanceMultipleSteps={skipSteps}
+        onTransactionTypeChange={handleTypeChange}
+        errors={errors}
+        isValid={isValid}
+      />
+    </div>
   );
 }

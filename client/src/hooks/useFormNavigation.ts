@@ -1,193 +1,179 @@
-import { AgentFormData } from '@/types/finder';
+import { AgentFormData, AgentTransactionType } from '@/types/finder';
 
-interface FormNavigationOptions {
-  onNext: () => void;
-  currentStep: number;
-  formData: AgentFormData;
+/**
+ * Step configuration for the form flow
+ */
+export enum FormStep {
+  TRANSACTION_TYPE = 1,
+  PROPERTY_TYPE = 2,
+  OWNER_OCCUPIED = 3,
+  LOCATION_PRICE = 4,
+  PROPERTY_ADDRESS = 5,
+  TIMELINE = 5, // Same as property address (different path)
+  INVESTMENT_STRATEGY = 6,
+  CONTACT_INFO = 7
 }
 
+/**
+ * Maximum number of steps in the form
+ */
+export const MAX_FORM_STEPS = 7;
+
+/**
+ * Options for navigation actions
+ */
+interface NavigationOptions {
+  currentStep: number;
+  formData: AgentFormData;
+  setStep: (step: number) => void;
+}
+
+/**
+ * Options for transaction type changes
+ */
+interface TransactionChangeOptions {
+  newType: AgentTransactionType;
+  formData: AgentFormData;
+  updateFormData: (data: Partial<AgentFormData>) => void;
+  setStep: (step: number) => void;
+}
+
+/**
+ * Form navigation hook that provides functions for step navigation
+ * Handles conditional logic for different transaction types
+ */
 export function useFormNavigation() {
   /**
-   * Find the next valid step based on the current state of the form
-   * This handles conditional step logic, especially for sell vs buy
+   * Determine the next step based on current step and form data
    */
-  const findNextValidStep = (currentStep: number, formData: AgentFormData): number => {
-    const maxSteps = 7;
+  const getNextStep = (currentStep: number, formData: AgentFormData): number => {
+    // Default next step (increment by 1)
     let nextStep = currentStep + 1;
     
-    // Skip logic based on transaction type
     if (formData.transaction_type === 'sell') {
-      // For sell flow:
-      // Step 1: Transaction Type
-      // Step 2: Hidden (Property Type) - Skip
-      // Step 3: Hidden (Owner Occupied) - Skip
-      // Step 4: Location and Price
-      // Step 5: Property Address
-      // Step 6: Hidden (Timeline) - Skip
-      // Step 7: Contact Info
-      
-      // If at step 1, go to step 4 (skip 2, 3)
-      if (currentStep === 1) {
-        return 4;
-      }
-      
-      // If at step 4, go to step 5
-      if (currentStep === 4) {
-        return 5;
-      }
-      
-      // If at step 5 (property address), go directly to step 7 (contact form) - skip step 6
-      if (currentStep === 5) {
-        return 7;
+      // Sell transaction flow has special skip logic
+      switch (currentStep) {
+        case FormStep.TRANSACTION_TYPE:
+          // Skip property type and owner occupied
+          return FormStep.LOCATION_PRICE;
+        case FormStep.LOCATION_PRICE:
+          // Go to property address
+          return FormStep.PROPERTY_ADDRESS;
+        case FormStep.PROPERTY_ADDRESS:
+          // Skip timeline and investment strategy
+          return FormStep.CONTACT_INFO;
+        default:
+          break;
       }
     }
     
-    // Return the next step, but never exceed max steps
-    return Math.min(nextStep, maxSteps);
+    // Ensure we don't exceed max steps
+    return Math.min(nextStep, MAX_FORM_STEPS);
   };
   
   /**
-   * Find the previous valid step based on the current state of the form
-   * This handles conditional step navigation, especially for the sell flow
+   * Determine the previous step based on current step and form data
    */
-  const findPrevValidStep = (currentStep: number, formData: AgentFormData): number => {
+  const getPreviousStep = (currentStep: number, formData: AgentFormData): number => {
+    // Default previous step (decrement by 1)
     let prevStep = currentStep - 1;
     
-    // Skip logic based on transaction type
     if (formData.transaction_type === 'sell') {
-      // For sell flow, when going backwards:
-      // If at step 7, go to step 5 (skip 6)
-      if (currentStep === 7) {
-        return 5;
-      }
-      
-      // If at step 5, go to step 4
-      if (currentStep === 5) {
-        return 4;
-      }
-      
-      // If at step 4, go to step 1 (skip 2, 3)
-      if (currentStep === 4) {
-        return 1;
+      // Sell transaction flow has special skip logic for going back
+      switch (currentStep) {
+        case FormStep.CONTACT_INFO:
+          // Skip timeline and investment strategy
+          return FormStep.PROPERTY_ADDRESS;
+        case FormStep.PROPERTY_ADDRESS:
+          // Go back to location/price
+          return FormStep.LOCATION_PRICE;
+        case FormStep.LOCATION_PRICE:
+          // Skip property type and owner occupied
+          return FormStep.TRANSACTION_TYPE;
+        default:
+          break;
       }
     }
     
-    // Return the previous step, never go below 1
+    // Ensure we don't go below step 1
     return Math.max(prevStep, 1);
   };
 
   /**
-   * Handle direct navigation to contact form for sell path
-   * Uses multiple sequential calls with delays to ensure proper state updates
+   * Move to the next step with proper flow logic
    */
-  const navigateToContactForm = (onNext: () => void): void => {
-    // Jump directly to contact information step (step 7)
-    // Use setTimeout to ensure state is updated before navigation
-    setTimeout(() => {
-      console.log("Jumping directly to contact information (step 7)");
-      onNext(); // 1 → 2
-      onNext(); // 2 → 3
-      onNext(); // 3 → 4
-      onNext(); // 4 → 5
-      onNext(); // 5 → 6
-      onNext(); // 6 → 7 (contact info)
-    }, 50);
-  };
-
-  /**
-   * Creates a handler function for advancing to the next step
-   */
-  const createNextHandler = ({ onNext, currentStep, formData }: FormNavigationOptions) => {
-    return () => {
-      const maxSteps = 7; // Total steps for the form
-      
-      console.log('Navigation - Next handler called');
-      console.log('Navigation - Current step:', currentStep);
-      console.log('Navigation - Max steps:', maxSteps);
-
-      if (currentStep < maxSteps) {
-        // Find the next valid step based on the form data
-        const nextStep = findNextValidStep(currentStep, formData);
-        console.log('Navigation - Advancing to next valid step:', nextStep);
-        // Use onNext multiple times to advance to the correct step
-        const stepsToAdvance = nextStep - currentStep;
-        
-        for (let i = 0; i < stepsToAdvance; i++) {
-          setTimeout(() => {
-            onNext();
-          }, i * 50); // Small delay between steps
-        }
-      } else {
-        console.log('Navigation - Already at max step, not advancing');
-      }
-    };
-  };
-
-  /**
-   * Creates a handler function for going back to the previous step
-   */
-  const createPreviousHandler = ({ onNext, currentStep, formData }: FormNavigationOptions) => {
-    return () => {
-      if (currentStep > 1) {
-        // Find the previous valid step based on the form data
-        const prevStep = findPrevValidStep(currentStep, formData);
-        console.log('Navigation - Going back to previous valid step:', prevStep);
-        
-        // Calculate how many steps we need to move back
-        const stepsBack = currentStep - prevStep;
-        
-        // We need to go all the way back to step 1 and then forward to the target previous step
-        // This is because we don't have a direct "onPrevious" function
-        
-        // First go back to step 1 (this would be handled by the component's onPrevious function)
-        // Then go forward to the desired step
-        
-        // This logic would be implemented in the component that uses this hook
-        return prevStep;
-      }
-      
-      return currentStep; // Don't change if already at step 1
-    };
-  };
-
-  /**
-   * Handle transaction type selection and special navigation logic
-   */
-  const handleTransactionTypeChange = (
-    value: string, 
-    formData: AgentFormData,
-    updateFormData: (data: Partial<AgentFormData>) => void,
-    onNext: () => void
-  ) => {
-    // Set the transaction type and default values
-    const newData: Partial<AgentFormData> = { 
-      transaction_type: value as any,
-      timeline: "asap", // Default to ASAP for all submission types
-      purchase_timeline: "asap" // Default to ASAP for all submission types
-    };
-    
-    // Handle the sell path differently
-    if (value === 'sell') {
-      // Apply transaction type update
-      updateFormData(newData);
-      
-      // Navigate directly to contact information for sell path
-      navigateToContactForm(onNext);
-      
-      return true; // Indicate special navigation was handled
+  const goToNextStep = ({ currentStep, formData, setStep }: NavigationOptions): void => {
+    if (currentStep < MAX_FORM_STEPS) {
+      const nextStep = getNextStep(currentStep, formData);
+      setStep(nextStep);
     }
+  };
+
+  /**
+   * Move to the previous step with proper flow logic
+   */
+  const goToPreviousStep = ({ currentStep, formData, setStep }: NavigationOptions): void => {
+    if (currentStep > 1) {
+      const prevStep = getPreviousStep(currentStep, formData);
+      setStep(prevStep);
+    }
+  };
+
+  /**
+   * Jump directly to a specific step skipping all intermediate steps
+   */
+  const jumpToStep = (stepNumber: number, setStep: (step: number) => void): void => {
+    setStep(Math.min(Math.max(1, stepNumber), MAX_FORM_STEPS));
+  };
+
+  /**
+   * Handle transaction type changes with appropriate navigation
+   */
+  const handleTransactionTypeChange = ({ 
+    newType, 
+    formData, 
+    updateFormData, 
+    setStep 
+  }: TransactionChangeOptions): void => {
+    // Set standard fields for both transaction types
+    const updatedFormData: Partial<AgentFormData> = {
+      transaction_type: newType,
+      timeline: "asap",
+      purchase_timeline: "asap"
+    };
     
-    // For buy path, just update the data
-    updateFormData(newData);
-    return false; // No special navigation needed
+    // Apply the updates
+    updateFormData(updatedFormData);
+    
+    // For sell transaction, jump directly to contact info
+    if (newType === 'sell') {
+      // Give time for state update to apply
+      setTimeout(() => {
+        // For sell transactions, we jump directly to the contact form (step 7)
+        jumpToStep(FormStep.CONTACT_INFO, setStep);
+      }, 50);
+    }
+    // For buy transactions, normal flow continues
+  };
+  
+  /**
+   * Advance multiple steps at once
+   */
+  const advanceMultipleSteps = (stepsCount: number, setStep: (step: number) => void, currentStep: number): void => {
+    // Calculate target step
+    const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
+    
+    // Set the step directly
+    setStep(targetStep);
   };
 
   return {
-    findNextValidStep,
-    findPrevValidStep,
-    createNextHandler,
-    createPreviousHandler,
+    getNextStep,
+    getPreviousStep,
+    goToNextStep,
+    goToPreviousStep,
+    jumpToStep,
     handleTransactionTypeChange,
-    navigateToContactForm
+    advanceMultipleSteps
   };
 }

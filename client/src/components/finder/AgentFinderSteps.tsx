@@ -27,6 +27,7 @@ interface AgentFinderStepsProps {
   onPrevious: () => void;
   onSubmit: () => void;
   advanceMultipleSteps: (stepsCount: number) => void;
+  onTransactionTypeChange: (value: string) => void;
   errors: Record<string, any>;
   isValid: boolean;
 }
@@ -39,6 +40,7 @@ export default function AgentFinderSteps({
   onPrevious,
   onSubmit,
   advanceMultipleSteps,
+  onTransactionTypeChange,
   errors,
   isValid
 }: AgentFinderStepsProps) {
@@ -80,33 +82,8 @@ export default function AgentFinderSteps({
           ]}
           selectedValue={formData.transaction_type}
           onChange={(value) => {
-            // Set the transaction type and clear unrelated fields
-            const newData: Partial<AgentFormData> = { 
-              transaction_type: value as any,
-              timeline: "asap", // Default to ASAP for all submission types
-              purchase_timeline: "asap" // Default to ASAP for all submission types
-            };
-            
-            // Handle the sell path differently
-            if (value === 'sell') {
-              // Only set the transaction type, don't add any default values
-              // This way the user will be required to input all their information
-              
-              // Apply transaction type update only once
-              updateFormData(newData);
-              
-              // Use the refactored advanceMultipleSteps function to jump directly to contact step
-              setTimeout(() => {
-                console.log("Using advanceMultipleSteps to jump to contact information (step 7)");
-                // Pass 6 to jump from step 1 to step 7
-                advanceMultipleSteps(6);
-              }, 50);
-              
-              return; // Exit early for sell path
-            }
-            
-            // Apply updates for buy path
-            updateFormData(newData);
+            // Use the centralized transaction type handler from parent
+            onTransactionTypeChange(value);
           }}
           name="agent_transaction_type"
           autoAdvance={formData.transaction_type === 'buy'} // Only auto-advance for buy path
