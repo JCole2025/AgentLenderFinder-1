@@ -208,9 +208,9 @@ export default function AgentFinderSteps({
               <div>
                 <Label htmlFor="state" className="text-sm font-medium">State</Label>
                 <Select
-                  value={formData.location.split(',')[1]?.trim() || ''}
+                  value={(formData.location || '').split(',')[1]?.trim() || ''}
                   onValueChange={(value) => {
-                    const city = formData.location.split(',')[0] || '';
+                    const city = (formData.location || '').split(',')[0] || '';
                     updateFormData({ 
                       location: `${city}${value ? `, ${value}` : ''}`
                     });
@@ -252,7 +252,7 @@ export default function AgentFinderSteps({
                     type="text"
                     className={`pl-7 ${errors.price_min ? "border-red-500" : ""}`}
                     placeholder="100,000"
-                    value={formData.price_min}
+                    value={formData.price_min || ''}
                     onChange={(e) => {
                       const value = e.target.value.replace(/[^0-9,]/g, '');
                       const formattedPrice = formatPrice(value);
@@ -294,7 +294,7 @@ export default function AgentFinderSteps({
                     type="text"
                     className={`pl-7 ${errors.price_max ? "border-red-500" : ""}`}
                     placeholder="500,000"
-                    value={formData.price_max}
+                    value={formData.price_max || ''}
                     onChange={(e) => {
                       const value = e.target.value.replace(/[^0-9,]/g, '');
                       const formattedPrice = formatPrice(value);
@@ -447,9 +447,9 @@ export default function AgentFinderSteps({
                 <div className="mt-6 flex justify-end">
                   <button
                     type="button"
-                    className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${formData.strategy.length < 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${(formData.strategy || []).length < 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     onClick={handleNext}
-                    disabled={formData.strategy.length < 1}
+                    disabled={(formData.strategy || []).length < 1}
                   >
                     Continue
                   </button>
