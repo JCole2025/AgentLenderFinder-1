@@ -123,8 +123,8 @@ export default function AgentFinderSteps({
                 updateFormData({
                   transaction_type: "sell",
                   owner_occupied: false,
-                  price_min: "300,000",
-                  price_max: "600,000",
+                  price_min: "300000",
+                  price_max: "600000",
                   location: "Denver, Colorado"
                 });
                 
@@ -305,12 +305,12 @@ export default function AgentFinderSteps({
                     id="price-min"
                     type="text"
                     className={`pl-7 ${errors.price_min ? "border-red-500" : ""}`}
-                    placeholder="100,000"
+                    placeholder="100000"
                     value={formData.price_min || ''}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9,]/g, '');
-                      const formattedPrice = formatPrice(value);
-                      updateFormData({ price_min: formattedPrice });
+                      // Only allow numeric input
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      updateFormData({ price_min: value });
                     }}
                     onFocus={(e) => {
                       // If empty, auto-populate with the minimum value
@@ -343,12 +343,12 @@ export default function AgentFinderSteps({
                     id="price-max"
                     type="text"
                     className={`pl-7 ${errors.price_max ? "border-red-500" : ""}`}
-                    placeholder="500,000"
+                    placeholder="500000"
                     value={formData.price_max || ''}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9,]/g, '');
-                      const formattedPrice = formatPrice(value);
-                      updateFormData({ price_max: formattedPrice });
+                      // Only allow numeric input
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      updateFormData({ price_max: value });
                     }}
                     onBlur={(e) => {
                       // Check if the value is below minimum when leaving the field
@@ -390,8 +390,8 @@ export default function AgentFinderSteps({
                     transaction_type: "sell",
                     owner_occupied: false,
                     property_address: formData.property_address || "To be provided",
-                    price_min: formData.price_min || "300,000",
-                    price_max: formData.price_max || "600,000",
+                    price_min: formData.price_min || "300000",
+                    price_max: formData.price_max || "600000",
                     location: formData.location || "Denver, Colorado"
                   });
                   
