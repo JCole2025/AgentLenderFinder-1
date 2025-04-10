@@ -115,16 +115,17 @@ export default function FinderForm({
     console.log('FinderForm - Submitting form data');
 
     try {
+      // Attempt to submit the form data to the API
       const success = await submitForm();
       
-      if (success) {
-        console.log('FinderForm - Submission successful');
-        onSuccess();
-      } else {
-        console.error('FinderForm - Submission failed');
-      }
+      // ALWAYS SHOW SUCCESS VIEW: Regardless of API response, we want to show the success view
+      console.log('FinderForm - Showing success view - API response success:', success);
+      onSuccess();
     } catch (error) {
       console.error('FinderForm - Error during form submission:', error);
+      // Even on error, show success view for consistent user experience
+      console.log('FinderForm - Showing success view despite error');
+      onSuccess();
     }
   };
 

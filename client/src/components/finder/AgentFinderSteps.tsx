@@ -554,7 +554,7 @@ export default function AgentFinderSteps({
         errors={errors}
         title="Your contact information"
         subtitle="Tell us how the agent can reach you"
-        nextLabel={`Find ${formData.transaction_type === 'buy' ? 'Buying' : 'Selling'} Agent`} // Dynamic label based on transaction type
+        nextLabel="Match with an Agent" // Consistent button text for all transaction types
         showSubmit={true} // Show the submit button instead of next
       >
         <ContactFormExtended
@@ -565,7 +565,7 @@ export default function AgentFinderSteps({
           onSubmit={onSubmit}
           enableNotes={true}
           enableLoanAssistance={formData.transaction_type === 'buy'}
-          buttonText={`Find ${formData.transaction_type === 'buy' ? 'Buying' : 'Selling'} Agent`}
+          buttonText="" // Empty string to ensure no button is shown in the ContactFormExtended component
         />
       </FormStep>
 
