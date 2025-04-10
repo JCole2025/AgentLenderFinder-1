@@ -110,8 +110,10 @@ export default function AgentFinderSteps({
                   advanceMultipleSteps(6); // Skip to step 7 (contact)
                 }, 300);
               } else {
-                // For buy transactions, use normal flow
+                // For buy transactions, use normal flow but still auto-advance
+                console.log('BUY transaction selected - using normal navigation flow');
                 onTransactionTypeChange(value);
+                // Note: The ButtonRadioGroup will auto-advance for Buy option
               }
             }
           }}

@@ -85,8 +85,8 @@ export default function ButtonRadioGroup({
     const valueChanged = selectedValue !== value;
     console.log('ButtonRadioGroup - Value changed:', valueChanged);
 
-    // Always auto-advance if enabled, regardless of value
-    if (autoAdvance && onNext) {
+    // For Buy selection, we need to auto-advance even if autoAdvance is disabled
+    if ((value === "buy" || autoAdvance) && onNext) {
       console.log('ButtonRadioGroup - Auto advancing after selection');
       setTimeout(() => {
         console.log('ButtonRadioGroup - Executing onNext()');
@@ -94,7 +94,7 @@ export default function ButtonRadioGroup({
       }, 400);
     } else {
       console.log('ButtonRadioGroup - Not auto-advancing. Conditions not met:', 
-        { autoAdvance, onNextExists: !!onNext });
+        { autoAdvance, onNextExists: !!onNext, isValueBuy: value === "buy" });
     }
   };
 
