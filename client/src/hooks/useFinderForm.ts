@@ -49,7 +49,7 @@ export function useFinderForm() {
     price_min: "",
     price_max: "",
     loan_started: false,
-    owner_occupied: undefined, // No default selection
+    owner_occupied: false, // Set default to false to avoid undefined type error
     investment_properties_count: "",
     strategy: [],
     timeline: "asap", // Default to ASAP

@@ -57,7 +57,20 @@ export default function ButtonRadioGroup({
     console.log('ButtonRadioGroup - Button clicked:', value);
     console.log('ButtonRadioGroup - Auto advance enabled:', autoAdvance);
     console.log('ButtonRadioGroup - onNext available:', !!onNext);
-    console.log('ButtonRadioGroup - onNext function:', onNext);
+    
+    // CRITICAL FIX FOR SELL PROPERTY FLOW
+    // Special handling for sell property option - this will trigger navigation from the parent component
+    if (value === "sell" && onNext) {
+      console.log('ButtonRadioGroup - SELL option selected! Will trigger navigation callback');
+      // Wait for formData state to update before navigating
+      setTimeout(() => {
+        console.log('ButtonRadioGroup - Navigating after SELL selection');
+        // We use timeout to let the event loop complete the formData update first
+        // Then execute the navigation callback after that's done
+        onNext();
+      }, 600); // Longer timeout for sell option to ensure state updates
+      return;
+    }
     
     // Check if the value changed
     const valueChanged = selectedValue !== value;

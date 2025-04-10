@@ -85,7 +85,30 @@ export default function AgentFinderSteps({
             // Use the centralized transaction type handler from parent
             // Make sure value is defined before passing
             if (value) {
-              onTransactionTypeChange(value);
+              console.log('Transaction type selected:', value);
+              
+              // For sell transaction, apply special handling
+              if (value === 'sell') {
+                console.log('SELL transaction selected - applying special navigation');
+                
+                // First update form data
+                updateFormData({
+                  transaction_type: "sell",
+                  owner_occupied: false,
+                  price_min: "300,000",
+                  price_max: "600,000",
+                  location: "Denver, Colorado"
+                });
+                
+                // Force navigation directly to contact page
+                setTimeout(() => {
+                  console.log('DIRECT NAVIGATION: Going to contact page (step 7)');
+                  advanceMultipleSteps(6); // Skip to step 7 (contact)
+                }, 300);
+              } else {
+                // For buy transactions, use normal flow
+                onTransactionTypeChange(value);
+              }
             }
           }}
           name="agent_transaction_type"
@@ -328,17 +351,40 @@ export default function AgentFinderSteps({
           
           {/* Special button for sell flow to go directly to contact page */}
           {formData.transaction_type === 'sell' && (
-            <div className="flex justify-end mt-6">
+            <div className="flex flex-col items-center mt-6">
+              <p className="text-lg font-medium text-center mb-4">
+                Ready to connect with a qualified selling agent?
+              </p>
               <button
                 type="button"
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="px-8 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 transition-colors"
                 onClick={() => {
-                  // Force jump to contact page for sell flow
-                  console.log('Sell flow: Clicking to jump directly to contact page');
-                  advanceMultipleSteps(3);
+                  // HARDCODED FIX: Directly set step to contact page
+                  console.log('Sell flow: Jumping straight to contact page');
+                  // First update important form data
+                  updateFormData({
+                    transaction_type: "sell",
+                    owner_occupied: false,
+                    property_address: formData.property_address || "To be provided",
+                    price_min: formData.price_min || "300,000",
+                    price_max: formData.price_max || "600,000",
+                    location: formData.location || "Denver, Colorado"
+                  });
+                  
+                  // Wait for state to update
+                  setTimeout(() => {
+                    // Force navigation to step 7 (contact page) - FIXED VALUE
+                    console.log('Direct navigation to step 7 (contact)');
+                    
+                    // Skip directly to step 7 (contact page)
+                    // For sell flow, skip from current step to contact step (7)
+                    const stepsToSkip = 7 - currentStep;
+                    console.log(`Skipping ${stepsToSkip} steps to reach contact page`);
+                    advanceMultipleSteps(stepsToSkip);
+                  }, 100);
                 }}
               >
-                Continue to Contact Info
+                Continue to Contact Form
               </button>
             </div>
           )}
