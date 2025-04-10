@@ -276,16 +276,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
         </div>
       </form>
       
-      <div className="flex justify-end mt-8">
-        <Button 
-          type="button" 
-          className={`px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
-          onClick={onSubmit}
-          disabled={!isValid}
-        >
-          {buttonText}
-        </Button>
-      </div>
+      {/* Button removed to avoid duplication with parent form's submit button */}
     </div>
   );
 }

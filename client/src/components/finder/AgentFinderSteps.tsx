@@ -552,7 +552,7 @@ export default function AgentFinderSteps({
         errors={errors}
         title="Your contact information"
         subtitle="Tell us how the agent can reach you"
-        nextLabel="Get Agent Matches" // Customize the button text
+        nextLabel={`Find ${formData.transaction_type === 'buy' ? 'Buying' : 'Selling'} Agent`} // Dynamic label based on transaction type
         showSubmit={true} // Show the submit button instead of next
       >
         <ContactFormExtended
