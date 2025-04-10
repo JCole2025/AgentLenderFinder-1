@@ -93,21 +93,14 @@ export default function AgentFinderSteps({
               // Apply transaction type update only
               updateFormData(newData);
               
-              // Use traditional navigation method
-              console.log("Moving directly to property address step");
-              // Use a traditional approach - multiple next calls with delays
+              // Update form data first, then navigate
+              updateFormData(newData);
+              
+              // Use setTimeout to ensure state is updated before navigation
               setTimeout(() => {
-                onNext(); // 1 → 2
-                setTimeout(() => {
-                  onNext(); // 2 → 3
-                  setTimeout(() => {
-                    onNext(); // 3 → 4
-                    setTimeout(() => {
-                      onNext(); // 4 → 5
-                    }, 50);
-                  }, 50);
-                }, 50);
-              }, 50);
+                console.log("Setting sell path navigation to property address step");
+                onNext(); // Use the regular navigation
+              }, 0);
               
               return; // Exit early for sell path
             }
