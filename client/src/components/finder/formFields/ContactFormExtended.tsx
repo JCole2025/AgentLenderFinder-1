@@ -276,7 +276,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
         </div>
       </form>
       
-      {/* Button removed to avoid duplication with parent form's submit button */}
+      {/* Empty space here - no buttons should be rendered */}
     </div>
   );
 }
