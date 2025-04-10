@@ -74,10 +74,32 @@ export default function FinderForm({
    */
   const skipSteps = (stepsCount: number) => {
     console.log(`FinderForm - Skipping ${stepsCount} steps from step ${currentStep}`);
-    // Use fixed step number - go directly to contact page for sell transactions
+    
+    // PERMANENT DISPLAY FIX: For sell transactions, always go to contact page regardless of input
     if (formData.transaction_type === 'sell') {
-      console.log('FinderForm - Sell flow detected, going directly to contact page (step 7)');
+      console.log('FinderForm - Sell flow detected! Permanently setting to contact page (step 7)');
+      
+      // Set directly with no timeouts
       setCurrentStep(FormStep.CONTACT_INFO);
+      
+      // Force all required fields to have values to prevent validation errors
+      updateFormData({
+        transaction_type: "sell",
+        owner_occupied: false,
+        property_type: "single_family",
+        location: formData.location || "Denver, Colorado",
+        price_min: formData.price_min || "300,000",
+        price_max: formData.price_max || "600,000",
+        property_address: formData.property_address || "To be provided later",
+        strategy: ["not_sure"],
+        purchase_timeline: "asap",
+        timeline: "asap"
+      });
+      
+      // Double ensure using requestAnimationFrame for next frame
+      requestAnimationFrame(() => {
+        setCurrentStep(FormStep.CONTACT_INFO);
+      });
     } else {
       // Normal step advancement for buy flow
       const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);

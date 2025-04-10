@@ -164,11 +164,16 @@ export function useFormNavigation() {
         strategy: ["not_sure"] // Default selection
       });
       
-      // Use longer timeout to ensure state updates are applied
-      setTimeout(() => {
-        console.log('CRITICAL FIX: Navigating directly to contact info page (step 7)');
-        jumpToStep(FormStep.CONTACT_INFO, setStep);
-      }, 600);
+      // PERMANENT FIX: Set contact page directly with no timeout
+      console.log('CRITICAL FIX: Permanently setting to contact info page (step 7)');
+      
+      // We use direct step setting to ensure it's immediately applied
+      setStep(FormStep.CONTACT_INFO);
+      
+      // Additional safeguard - apply again in case any state updates happen
+      requestAnimationFrame(() => {
+        setStep(FormStep.CONTACT_INFO);
+      });
     } else {
       // For buy transaction, just update the form data and let normal flow continue
       console.log('Buy transaction type selected, continuing normal flow');

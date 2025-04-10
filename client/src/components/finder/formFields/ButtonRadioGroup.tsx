@@ -58,17 +58,26 @@ export default function ButtonRadioGroup({
     console.log('ButtonRadioGroup - Auto advance enabled:', autoAdvance);
     console.log('ButtonRadioGroup - onNext available:', !!onNext);
     
-    // CRITICAL FIX FOR SELL PROPERTY FLOW
-    // Special handling for sell property option - this will trigger navigation from the parent component
+    // PERMANENT FIX FOR SELL PROPERTY FLOW
+    // Direct navigation to contact page for sell transactions
     if (value === "sell" && onNext) {
-      console.log('ButtonRadioGroup - SELL option selected! Will trigger navigation callback');
-      // Wait for formData state to update before navigating
-      setTimeout(() => {
-        console.log('ButtonRadioGroup - Navigating after SELL selection');
-        // We use timeout to let the event loop complete the formData update first
-        // Then execute the navigation callback after that's done
+      console.log('PERMANENT FIX: SELL option selected - going to contact page');
+      
+      // Call the navigation callback immediately 
+      onNext();
+      
+      // REDUNDANT CALL: Use requestAnimationFrame to ensure it's called after state updates
+      requestAnimationFrame(() => {
+        console.log('REDUNDANT NAVIGATION: Double-ensuring sell flow goes to contact page');
         onNext();
-      }, 600); // Longer timeout for sell option to ensure state updates
+      });
+      
+      // THIRD CALL: Add a final backup call with a small timeout
+      setTimeout(() => {
+        console.log('FINAL BACKUP: Triple-ensuring sell flow goes to contact page');
+        onNext();
+      }, 100);
+      
       return;
     }
     

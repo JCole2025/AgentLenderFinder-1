@@ -375,17 +375,15 @@ export default function AgentFinderSteps({
                     location: formData.location || "Denver, Colorado"
                   });
                   
-                  // Wait for state to update
-                  setTimeout(() => {
-                    // Force navigation to step 7 (contact page) - FIXED VALUE
-                    console.log('Direct navigation to step 7 (contact)');
-                    
-                    // Skip directly to step 7 (contact page)
-                    // For sell flow, skip from current step to contact step (7)
-                    const stepsToSkip = 7 - currentStep;
-                    console.log(`Skipping ${stepsToSkip} steps to reach contact page`);
-                    advanceMultipleSteps(stepsToSkip);
-                  }, 100);
+                  // PERMANENT DISPLAY FIX: Force immediate navigation to contact page
+                  console.log('SELL FLOW: Direct immediate navigation to contact page (step 7)');
+                  
+                  // Skip directly to step 7 (contact page)
+                  // Using fixed value to ensure it always goes to contact page regardless of current step
+                  console.log('Setting current step to 7 (Contact Page) permanently');
+                  
+                  // Use React state to ensure the contact page is permanently shown
+                  advanceMultipleSteps(99); // Use large number to force to last step (contact)
                 }}
               >
                 Continue to Contact Form
