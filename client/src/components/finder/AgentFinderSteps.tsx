@@ -93,13 +93,21 @@ export default function AgentFinderSteps({
               // Apply transaction type update only
               updateFormData(newData);
               
-              // Skip directly to property address input
-              // No delay needed - immediately set step to property address
-              console.log("Setting sell path navigation directly to property address step");
-              const event = new CustomEvent('agentFinder:setStep', { 
-                detail: { step: 5 } 
-              });
-              window.dispatchEvent(event);
+              // Use traditional navigation method
+              console.log("Moving directly to property address step");
+              // Use a traditional approach - multiple next calls with delays
+              setTimeout(() => {
+                onNext(); // 1 → 2
+                setTimeout(() => {
+                  onNext(); // 2 → 3
+                  setTimeout(() => {
+                    onNext(); // 3 → 4
+                    setTimeout(() => {
+                      onNext(); // 4 → 5
+                    }, 50);
+                  }, 50);
+                }, 50);
+              }, 50);
               
               return; // Exit early for sell path
             }

@@ -1,7 +1,6 @@
 import { useFinderForm } from "@/hooks/useFinderForm";
 import { FinderFormProps } from "@/types/finder";
 import AgentFinderSteps from "./AgentFinderSteps";
-import { useEffect } from "react";
 
 export default function FinderForm({ 
   currentStep, 
@@ -16,23 +15,6 @@ export default function FinderForm({
     resetForm,
     submitForm
   } = useFinderForm();
-  
-  // Listen for the custom event to directly set the step (especially for sell flow)
-  useEffect(() => {
-    // Event handler for directly setting step
-    const handleSetStep = (event: any) => {
-      console.log('FinderForm - Received setStep event:', event.detail);
-      setCurrentStep(event.detail.step);
-    };
-    
-    // Add event listener
-    window.addEventListener('agentFinder:setStep', handleSetStep);
-    
-    // Clean up
-    return () => {
-      window.removeEventListener('agentFinder:setStep', handleSetStep);
-    };
-  }, [setCurrentStep]);
 
   // Helper function to find the next valid step based on form state
   const findNextValidStep = (currentStep: number, formData: any) => {
