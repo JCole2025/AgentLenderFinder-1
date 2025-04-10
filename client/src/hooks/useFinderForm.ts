@@ -76,16 +76,15 @@ export function useFinderForm() {
   // State for form validity
   const [isValid, setIsValid] = useState(true);
 
-  // Function to update form data
-  const updateFormData = (data: Partial<AgentFormData>) => {
+  // Function to update form data with optimized validation
+  const updateFormData = React.useCallback((data: Partial<AgentFormData>) => {
     setFormData(prev => {
       const updatedData = { ...prev, ...data };
+      // Validate inline to prevent unnecessary re-renders
+      validateForm(updatedData);
       return updatedData;
     });
-
-    // Validate the updated data
-    validateForm({ ...formData, ...data });
-  };
+  }, []);
 
   // Validate form data using Zod schemas and custom validators
   const validateForm = (data: AgentFormData) => {

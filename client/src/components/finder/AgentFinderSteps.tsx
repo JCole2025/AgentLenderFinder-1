@@ -33,7 +33,7 @@ interface AgentFinderStepsProps {
   isValid: boolean;
 }
 
-export default function AgentFinderSteps({
+const AgentFinderSteps = React.memo(function AgentFinderSteps({
   currentStep,
   formData,
   updateFormData,

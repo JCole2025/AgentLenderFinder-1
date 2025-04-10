@@ -8,7 +8,25 @@ import AgentFinderSteps from "./AgentFinderSteps";
  * Uses useFinderForm for form data and validation
  * Uses useFormNavigation for form flow control
  */
+import { ErrorBoundary } from '../ErrorBoundary';
+
 export default function FinderForm({ 
+  currentStep, 
+  setCurrentStep, 
+  onSuccess 
+}: FinderFormProps) {
+  return (
+    <ErrorBoundary>
+      <FinderFormContent
+        currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+        onSuccess={onSuccess}
+      />
+    </ErrorBoundary>
+  );
+}
+
+function FinderFormContent({ 
   currentStep, 
   setCurrentStep, 
   onSuccess 

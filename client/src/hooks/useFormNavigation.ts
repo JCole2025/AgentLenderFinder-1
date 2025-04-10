@@ -47,35 +47,18 @@ export function useFormNavigation() {
    * Determine the next step based on current step and form data
    */
   const getNextStep = (currentStep: number, formData: AgentFormData): number => {
-    // Default next step (increment by 1)
-    let nextStep = currentStep + 1;
+    const sellPathSteps = {
+      [FormStep.TRANSACTION_TYPE]: FormStep.LOCATION_PRICE,
+      [FormStep.LOCATION_PRICE]: FormStep.PROPERTY_ADDRESS,
+      [FormStep.PROPERTY_ADDRESS]: FormStep.CONTACT_INFO,
+      [FormStep.CONTACT_INFO]: FormStep.CONTACT_INFO
+    };
     
     if (formData.transaction_type === 'sell') {
-      // Sell transaction flow has special skip logic
-      switch (currentStep) {
-        case FormStep.TRANSACTION_TYPE:
-          console.log('Navigation: Transaction type -> Location/Price (sell path)');
-          // Skip property type and owner occupied
-          return FormStep.LOCATION_PRICE;
-        case FormStep.LOCATION_PRICE:
-          console.log('Navigation: Location/Price -> Property Address (sell path)');
-          // Go to property address
-          return FormStep.PROPERTY_ADDRESS;
-        case FormStep.PROPERTY_ADDRESS:
-          console.log('Navigation: Property Address -> Contact Info (sell path)');
-          // Skip timeline and investment strategy
-          return FormStep.CONTACT_INFO;
-        case FormStep.CONTACT_INFO:
-          console.log('Navigation: Already at Contact Info (sell path) - staying here');
-          // Stay on contact info if already there
-          return FormStep.CONTACT_INFO;
-        default:
-          break;
-      }
+      return sellPathSteps[currentStep] || Math.min(currentStep + 1, MAX_FORM_STEPS);
     }
     
-    // Ensure we don't exceed max steps
-    return Math.min(nextStep, MAX_FORM_STEPS);
+    return Math.min(currentStep + 1, MAX_FORM_STEPS);
   };
   
   /**
