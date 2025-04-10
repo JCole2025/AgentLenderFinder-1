@@ -135,6 +135,8 @@ export function useFormNavigation() {
     updateFormData, 
     setStep 
   }: TransactionChangeOptions): void => {
+    console.log('Transaction type changed to:', newType);
+    
     // Set standard fields for both transaction types
     const updatedFormData: Partial<AgentFormData> = {
       transaction_type: newType,
@@ -147,13 +149,17 @@ export function useFormNavigation() {
     
     // For sell transaction, jump directly to contact info
     if (newType === 'sell') {
-      // Give time for state update to apply
+      console.log('Sell transaction type selected, will jump to contact info');
+      
+      // Increase timeout to give more time for state update to apply
       setTimeout(() => {
-        // For sell transactions, we jump directly to the contact form (step 7)
-        jumpToStep(FormStep.CONTACT_INFO, setStep);
-      }, 50);
+        console.log('Now jumping to contact info step');
+        // For sell transactions, we jump directly to location/price (step 4) first
+        jumpToStep(FormStep.LOCATION_PRICE, setStep);
+      }, 300);
+    } else {
+      console.log('Buy transaction type selected, continuing normal flow');
     }
-    // For buy transactions, normal flow continues
   };
   
   /**
