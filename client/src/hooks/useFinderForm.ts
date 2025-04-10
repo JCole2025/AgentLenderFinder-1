@@ -101,7 +101,7 @@ export function useFinderForm() {
 
       // State validation removed as it's no longer required
 
-      // Only validate prices if transaction type is 'buy'
+      // Only validate buy-specific fields if transaction type is 'buy'
       if (data.transaction_type === 'buy') {
         // Validate min price
         if (data.price_min && !validatePrice(data.price_min)) {
@@ -121,6 +121,12 @@ export function useFinderForm() {
             customErrors.price_max = "Maximum price must be greater than minimum price";
             isFormValid = false;
           }
+        }
+        
+        // Owner occupied validation only applies to buy transactions
+        if (data.owner_occupied === undefined) {
+          customErrors.owner_occupied = "Please select if this will be your primary residence";
+          isFormValid = false;
         }
       }
 

@@ -153,6 +153,8 @@ export function useFormNavigation() {
         transaction_type: newType,
         timeline: "asap",
         purchase_timeline: "asap",
+        // For sell path, we don't need owner_occupied, but set a default to avoid validation issues
+        owner_occupied: false, // Set a default but it won't be shown or used in sell path
         // Add defaults for location and price to make form valid
         location: formData.location || "Denver, Colorado",
         price_min: formData.price_min || "300,000",
