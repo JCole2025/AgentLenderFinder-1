@@ -47,15 +47,20 @@ export function useFormNavigation() {
    * Determine the next step based on current step and form data
    */
   const getNextStep = (currentStep: number, formData: AgentFormData): number => {
-    const sellPathSteps = {
-      [FormStep.TRANSACTION_TYPE]: FormStep.LOCATION_PRICE,
-      [FormStep.LOCATION_PRICE]: FormStep.PROPERTY_ADDRESS,
-      [FormStep.PROPERTY_ADDRESS]: FormStep.CONTACT_INFO,
-      [FormStep.CONTACT_INFO]: FormStep.CONTACT_INFO
-    };
-    
     if (formData.transaction_type === 'sell') {
-      return sellPathSteps[currentStep] || Math.min(currentStep + 1, MAX_FORM_STEPS);
+      // Define explicit mapping for sell path steps
+      switch (currentStep) {
+        case FormStep.TRANSACTION_TYPE:
+          return FormStep.LOCATION_PRICE;
+        case FormStep.LOCATION_PRICE:
+          return FormStep.PROPERTY_ADDRESS;
+        case FormStep.PROPERTY_ADDRESS:
+          return FormStep.CONTACT_INFO;
+        case FormStep.CONTACT_INFO:
+          return FormStep.CONTACT_INFO; // Stay on contact step
+        default:
+          return Math.min(currentStep + 1, MAX_FORM_STEPS);
+      }
     }
     
     return Math.min(currentStep + 1, MAX_FORM_STEPS);
@@ -127,36 +132,26 @@ export function useFormNavigation() {
   }: TransactionChangeOptions): void => {
     console.log('Transaction type changed to:', newType);
     
-    // For sell transaction, set up a complete transition
+    // For sell transaction, set up a special flow
     if (newType === 'sell') {
-      console.log('Sell transaction type selected, will navigate DIRECTLY to contact page');
+      console.log('Sell transaction type selected, will follow specialized sell flow');
       
-      // Update form data before navigation with ALL required fields for form validation
+      // Update form data before navigation with basic fields for validation
       updateFormData({
         transaction_type: newType,
         timeline: "asap",
         purchase_timeline: "asap",
         // For sell path, we don't need owner_occupied, but set a default to avoid validation issues
         owner_occupied: false,
-        // Add defaults for all required fields to make form valid
-        location: "Denver, Colorado",
-        price_min: "300,000",
-        price_max: "600,000",
-        property_address: "To be provided",
+        // Default values for required fields that will be overridden by user
         property_type: "single_family", // Default to something valid
         strategy: ["not_sure"] // Default selection
       });
       
-      // PERMANENT FIX: Set contact page directly with no timeout
-      console.log('CRITICAL FIX: Permanently setting to contact info page (step 7)');
+      // For sell transactions, go to location and price step first
+      console.log('Setting step to LOCATION_PRICE (step 4)');
+      setStep(FormStep.LOCATION_PRICE);
       
-      // We use direct step setting to ensure it's immediately applied
-      setStep(FormStep.CONTACT_INFO);
-      
-      // Additional safeguard - apply again in case any state updates happen
-      requestAnimationFrame(() => {
-        setStep(FormStep.CONTACT_INFO);
-      });
     } else {
       // For buy transaction, just update the form data and let normal flow continue
       console.log('Buy transaction type selected, continuing normal flow');

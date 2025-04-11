@@ -100,7 +100,7 @@ export function useFinderForm() {
 
       // State validation removed as it's no longer required
 
-      // Only validate buy-specific fields if transaction type is 'buy'
+      // Transaction type specific validations
       if (data.transaction_type === 'buy') {
         // Validate min price
         if (data.price_min && !validatePrice(data.price_min)) {
@@ -126,6 +126,30 @@ export function useFinderForm() {
         if (data.owner_occupied === undefined) {
           customErrors.owner_occupied = "Please select if this will be your primary residence";
           isFormValid = false;
+        }
+      } else if (data.transaction_type === 'sell') {
+        // For sell transactions, property address is required
+        if (!data.property_address || data.property_address.trim() === '') {
+          customErrors.property_address = "Please enter the property address";
+          isFormValid = false;
+        }
+        
+        // Also validate price fields for sell transactions
+        if (data.price_min && !validatePrice(data.price_min)) {
+          customErrors.price_min = "Minimum price must be at least $100,000";
+          isFormValid = false;
+        }
+
+        if (data.price_max && !validatePrice(data.price_max)) {
+          customErrors.price_max = "Please enter a valid price";
+          isFormValid = false;
+        }
+
+        if (data.price_min && data.price_max) {
+          if (!validatePriceRange(data.price_min, data.price_max)) {
+            customErrors.price_max = "Maximum price must be greater than minimum price";
+            isFormValid = false;
+          }
         }
       }
 
