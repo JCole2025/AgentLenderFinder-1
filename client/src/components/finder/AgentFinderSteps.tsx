@@ -47,7 +47,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
 }: AgentFinderStepsProps) {
   // Use toast directly from import
   const isMobile = useIsMobile();
-  
+
   // State for price warning dialog
   const [showPriceWarning, setShowPriceWarning] = useState(false);
   const [currentPriceField, setCurrentPriceField] = useState<'min' | 'max'>('min');
@@ -63,7 +63,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
     // Cast string[] to AgentStrategy[]
     updateFormData({ strategy: values as any });
   };
-  
+
   // Handle price warning dialog confirmation
   const handlePriceWarningConfirm = () => {
     // Update the price to the minimum value
@@ -72,7 +72,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
     } else {
       updateFormData({ price_max: getDefaultMinPrice() });
     }
-    
+
     // Close the dialog
     setShowPriceWarning(false);
   };
@@ -114,11 +114,11 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
             // Make sure value is defined before passing
             if (value) {
               console.log('Transaction type selected:', value);
-              
+
               // For sell transaction, apply special handling
               if (value === 'sell') {
                 console.log('SELL transaction selected - applying special navigation');
-                
+
                 // First update form data
                 updateFormData({
                   transaction_type: "sell",
@@ -127,7 +127,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                   price_max: "600000",
                   location: "Denver, Colorado"
                 });
-                
+
                 // Force navigation directly to contact page
                 setTimeout(() => {
                   console.log('DIRECT NAVIGATION: Going to contact page (step 7)');
@@ -179,7 +179,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           </div>
         </FormStep>
       )}
-      
+
       {/* Skip property type step for sell path */}
       {formData.transaction_type === 'sell' && (
         <div className="hidden"></div>
@@ -210,7 +210,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           </div>
         </FormStep>
       )}
-      
+
       {/* Skip step 3 for sell path - add empty component to maintain indexing */}
       {formData.transaction_type === 'sell' && (
         <div className="hidden"></div>
@@ -332,7 +332,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                 </div>
                 {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="price-max" className="font-medium">
                   {formData.transaction_type === 'buy' ? 'Maximum Purchase Price' : 'Maximum Sale Price'}
@@ -365,14 +365,14 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                 {errors.price_max && <p className="text-sm text-red-500">{errors.price_max}</p>}
               </div>
             </div>
-            
+
             {(errors.price_range || errors.price_min_max) && (
               <p className="text-sm text-red-500 mt-2">
                 {errors.price_range || errors.price_min_max}
               </p>
             )}
           </div>
-          
+
           {/* Special button for sell flow to go directly to contact page */}
           {formData.transaction_type === 'sell' && (
             <div className="flex flex-col items-center mt-6">
@@ -394,14 +394,14 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                     price_max: formData.price_max || "600000",
                     location: formData.location || "Denver, Colorado"
                   });
-                  
+
                   // PERMANENT DISPLAY FIX: Force immediate navigation to contact page
                   console.log('SELL FLOW: Direct immediate navigation to contact page (step 7)');
-                  
+
                   // Skip directly to step 7 (contact page)
                   // Using fixed value to ensure it always goes to contact page regardless of current step
                   console.log('Setting current step to 7 (Contact Page) permanently');
-                  
+
                   // Use React state to ensure the contact page is permanently shown
                   advanceMultipleSteps(99); // Use large number to force to last step (contact)
                 }}
@@ -444,7 +444,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                 <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
               )}
             </div>
-            
+
             <div className="flex justify-end mt-6">
               <button
                 type="button"
@@ -550,7 +550,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           </div>
         </FormStep>
       )}
-      
+
       {/* Skip step 6 for sell path - add empty component to maintain indexing */}
       {formData.transaction_type === 'sell' && (
         <div className="hidden"></div>
@@ -591,4 +591,6 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
 
     </div>
   );
-}
+});
+
+export default AgentFinderSteps;
