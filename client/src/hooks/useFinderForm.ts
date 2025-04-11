@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AgentFormData, AgentTransactionType, AgentTimeline } from "@/types/finder";
 import { apiRequest } from "@/lib/queryClient";
 import { agentFinderSchema } from "@shared/schema";
@@ -77,7 +77,7 @@ export function useFinderForm() {
   const [isValid, setIsValid] = useState(true);
 
   // Function to update form data with optimized validation
-  const updateFormData = React.useCallback((data: Partial<AgentFormData>) => {
+  const updateFormData = useCallback((data: Partial<AgentFormData>) => {
     setFormData(prev => {
       const updatedData = { ...prev, ...data };
       // Validate inline to prevent unnecessary re-renders
