@@ -591,6 +591,6 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
 
     </div>
   );
-});
+}););
 
 export default AgentFinderSteps;
