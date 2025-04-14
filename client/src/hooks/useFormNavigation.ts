@@ -50,22 +50,40 @@ export function useFormNavigation() {
     if (!formData) return currentStep;
 
     if (formData.transaction_type === 'sell') {
+      // Sell path has 4 steps
       switch (currentStep) {
-        case FormStep.TRANSACTION_TYPE:
-          return 2; // Go to location/price card (D2)
-        case 2: // After location/price
+        case FormStep.TRANSACTION_TYPE: // Step 1
+          return 2; // Go to location/price
+        case 2: // Location/price
           return FormStep.PROPERTY_ADDRESS;
         case FormStep.PROPERTY_ADDRESS:
           return FormStep.CONTACT_INFO;
         case FormStep.CONTACT_INFO:
-          return FormStep.CONTACT_INFO;
+          return FormStep.CONTACT_INFO; // Stay on last step
         default:
-          return Math.min(currentStep + 1, MAX_FORM_STEPS);
+          return currentStep;
+      }
+    } else {
+      // Buy path has 7 steps
+      switch (currentStep) {
+        case FormStep.TRANSACTION_TYPE: // Step 1
+          return FormStep.PROPERTY_TYPE; // Step 2
+        case FormStep.PROPERTY_TYPE:
+          return FormStep.OWNER_OCCUPIED; // Step 3
+        case FormStep.OWNER_OCCUPIED:
+          return FormStep.LOCATION_PRICE; // Step 4
+        case FormStep.LOCATION_PRICE:
+          return FormStep.TIMELINE; // Step 5
+        case FormStep.TIMELINE:
+          return FormStep.INVESTMENT_STRATEGY; // Step 6
+        case FormStep.INVESTMENT_STRATEGY:
+          return FormStep.CONTACT_INFO; // Step 7
+        case FormStep.CONTACT_INFO:
+          return FormStep.CONTACT_INFO; // Stay on last step
+        default:
+          return currentStep;
       }
     }
-
-    // For buy path
-    return Math.min(currentStep + 1, MAX_FORM_STEPS);
   };
   
   /**
