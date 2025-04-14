@@ -93,31 +93,26 @@ function FinderFormContent({
   const skipSteps = (stepsCount: number) => {
     console.log(`FinderForm - Skipping ${stepsCount} steps from step ${currentStep}`);
     
-    // PERMANENT DISPLAY FIX: For sell transactions, always go to contact page regardless of input
+    // For sell transactions, use our new flow that includes property address collection
     if (formData.transaction_type === 'sell') {
-      console.log('FinderForm - Sell flow detected! Permanently setting to contact page (step 7)');
+      console.log('FinderForm - Sell flow detected! Using property address flow');
       
-      // Set directly with no timeouts
-      setCurrentStep(FormStep.CONTACT_INFO);
+      // Calculate the next step properly
+      const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
+      console.log(`FinderForm - Target step: ${targetStep}`);
+      setCurrentStep(targetStep);
       
-      // Force all required fields to have values to prevent validation errors
-      updateFormData({
-        transaction_type: "sell",
-        owner_occupied: false,
-        property_type: "single_family",
-        location: formData.location || "Denver, Colorado",
-        price_min: formData.price_min || "300,000",
-        price_max: formData.price_max || "600,000",
-        property_address: formData.property_address || "To be provided later",
-        strategy: ["not_sure"],
-        purchase_timeline: "asap",
-        timeline: "asap"
-      });
-      
-      // Double ensure using requestAnimationFrame for next frame
-      requestAnimationFrame(() => {
-        setCurrentStep(FormStep.CONTACT_INFO);
-      });
+      // Only set default values if absolutely needed for validation
+      if (currentStep === FormStep.TRANSACTION_TYPE && stepsCount > 1) {
+        updateFormData({
+          transaction_type: "sell",
+          owner_occupied: false,
+          property_type: "single_family",
+          strategy: ["not_sure"],
+          purchase_timeline: "asap",
+          timeline: "asap"
+        });
+      }
     } else {
       // Normal step advancement for buy flow
       const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);

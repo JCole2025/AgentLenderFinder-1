@@ -59,7 +59,18 @@ export const agentFinderSchema = z.object({
   location: z.string().min(1, "Please enter a location"),
   property_type: z.string().min(1, "Please specify property type"),
   purchase_timeline: agentTimelineSchema,
-  property_address: z.string().optional(),
+  // Conditionally require property_address based on transaction type
+  property_address: z.string()
+    .refine(
+      (val, ctx) => {
+        // Only require for sell transactions
+        if (ctx.parent.transaction_type === 'sell' && (!val || val.trim() === '')) {
+          return false;
+        }
+        return true;
+      },
+      { message: "Property address is required when selling a property" }
+    ),
   price_min: z.string().min(1, "Please specify minimum price"),
   price_max: z.string().min(1, "Please specify maximum price"),
   loan_started: z.boolean().optional(),
