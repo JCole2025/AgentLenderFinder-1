@@ -97,8 +97,8 @@ function FinderFormContent({
     if (formData.transaction_type === 'sell') {
       console.log('FinderForm - Sell flow detected! Using sequential flow');
       
-      // For sell path, always go to location step first
-      setCurrentStep(FormStep.LOCATION_PRICE);
+      // For sell path, go to step 2 (seller location)
+      setCurrentStep(2);
       
       // Only set default values if absolutely needed for validation
       if (currentStep === FormStep.TRANSACTION_TYPE && stepsCount > 1) {

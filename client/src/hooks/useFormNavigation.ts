@@ -51,8 +51,8 @@ export function useFormNavigation() {
       // Define explicit mapping for sell path steps
       switch (currentStep) {
         case FormStep.TRANSACTION_TYPE:
-          return FormStep.LOCATION_PRICE; // Go to step 2 (Card D2)
-        case FormStep.LOCATION_PRICE:
+          return 2; // Go to seller location card (D2)
+        case 2: // From seller location
           return FormStep.PROPERTY_ADDRESS;
         case FormStep.PROPERTY_ADDRESS:
           return FormStep.CONTACT_INFO;
