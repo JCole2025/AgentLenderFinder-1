@@ -52,16 +52,12 @@ export function useFormNavigation() {
       switch (currentStep) {
         case FormStep.TRANSACTION_TYPE:
           return 2; // Go to seller location card (D2)
-        case 2: // From seller location
+        case 2: // From seller location (D2)
           return FormStep.PROPERTY_ADDRESS;
         case FormStep.PROPERTY_ADDRESS:
           return FormStep.CONTACT_INFO;
         case FormStep.CONTACT_INFO:
           return FormStep.CONTACT_INFO; // Stay on last step
-        default:
-          return Math.min(currentStep + 1, MAX_FORM_STEPS);
-        case FormStep.CONTACT_INFO:
-          return FormStep.CONTACT_INFO; // Stay on contact step
         default:
           return Math.min(currentStep + 1, MAX_FORM_STEPS);
       }
