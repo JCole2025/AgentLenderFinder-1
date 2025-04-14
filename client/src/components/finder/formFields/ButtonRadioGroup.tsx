@@ -58,26 +58,13 @@ export default function ButtonRadioGroup({
     console.log('ButtonRadioGroup - Auto advance enabled:', autoAdvance);
     console.log('ButtonRadioGroup - onNext available:', !!onNext);
     
-    // PERMANENT FIX FOR SELL PROPERTY FLOW
-    // Direct navigation to contact page for sell transactions
+    // For sell option, just call onNext once to follow our new flow
+    // that includes the property address step
     if (value === "sell" && onNext) {
-      console.log('PERMANENT FIX: SELL option selected - going to contact page');
+      console.log('SELL option selected - following property address flow');
       
-      // Call the navigation callback immediately 
+      // Call the navigation callback to proceed to property address step
       onNext();
-      
-      // REDUNDANT CALL: Use requestAnimationFrame to ensure it's called after state updates
-      requestAnimationFrame(() => {
-        console.log('REDUNDANT NAVIGATION: Double-ensuring sell flow goes to contact page');
-        onNext();
-      });
-      
-      // THIRD CALL: Add a final backup call with a small timeout
-      setTimeout(() => {
-        console.log('FINAL BACKUP: Triple-ensuring sell flow goes to contact page');
-        onNext();
-      }, 100);
-      
       return;
     }
     

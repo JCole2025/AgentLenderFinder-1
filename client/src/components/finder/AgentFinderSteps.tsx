@@ -128,11 +128,9 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                   location: "Denver, Colorado"
                 });
 
-                // Force navigation directly to contact page
-                setTimeout(() => {
-                  console.log('DIRECT NAVIGATION: Going to contact page (step 7)');
-                  advanceMultipleSteps(6); // Skip to step 7 (contact)
-                }, 300);
+                // Use the onTransactionTypeChange to follow our new flow
+                console.log('SELL transaction selected - following property address flow');
+                onTransactionTypeChange(value);
               } else {
                 // For buy transactions, use normal flow but still auto-advance
                 console.log('BUY transaction selected - using normal navigation flow');
@@ -373,40 +371,31 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
             )}
           </div>
 
-          {/* Special button for sell flow to go directly to contact page */}
+          {/* Button to go to property address step for sell flow */}
           {formData.transaction_type === 'sell' && (
             <div className="flex flex-col items-center mt-6">
               <p className="text-lg font-medium text-center mb-4">
-                Ready to connect with a qualified selling agent?
+                Ready to provide your property details?
               </p>
               <button
                 type="button"
                 className="px-8 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 transition-colors"
                 onClick={() => {
-                  // HARDCODED FIX: Directly set step to contact page
-                  console.log('Sell flow: Jumping straight to contact page');
-                  // First update important form data
+                  // Update form data before proceeding
                   updateFormData({
                     transaction_type: "sell",
                     owner_occupied: false,
-                    property_address: formData.property_address || "To be provided",
                     price_min: formData.price_min || "300000",
                     price_max: formData.price_max || "600000",
                     location: formData.location || "Denver, Colorado"
                   });
-
-                  // PERMANENT DISPLAY FIX: Force immediate navigation to contact page
-                  console.log('SELL FLOW: Direct immediate navigation to contact page (step 7)');
-
-                  // Skip directly to step 7 (contact page)
-                  // Using fixed value to ensure it always goes to contact page regardless of current step
-                  console.log('Setting current step to 7 (Contact Page) permanently');
-
-                  // Use React state to ensure the contact page is permanently shown
-                  advanceMultipleSteps(99); // Use large number to force to last step (contact)
+                  
+                  // Regular flow to next step (Property Address for sell)
+                  console.log('Proceeding to property address step');
+                  onNext();
                 }}
               >
-                Continue to Contact Form
+                Continue to Property Address
               </button>
             </div>
           )}
