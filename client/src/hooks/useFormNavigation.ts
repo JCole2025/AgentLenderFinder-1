@@ -57,6 +57,10 @@ export function useFormNavigation() {
         case FormStep.PROPERTY_ADDRESS:
           return FormStep.CONTACT_INFO;
         case FormStep.CONTACT_INFO:
+          return FormStep.CONTACT_INFO; // Stay on last step
+        default:
+          return Math.min(currentStep + 1, MAX_FORM_STEPS);
+        case FormStep.CONTACT_INFO:
           return FormStep.CONTACT_INFO; // Stay on contact step
         default:
           return Math.min(currentStep + 1, MAX_FORM_STEPS);
