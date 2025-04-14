@@ -145,12 +145,14 @@ export function useFormNavigation() {
         owner_occupied: false,
         // Default values for required fields that will be overridden by user
         property_type: "single_family", // Default to something valid
-        strategy: ["not_sure"] // Default selection
+        strategy: ["not_sure"], // Default selection
+        // Clear any existing property address to force user input
+        property_address: ""
       });
       
-      // For sell transactions, go to location and price step first
-      console.log('Setting step to LOCATION_PRICE (step 4)');
-      setStep(FormStep.LOCATION_PRICE);
+      // For sell transactions, immediately go to property address step
+      console.log('Setting step to PROPERTY_ADDRESS (step 5) for sell flow');
+      setStep(FormStep.PROPERTY_ADDRESS);
       
     } else {
       // For buy transaction, just update the form data and let normal flow continue
