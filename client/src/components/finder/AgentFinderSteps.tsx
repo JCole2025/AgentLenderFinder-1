@@ -136,9 +136,15 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
+    sellerLocationAndPrice: {
+      isActive: currentStep === 4 && formData.transaction_type === 'sell',
+      title: "Where is your property located?",
+      subtitle: "Tell us the location and estimated value of your property",
+    },
+
     locationAndPrice: {
-      isActive: currentStep === 4,
-      title: formData.transaction_type === 'buy' ? "Where are you looking to invest?" : "Where is your property located?",
+      isActive: currentStep === 4 && formData.transaction_type === 'buy',
+      title: "Where are you looking to invest?",
       subtitle: "Tell us about your location and budget",
       content: (
         <div className="space-y-8">
