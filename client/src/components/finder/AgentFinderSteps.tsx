@@ -140,6 +140,102 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       isActive: currentStep === 4 && formData.transaction_type === 'sell',
       title: "Where is your property located?",
       subtitle: "Tell us the location and estimated value of your property",
+      content: (
+        <div className="space-y-8">
+          <div className="mb-4 space-y-4">
+            <h3 className="text-lg font-semibold mb-2">Property location</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="city" className="text-sm font-medium">City</Label>
+                <Input 
+                  id="city"
+                  placeholder="Denver"
+                  value={(formData.location || '').split(',')[0] || ''}
+                  onChange={(e) => {
+                    const state = (formData.location || '').split(',')[1]?.trim() || '';
+                    updateFormData({ 
+                      location: `${e.target.value}${state ? `, ${state}` : ''}`
+                    });
+                  }}
+                  className={`w-full ${errors.location ? "border-red-500" : ""}`}
+                />
+              </div>
+              <div>
+                <Label htmlFor="state" className="text-sm font-medium">State</Label>
+                <Select
+                  value={(formData.location || '').split(',')[1]?.trim() || ''}
+                  onValueChange={(value) => {
+                    const city = (formData.location || '').split(',')[0] || '';
+                    updateFormData({ 
+                      location: `${city}${value ? `, ${value}` : ''}`
+                    });
+                  }}
+                >
+                  <SelectTrigger 
+                    id="state" 
+                    className={`w-full h-10 ${errors.location ? "border-red-500" : ""}`}
+                  >
+                    <SelectValue placeholder="Select State" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getStateOptions().map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {errors.location && (
+              <p className="text-red-500 text-sm">{errors.location}</p>
+            )}
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-4">What is your estimated property value?</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="price-min" className="font-medium">Minimum Value</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
+                  <Input
+                    id="price-min"
+                    type="text"
+                    className={`pl-7 ${errors.price_min ? "border-red-500" : ""}`}
+                    placeholder="300000"
+                    value={formData.price_min || ''}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      updateFormData({ price_min: value });
+                    }}
+                  />
+                </div>
+                {errors.price_min && <p className="text-sm text-red-500">{errors.price_min}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="price-max" className="font-medium">Maximum Value</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-dark">$</span>
+                  <Input
+                    id="price-max"
+                    type="text"
+                    className={`pl-7 ${errors.price_max ? "border-red-500" : ""}`}
+                    placeholder="600000"
+                    value={formData.price_max || ''}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      updateFormData({ price_max: value });
+                    }}
+                  />
+                </div>
+                {errors.price_max && <p className="text-sm text-red-500">{errors.price_max}</p>}
+              </div>
+            </div>
+          </div>
+        </div>
+      )
     },
 
     locationAndPrice: {
