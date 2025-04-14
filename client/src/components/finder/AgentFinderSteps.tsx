@@ -4,7 +4,7 @@ import {
   AgentFormData,
   agentTimelineLabels
 } from '@/types/finder';
-import { FormStep as FormStepEnum } from '@/hooks/useFormNavigation';
+
 import FormStep from './FormStep';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -406,12 +406,12 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       {/* Step 5: Property Address (Only for Sell) */}
       {formData.transaction_type === 'sell' && (
         <FormStep
-          isActive={currentStep === FormStep.PROPERTY_ADDRESS}
+          isActive={currentStep === 5}
           onNext={onNext}
           onPrevious={onPrevious}
           formData={formData}
           updateFormData={updateFormData}
-          stepNumber={FormStep.PROPERTY_ADDRESS}
+          stepNumber={5}
 
           isValid={Boolean(formData.property_address && formData.property_address.trim() !== '')}
           errors={errors}
@@ -452,12 +452,12 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       {/* Step 6: Timeline (Only for Buy) */}
       {formData.transaction_type === 'buy' && (
         <FormStep
-          isActive={currentStep === FormStep.TIMELINE}
+          isActive={currentStep === 5}
           onNext={onNext}
           onPrevious={onPrevious}
           formData={formData}
           updateFormData={updateFormData}
-          stepNumber={FormStep.TIMELINE}
+          stepNumber={5}
 
           isValid={Boolean(formData.purchase_timeline)}
           errors={errors}
