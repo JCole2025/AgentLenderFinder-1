@@ -95,12 +95,10 @@ function FinderFormContent({
     
     // For sell transactions, use our new flow that includes property address collection
     if (formData.transaction_type === 'sell') {
-      console.log('FinderForm - Sell flow detected! Using property address flow');
+      console.log('FinderForm - Sell flow detected! Using sequential flow');
       
-      // Calculate the next step properly
-      const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
-      console.log(`FinderForm - Target step: ${targetStep}`);
-      setCurrentStep(targetStep);
+      // For sell path, always go to location step first
+      setCurrentStep(FormStep.LOCATION_PRICE);
       
       // Only set default values if absolutely needed for validation
       if (currentStep === FormStep.TRANSACTION_TYPE && stepsCount > 1) {
