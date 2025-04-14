@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getStateOptions } from '@/lib/stateValidator';
 import { formatPrice, getDefaultMinPrice, MIN_PROPERTY_PRICE } from '@/lib/priceValidator';
 import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from '@/hooks/use-toast';
 import ButtonRadioGroup from './formFields/ButtonRadioGroup';
 import ButtonPropertySelect from './formFields/ButtonPropertySelect';
 import OwnerOccupiedButtons from './formFields/OwnerOccupiedButtons';
@@ -45,81 +44,42 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
   errors,
   isValid
 }: AgentFinderStepsProps) {
-  // Use toast directly from import
   const isMobile = useIsMobile();
-
-  // State for price warning dialog
   const [showPriceWarning, setShowPriceWarning] = useState(false);
   const [currentPriceField, setCurrentPriceField] = useState<'min' | 'max'>('min');
 
-  // Handle special skipping of steps for navigation
   const handleNext = () => {
-    console.log('AgentFinderSteps - handleNext called');
     onNext();
   };
 
-  // Special handling for strategy selection
   const handleStrategyChange = (values: string[]) => {
-    // Cast string[] to AgentStrategy[]
     updateFormData({ strategy: values as any });
   };
 
-  // Handle price warning dialog confirmation
   const handlePriceWarningConfirm = () => {
-    // Update the price to the minimum value
     if (currentPriceField === 'min') {
       updateFormData({ price_min: getDefaultMinPrice() });
     } else {
       updateFormData({ price_max: getDefaultMinPrice() });
     }
-
-    // Close the dialog
     setShowPriceWarning(false);
   };
 
-  return (
-    <div className="pt-6 pb-8 px-6 md:px-8">
-      {/* Price Warning Dialog */}
-      <PriceWarningDialog 
-        isOpen={showPriceWarning}
-        onClose={() => setShowPriceWarning(false)}
-        onConfirm={handlePriceWarningConfirm}
-      />
-      {/* Step 1: Transaction Type */}
-      <FormStep
-        isActive={currentStep === 1}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={1}
-        isValid={Boolean(formData.transaction_type)}
-        errors={errors}
-        title="What type of transaction are you interested in?"
-        subtitle="Select the type of real estate transaction"
-        showNext={false}
-      >
+  const cards = {
+    transactionType: {
+      isActive: currentStep === 1,
+      title: "What type of transaction are you interested in?",
+      subtitle: "Select the type of real estate transaction",
+      content: (
         <ButtonRadioGroup
           options={[
             { value: "buy", label: "Buy Property", description: agentTransactionTypeDescriptions.buy },
-            { 
-              value: "sell", 
-              label: "Sell Property", 
-              description: "I'm looking to sell my real estate property and need to find a qualified selling agent"
-            }
+            { value: "sell", label: "Sell Property", description: "I'm looking to sell my real estate property and need to find a qualified selling agent" }
           ]}
           selectedValue={formData.transaction_type}
           onChange={(value) => {
-            // Use the centralized transaction type handler from parent
-            // Make sure value is defined before passing
             if (value) {
-              console.log('Transaction type selected:', value);
-
-              // For sell transaction, apply special handling
               if (value === 'sell') {
-                console.log('SELL transaction selected - applying special navigation');
-
-                // First update form data
                 updateFormData({
                   transaction_type: "sell",
                   owner_occupied: false,
@@ -127,121 +87,65 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                   price_max: "600000",
                   location: "Denver, Colorado"
                 });
-
-                // Force navigation directly to contact page
                 setTimeout(() => {
-                  console.log('DIRECT NAVIGATION: Going to contact page (step 7)');
-                  advanceMultipleSteps(6); // Skip to step 7 (contact)
+                  advanceMultipleSteps(6);
                 }, 300);
               } else {
-                // For buy transactions, use normal flow but still auto-advance
-                console.log('BUY transaction selected - using normal navigation flow');
                 onTransactionTypeChange(value);
-                // Note: The ButtonRadioGroup will auto-advance for Buy option
               }
             }
           }}
           name="agent_transaction_type"
-          autoAdvance={false} // Disable auto-advance for both paths
+          autoAdvance={false}
           onNext={handleNext}
         />
-        {errors.transaction_type && (
-          <p className="text-red-500 text-sm mt-2">{errors.transaction_type}</p>
-        )}
-      </FormStep>
+      )
+    },
 
-      {/* Step 2: Property Type (Only for Buy) */}
-      {formData.transaction_type === 'buy' && (
-        <FormStep
-          isActive={currentStep === 2}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={2}
-
-          isValid={Boolean(formData.property_type && formData.property_type.trim() !== '')}
-          errors={errors}
-          title="What type of property are you looking for?"
-          subtitle="Select the property type"
-          showNext={false}
-        >
-          <div className="space-y-6">
-            <div className="mt-4">
-              <ButtonPropertySelect
-                selectedValue={formData.property_type}
-                onChange={(value) => updateFormData({ property_type: value })}
-                error={errors.property_type}
-                autoAdvance={true}
-                onNext={handleNext}
-              />
-            </div>
-          </div>
-        </FormStep>
-      )}
-
-      {/* Skip property type step for sell path */}
-      {formData.transaction_type === 'sell' && (
-        <div className="hidden"></div>
-      )}
-
-      {/* Step 3: Owner Occupied (Only for Buy) */}
-      {formData.transaction_type === 'buy' && (
-        <FormStep
-          isActive={currentStep === 3}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={3}
-
-          isValid={formData.owner_occupied !== undefined} // Required field
-          errors={errors}
-          title="Will you live in this property?"
-          subtitle="Select if this will be your primary residence"
-          showNext={false} // Hide Next button as we auto-advance
-        >
-          <div className="space-y-6 max-w-xl mx-auto">
-            <OwnerOccupiedButtons 
-              isOwnerOccupied={formData.owner_occupied}
-              onChange={(value) => updateFormData({ owner_occupied: value })}
+    propertyType: {
+      isActive: currentStep === 2 && formData.transaction_type === 'buy',
+      title: "What type of property are you looking for?",
+      subtitle: "Select the property type",
+      content: (
+        <div className="space-y-6">
+          <div className="mt-4">
+            <ButtonPropertySelect
+              selectedValue={formData.property_type}
+              onChange={(value) => updateFormData({ property_type: value })}
+              error={errors.property_type}
+              autoAdvance={true}
               onNext={handleNext}
             />
           </div>
-        </FormStep>
-      )}
+        </div>
+      )
+    },
 
-      {/* Skip step 3 for sell path - add empty component to maintain indexing */}
-      {formData.transaction_type === 'sell' && (
-        <div className="hidden"></div>
-      )}
+    ownerOccupied: {
+      isActive: currentStep === 3 && formData.transaction_type === 'buy',
+      title: "Will you live in this property?",
+      subtitle: "Select if this will be your primary residence",
+      content: (
+        <div className="space-y-6 max-w-xl mx-auto">
+          <OwnerOccupiedButtons 
+            isOwnerOccupied={formData.owner_occupied}
+            onChange={(value) => updateFormData({ owner_occupied: value })}
+            onNext={handleNext}
+          />
+        </div>
+      )
+    },
 
-      {/* Step 4: Location and Price Range */}
-      <FormStep
-        isActive={currentStep === 4}
-        onNext={onNext}
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={4}
-
-        isValid={Boolean(
-          formData.location && formData.location.trim() !== '' && 
-          formData.price_min && formData.price_min.trim() !== '' && 
-          formData.price_max && formData.price_max.trim() !== ''
-        )}
-        errors={errors}
-        title={formData.transaction_type === 'buy' ? "Where are you looking to invest?" : "Where is your property located?"}
-        subtitle="Tell us about your location and budget"
-        showNext={true} // Always show the next button
-      >
+    locationAndPrice: {
+      isActive: currentStep === 4,
+      title: formData.transaction_type === 'buy' ? "Where are you looking to invest?" : "Where is your property located?",
+      subtitle: "Tell us about your location and budget",
+      content: (
         <div className="space-y-8">
-          {/* Location Section */}
+          {/* Location fields */}
           <div className="mb-4 space-y-4">
             <h3 className="text-lg font-semibold mb-2">
-              {formData.transaction_type === 'buy' 
-                ? "Target location" 
-                : "Property location"}
+              {formData.transaction_type === 'buy' ? "Target location" : "Property location"}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -291,7 +195,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
             )}
           </div>
 
-          {/* Price Range Section */}
+          {/* Price Range fields */}
           <div>
             <h3 className="text-lg font-semibold mb-4">What is your price range?</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -308,23 +212,13 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                     placeholder="100000"
                     value={formData.price_min || ''}
                     onChange={(e) => {
-                      // Only allow numeric input
                       const value = e.target.value.replace(/[^0-9]/g, '');
                       updateFormData({ price_min: value });
                     }}
-                    onFocus={(e) => {
-                      // If empty, auto-populate with the minimum value
-                      if (!formData.price_min) {
-                        updateFormData({ price_min: getDefaultMinPrice() });
-                      }
-                    }}
                     onBlur={(e) => {
-                      // Check if the value is below minimum when leaving the field
                       const numericValue = parseInt(e.target.value.replace(/[^0-9]/g, ''));
                       if (numericValue > 0 && numericValue < MIN_PROPERTY_PRICE) {
-                        // Set the current price field for the dialog
                         setCurrentPriceField('min');
-                        // Show the warning dialog
                         setShowPriceWarning(true);
                       }
                     }}
@@ -346,17 +240,13 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                     placeholder="500000"
                     value={formData.price_max || ''}
                     onChange={(e) => {
-                      // Only allow numeric input
                       const value = e.target.value.replace(/[^0-9]/g, '');
                       updateFormData({ price_max: value });
                     }}
                     onBlur={(e) => {
-                      // Check if the value is below minimum when leaving the field
                       const numericValue = parseInt(e.target.value.replace(/[^0-9]/g, ''));
                       if (numericValue > 0 && numericValue < MIN_PROPERTY_PRICE) {
-                        // Set the current price field for the dialog
                         setCurrentPriceField('max');
-                        // Show the warning dialog
                         setShowPriceWarning(true);
                       }
                     }}
@@ -365,218 +255,95 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
                 {errors.price_max && <p className="text-sm text-red-500">{errors.price_max}</p>}
               </div>
             </div>
+          </div>
+        </div>
+      )
+    },
 
-            {(errors.price_range || errors.price_min_max) && (
-              <p className="text-sm text-red-500 mt-2">
-                {errors.price_range || errors.price_min_max}
-              </p>
+    propertyAddress: {
+      isActive: currentStep === 5 && formData.transaction_type === 'sell',
+      title: "What is the property address?",
+      subtitle: "Enter the full address of the property you want to sell",
+      content: (
+        <div className="space-y-6">
+          <div className="mb-4">
+            <Label htmlFor="property_address" className="font-medium">
+              Full property address
+            </Label>
+            <Input 
+              id="property_address"
+              placeholder="123 Main St"
+              value={formData.property_address || ''}
+              onChange={(e) => updateFormData({ property_address: e.target.value })}
+              className={`w-full ${errors.property_address ? "border-red-500" : ""}`}
+            />
+            {errors.property_address && (
+              <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
             )}
           </div>
+        </div>
+      )
+    },
 
-          {/* Special button for sell flow to go directly to contact page */}
-          {formData.transaction_type === 'sell' && (
-            <div className="flex flex-col items-center mt-6">
-              <p className="text-lg font-medium text-center mb-4">
-                Ready to connect with a qualified selling agent?
-              </p>
-              <button
-                type="button"
-                className="px-8 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 transition-colors"
-                onClick={() => {
-                  // HARDCODED FIX: Directly set step to contact page
-                  console.log('Sell flow: Jumping straight to contact page');
-                  // First update important form data
-                  updateFormData({
-                    transaction_type: "sell",
-                    owner_occupied: false,
-                    property_address: formData.property_address || "To be provided",
-                    price_min: formData.price_min || "300000",
-                    price_max: formData.price_max || "600000",
-                    location: formData.location || "Denver, Colorado"
-                  });
+    investmentStrategy: {
+      isActive: currentStep === 6 && formData.transaction_type === 'buy',
+      title: "What is your investment strategy?",
+      subtitle: "Tell us about your investment plans",
+      content: (
+        <div className="space-y-8">
+          <div>
+            <h3 className="text-lg font-medium mb-3">Select all that apply:</h3>
+            <ButtonCheckboxGroup
+              options={[
+                { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
+                { value: "short_term_rental", label: "Short-Term Rental (STR)", description: "I plan to list on platforms like Airbnb/VRBO (1-30 days)" },
+                { value: "mid_term_rental", label: "Mid-Term Rental (MTR)", description: "I plan to rent for 1-12 months at a time" },
+                { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
+              ]}
+              selectedValues={formData.strategy || []}
+              onChange={handleStrategyChange}
+              autoAdvance={false}
+              minSelected={1}
+            />
+          </div>
+        </div>
+      )
+    },
 
-                  // PERMANENT DISPLAY FIX: Force immediate navigation to contact page
-                  console.log('SELL FLOW: Direct immediate navigation to contact page (step 7)');
-
-                  // Skip directly to step 7 (contact page)
-                  // Using fixed value to ensure it always goes to contact page regardless of current step
-                  console.log('Setting current step to 7 (Contact Page) permanently');
-
-                  // Use React state to ensure the contact page is permanently shown
-                  advanceMultipleSteps(99); // Use large number to force to last step (contact)
-                }}
-              >
-                Continue to Contact Form
-              </button>
-            </div>
+    purchaseTimeline: {
+      isActive: currentStep === 5 && formData.transaction_type === 'buy',
+      title: `When are you looking to purchase in ${formData.location}?`,
+      subtitle: "Select your timeline",
+      content: (
+        <div>
+          <ButtonRadioGroup
+            options={[
+              { value: "asap", label: "ASAP", description: "I am ready now" },
+              { value: "1_3_months", label: "1-3 Months", description: "I'm planning to invest in the next 1-3 months" },
+              { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
+              { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" }
+            ]}
+            selectedValue={formData.purchase_timeline === undefined ? "" : formData.purchase_timeline}
+            onChange={(value) => updateFormData({ 
+              purchase_timeline: value === "default" ? undefined : value as any,
+              timeline: value === "default" ? undefined : value as any
+            })}
+            name="agent_purchase_timeline"
+            autoAdvance={true}
+            onNext={handleNext}
+          />
+          {errors.purchase_timeline && (
+            <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
           )}
         </div>
-      </FormStep>
+      )
+    },
 
-      {/* Step 5: Property Address (Only for Sell) */}
-      {formData.transaction_type === 'sell' && (
-        <FormStep
-          isActive={currentStep === 5}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={5}
-
-          isValid={Boolean(formData.property_address && formData.property_address.trim() !== '')}
-          errors={errors}
-          title="What is the property address?"
-          subtitle="Enter the full address of the property you want to sell"
-        >
-          <div className="space-y-6">
-            <div className="mb-4">
-              <Label htmlFor="property_address" className="font-medium">
-                Full property address
-              </Label>
-              <Input 
-                id="property_address"
-                placeholder="123 Main St"
-                value={formData.property_address || ''}
-                onChange={(e) => updateFormData({ property_address: e.target.value })}
-                className={`w-full ${errors.property_address ? "border-red-500" : ""}`}
-              />
-              {errors.property_address && (
-                <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
-              )}
-            </div>
-
-            <div className="flex justify-end mt-6">
-              <button
-                type="button"
-                className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${!formData.property_address ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={onNext}
-                disabled={!formData.property_address}
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </FormStep>
-      )}
-
-      {/* Step 6: Timeline (Only for Buy) */}
-      {formData.transaction_type === 'buy' && (
-        <FormStep
-          isActive={currentStep === 5}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={5}
-
-          isValid={Boolean(formData.purchase_timeline)}
-          errors={errors}
-          title={`When are you looking to purchase in ${formData.location}?`}
-          subtitle="Select your timeline"
-          showNext={false}
-        >
-          <div>
-            <ButtonRadioGroup
-              options={[
-                { value: "asap", label: "ASAP", description: "I am ready now" },
-                { value: "1_3_months", label: "1-3 Months", description: "I'm planning to invest in the next 1-3 months" },
-                { value: "3_6_months", label: "3-6 Months", description: "I'm planning to invest in the next 3-6 months" },
-                { value: "6_12_months", label: "6-12 Months", description: "I'm planning to invest in the next 6-12 months" }
-              ]}
-              selectedValue={formData.purchase_timeline === undefined ? "" : formData.purchase_timeline}
-              onChange={(value) => updateFormData({ 
-                purchase_timeline: value === "default" ? undefined : value as any,
-                timeline: value === "default" ? undefined : value as any
-              })}
-              name="agent_purchase_timeline"
-              autoAdvance={true}
-              onNext={handleNext}
-            />
-            {errors.purchase_timeline && (
-              <p className="text-red-500 text-sm mt-2">{errors.purchase_timeline}</p>
-            )}
-          </div>
-        </FormStep>
-      )}
-
-      {/* Step 6: Investment Strategy (Only for Buy) */}
-      {formData.transaction_type === 'buy' && (
-        <FormStep
-          isActive={currentStep === 6}
-          onNext={onNext}
-          onPrevious={onPrevious}
-          formData={formData}
-          updateFormData={updateFormData}
-          stepNumber={6}
-
-          isValid={Boolean(formData.strategy && formData.strategy.length > 0)}
-          errors={errors}
-          title="What is your investment strategy?"
-          subtitle="Tell us about your investment plans"
-          showNext={false}
-        >
-          <div className="space-y-8">
-            <div>
-              <div>
-                <h3 className="text-lg font-medium mb-3">Select all that apply:</h3>
-                <ButtonCheckboxGroup
-                  options={[
-                    { value: "buy_and_hold_brrrr", label: "Long Term Rental", description: "I plan to buy and rent out long-term" },
-                    { value: "short_term_rental", label: "Short-Term Rental (STR)", description: "I plan to list on platforms like Airbnb/VRBO (1-30 days)" },
-                    { value: "mid_term_rental", label: "Mid-Term Rental (MTR)", description: "I plan to rent for 1-12 months at a time" },
-                    { value: "not_sure", label: "Not sure yet", description: "I'm still exploring my options" }
-                  ]}
-                  selectedValues={formData.strategy || []}
-                  onChange={handleStrategyChange}
-                  autoAdvance={false}
-                  minSelected={1}
-                />
-                <div className="mt-6 flex justify-end">
-                  <button
-                    type="button"
-                    className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ${(formData.strategy || []).length < 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    onClick={handleNext}
-                    disabled={(formData.strategy || []).length < 1}
-                  >
-                    Continue
-                  </button>
-                </div>
-              </div>
-              {errors.strategy && (
-                <p className="text-red-500 text-sm mt-2">{errors.strategy}</p>
-              )}
-              <p className="text-sm text-gray-500 mt-4">Note: We do not yet support Fix and Flip strategies or commercial.</p>
-            </div>
-          </div>
-        </FormStep>
-      )}
-
-      {/* Skip step 6 for sell path - add empty component to maintain indexing */}
-      {formData.transaction_type === 'sell' && (
-        <div className="hidden"></div>
-      )}
-
-      {/* Step 7: Contact Information */}
-      <FormStep
-        isActive={currentStep === 7}
-        onNext={onSubmit} // Submit the form when going "next" from the contact step
-        onPrevious={onPrevious}
-        formData={formData}
-        updateFormData={updateFormData}
-        stepNumber={7}
-        isValid={
-          Boolean(formData.contact?.first_name) &&
-          Boolean(formData.contact?.last_name) &&
-          Boolean(formData.contact?.email) &&
-          Boolean(formData.contact?.phone) &&
-          Boolean(formData.terms_accepted)
-        }
-        errors={errors}
-        title="Your contact information"
-        subtitle="Tell us how the agent can reach you"
-        nextLabel="Match with an Agent" // Consistent button text for all transaction types
-        showSubmit={true} // Show the submit button instead of next
-      >
+    contactInformation: {
+      isActive: currentStep === 7,
+      title: "Your contact information",
+      subtitle: "Tell us how the agent can reach you",
+      content: (
         <ContactFormExtended
           formData={formData}
           updateFormData={updateFormData}
@@ -585,10 +352,40 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           onSubmit={onSubmit}
           enableNotes={true}
           enableLoanAssistance={formData.transaction_type === 'buy'}
-          buttonText="" // Empty string to ensure no button is shown in the ContactFormExtended component
+          buttonText=""
         />
-      </FormStep>
+      )
+    }
+  };
 
+  return (
+    <div className="pt-6 pb-8 px-6 md:px-8">
+      <PriceWarningDialog 
+        isOpen={showPriceWarning}
+        onClose={() => setShowPriceWarning(false)}
+        onConfirm={handlePriceWarningConfirm}
+      />
+
+      {Object.entries(cards).map(([key, card]) => (
+        <FormStep
+          key={key}
+          isActive={card.isActive}
+          onNext={onNext}
+          onPrevious={onPrevious}
+          formData={formData}
+          updateFormData={updateFormData}
+          stepNumber={currentStep}
+          isValid={isValid}
+          errors={errors}
+          title={card.title}
+          subtitle={card.subtitle}
+          showNext={key === 'contactInformation'}
+          nextLabel={key === 'contactInformation' ? "Match with an Agent" : undefined}
+          showSubmit={key === 'contactInformation'}
+        >
+          {card.content}
+        </FormStep>
+      ))}
     </div>
   );
 });
