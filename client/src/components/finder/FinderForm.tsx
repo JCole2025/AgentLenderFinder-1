@@ -91,32 +91,10 @@ function FinderFormContent({
    * Skip multiple steps at once - useful for complex navigation flows
    */
   const skipSteps = (stepsCount: number) => {
-    console.log(`FinderForm - Skipping ${stepsCount} steps from step ${currentStep}`);
-    
-    // For sell transactions, use our new flow that includes property address collection
-    if (formData.transaction_type === 'sell') {
-      console.log('FinderForm - Sell flow detected! Using sequential flow');
-      
-      // For sell path, go to step 2 (seller location)
-      setCurrentStep(2);
-      
-      // Only set default values if absolutely needed for validation
-      if (currentStep === FormStep.TRANSACTION_TYPE && stepsCount > 1) {
-        updateFormData({
-          transaction_type: "sell",
-          owner_occupied: false,
-          property_type: "single_family",
-          strategy: ["not_sure"],
-          purchase_timeline: "asap",
-          timeline: "asap"
-        });
-      }
-    } else {
-      // Normal step advancement for buy flow
-      const targetStep = Math.min(currentStep + stepsCount, MAX_FORM_STEPS);
-      console.log(`FinderForm - Target step: ${targetStep}`);
-      setCurrentStep(targetStep);
-    }
+    // Always increment by 1 for more controlled navigation
+    const nextStep = currentStep + 1;
+    console.log(`FinderForm - Moving to step ${nextStep}`);
+    setCurrentStep(nextStep);
   };
 
   /**

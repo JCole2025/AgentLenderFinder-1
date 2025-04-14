@@ -47,22 +47,24 @@ export function useFormNavigation() {
    * Determine the next step based on current step and form data
    */
   const getNextStep = (currentStep: number, formData: AgentFormData): number => {
+    if (!formData) return currentStep;
+
     if (formData.transaction_type === 'sell') {
-      // Define explicit mapping for sell path steps
       switch (currentStep) {
         case FormStep.TRANSACTION_TYPE:
-          return 2; // Go to seller location card (D2)
-        case 2: // From seller location (D2)
+          return 2; // Go to location/price card (D2)
+        case 2: // After location/price
           return FormStep.PROPERTY_ADDRESS;
         case FormStep.PROPERTY_ADDRESS:
           return FormStep.CONTACT_INFO;
         case FormStep.CONTACT_INFO:
-          return FormStep.CONTACT_INFO; // Stay on last step
+          return FormStep.CONTACT_INFO;
         default:
           return Math.min(currentStep + 1, MAX_FORM_STEPS);
       }
     }
-    
+
+    // For buy path
     return Math.min(currentStep + 1, MAX_FORM_STEPS);
   };
   
