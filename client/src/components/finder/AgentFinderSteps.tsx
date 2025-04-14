@@ -79,20 +79,16 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           selectedValue={formData.transaction_type}
           onChange={(value) => {
             if (value) {
-              if (value === 'sell') {
-                updateFormData({
-                  transaction_type: "sell",
+              updateFormData({
+                transaction_type: value,
+                ...(value === 'sell' ? {
                   owner_occupied: false,
                   price_min: "300000",
                   price_max: "600000",
                   location: "Denver, Colorado"
-                });
-                setTimeout(() => {
-                  advanceMultipleSteps(6);
-                }, 300);
-              } else {
-                onTransactionTypeChange(value);
-              }
+                } : {})
+              });
+              onTransactionTypeChange(value);
             }
           }}
           name="agent_transaction_type"
