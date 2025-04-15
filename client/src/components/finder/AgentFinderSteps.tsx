@@ -69,8 +69,8 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
   const cards = {
     transactionType: {
       isActive: currentStep === 1,
-      title: "What type of transaction are you interested in?",
-      subtitle: "Select the type of real estate transaction",
+      title: "Are you looking to buy or sell?",
+      subtitle: "",
       content: (
         <ButtonRadioGroup
           options={[
