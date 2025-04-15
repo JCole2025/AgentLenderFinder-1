@@ -18,7 +18,7 @@ import ButtonCheckboxGroup from './formFields/ButtonCheckboxGroup';
 import ContactFormExtended from './formFields/ContactFormExtended';
 import { useIsMobile } from '@/hooks/use-mobile';
 import PriceWarningDialog from './formFields/PriceWarningDialog';
-import Button from "@/components/ui/button"; // Added import for Button component
+import { Button } from "@/components/ui/button"; // Added import for Button component
 
 interface AgentFinderStepsProps {
   currentStep: number;
