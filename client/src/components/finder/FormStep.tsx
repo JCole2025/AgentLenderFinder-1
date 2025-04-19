@@ -57,19 +57,11 @@ export default function FormStep({
         {showSubmit ? (
           <Button 
             disabled={!isValid}
-            onClick={() => {
-              console.log('FormStep - Submit button clicked');
-              console.log('FormStep - isValid:', isValid);
-              console.log('FormStep - onNext function available:', !!onNext);
-              if (onNext) {
-                console.log('FormStep - Calling onNext (which should be onSubmit)');
-                onNext();
-              }
-            }}
+            onClick={onNext}
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
           >
-            Match with an Agent
+            {nextLabel || "Submit Information"}
           </Button>
         ) : showNext && (
           <Button 
