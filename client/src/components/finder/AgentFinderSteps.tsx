@@ -66,8 +66,21 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
     setShowPriceWarning(false);
   };
 
+  // Card Labels:
+  // Card A: Transaction Type
+  // Card B: Property Type (Buy Path)
+  // Card B2: Property Type (Sell Path)
+  // Card C: Owner Occupied
+  // Card D1: Location & Price (Buy Path)
+  // Card D2: Location & Price (Sell Path)
+  // Card E: Property Address
+  // Card F: Purchase Timeline
+  // Card G: Investment Strategy
+  // Card H: Contact Info (Buy Path)
+  // Card H2: Contact Info (Sell Path)
+  
   const cards = {
-    transactionType: {
+    transactionType: { // Card A
       isActive: currentStep === 1,
       title: "Are you looking to buy or sell?",
       subtitle: "",
@@ -99,7 +112,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    propertyType: {
+    propertyType: { // Card B
       isActive: currentStep === 2 && formData.transaction_type === 'buy',
       title: "What type of property are you looking for?",
       subtitle: "Select the property type",
@@ -118,7 +131,26 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    ownerOccupied: {
+    propertyTypeSell: { // Card B2
+      isActive: currentStep === 2 && formData.transaction_type === 'sell',
+      title: "What type of property are you selling?",
+      subtitle: "Select your property type",
+      content: (
+        <div className="space-y-6">
+          <div className="mt-4">
+            <ButtonPropertySelect
+              selectedValue={formData.property_type}
+              onChange={(value) => updateFormData({ property_type: value })}
+              error={errors.property_type}
+              autoAdvance={true}
+              onNext={handleNext}
+            />
+          </div>
+        </div>
+      )
+    },
+
+    ownerOccupied: { // Card C
       isActive: currentStep === 3 && formData.transaction_type === 'buy',
       title: "Will you live in this property?",
       subtitle: "Select if this will be your primary residence",
@@ -452,8 +484,8 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    contactInformation: {
-      isActive: currentStep === 7,
+    contactInformationBuy: { // Card H
+      isActive: currentStep === 7 && formData.transaction_type === 'buy',
       title: "Your contact information",
       subtitle: "Tell us how the agent can reach you",
       content: (
@@ -465,6 +497,24 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           onSubmit={onSubmit}
           enableNotes={true}
           enableLoanAssistance={formData.transaction_type === 'buy'}
+          buttonText=""
+        />
+      )
+    },
+    
+    contactInformationSell: { // Card H2
+      isActive: currentStep === 7 && formData.transaction_type === 'sell',
+      title: "Your contact information",
+      subtitle: "Tell us how the agent can reach you",
+      content: (
+        <ContactFormExtended
+          formData={formData}
+          updateFormData={updateFormData}
+          errors={errors}
+          isValid={isValid}
+          onSubmit={onSubmit}
+          enableNotes={true}
+          enableLoanAssistance={false}
           buttonText=""
         />
       )
