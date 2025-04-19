@@ -78,7 +78,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
   // Card G: Investment Strategy
   // Card H: Contact Info (Buy Path)
   // Card H2: Contact Info (Sell Path)
-  
+
   const cards = {
     transactionType: { // Card A
       isActive: currentStep === 1,
@@ -165,7 +165,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    sellerLocationAndPrice: {
+    sellerLocationAndPrice: { // Card D2
       isActive: currentStep === 2 && formData.transaction_type === 'sell',
       title: "Where is your property located?",
       subtitle: "Tell us the location and estimated value of your property",
@@ -281,7 +281,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    locationAndPrice: {
+    locationAndPrice: { // Card D1
       isActive: currentStep === 4 && formData.transaction_type === 'buy',
       title: "Where are you looking to invest?",
       subtitle: "Tell us about your location and budget",
@@ -405,7 +405,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    propertyAddress: {
+    propertyAddress: { // Card E
       isActive: currentStep === 5 && formData.transaction_type === 'sell',
       title: "What is the property address?",
       subtitle: "Enter the full address of the property you want to sell",
@@ -430,7 +430,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    investmentStrategy: {
+    investmentStrategy: { // Card G
       isActive: currentStep === 6 && formData.transaction_type === 'buy',
       title: "What is your investment strategy?",
       subtitle: "Tell us about your investment plans",
@@ -455,7 +455,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    purchaseTimeline: {
+    purchaseTimeline: { // Card F
       isActive: currentStep === 5 && formData.transaction_type === 'buy',
       title: `When are you looking to purchase in ${formData.location}?`,
       subtitle: "Select your timeline",
@@ -501,7 +501,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
         />
       )
     },
-    
+
     contactInformationSell: { // Card H2
       isActive: currentStep === 7 && formData.transaction_type === 'sell',
       title: "Your contact information",
