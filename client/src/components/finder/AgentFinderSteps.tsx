@@ -168,11 +168,24 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
     sellerLocationAndPrice: { // Card D2
       isActive: currentStep === 2 && formData.transaction_type === 'sell',
       title: "Where is your property located?",
-      subtitle: "Tell us the location and estimated value of your property",
+      subtitle: "Tell us about your property location and estimated value",
       content: (
         <div className="space-y-8">
           <div className="mb-4 space-y-4">
             <h3 className="text-lg font-semibold mb-2">Property location</h3>
+            <div className="mb-4">
+              <Label htmlFor="property_address" className="text-sm font-medium">Property address</Label>
+              <Input 
+                id="property_address"
+                placeholder="123 Main St"
+                value={formData.property_address || ''}
+                onChange={(e) => updateFormData({ property_address: e.target.value })}
+                className={`w-full ${errors.property_address ? "border-red-500" : ""}`}
+              />
+              {errors.property_address && (
+                <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
+              )}
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="city" className="text-sm font-medium">City</Label>
@@ -419,30 +432,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
       )
     },
 
-    propertyAddress: { // Card E
-      isActive: currentStep === 5 && formData.transaction_type === 'sell',
-      title: "What is the property address?",
-      subtitle: "Enter the full address of the property you want to sell",
-      content: (
-        <div className="space-y-6">
-          <div className="mb-4">
-            <Label htmlFor="property_address" className="font-medium">
-              Full property address
-            </Label>
-            <Input 
-              id="property_address"
-              placeholder="123 Main St"
-              value={formData.property_address || ''}
-              onChange={(e) => updateFormData({ property_address: e.target.value })}
-              className={`w-full ${errors.property_address ? "border-red-500" : ""}`}
-            />
-            {errors.property_address && (
-              <p className="text-red-500 text-sm mt-2">{errors.property_address}</p>
-            )}
-          </div>
-        </div>
-      )
-    },
+    
 
     investmentStrategy: { // Card G
       isActive: currentStep === 6 && formData.transaction_type === 'buy',
