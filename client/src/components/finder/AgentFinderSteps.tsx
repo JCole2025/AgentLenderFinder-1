@@ -451,8 +451,9 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
               ]}
               selectedValues={formData.strategy || []}
               onChange={handleStrategyChange}
-              autoAdvance={false}
+              autoAdvance={true}
               minSelected={1}
+              onNext={handleNext}
             />
           </div>
         </div>
