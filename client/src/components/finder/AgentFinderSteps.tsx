@@ -502,7 +502,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           onSubmit={onSubmit}
           enableNotes={true}
           enableLoanAssistance={formData.transaction_type === 'buy'}
-          buttonText=""
+          buttonText="Submit Information"
         />
       )
     },
@@ -520,7 +520,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           onSubmit={onSubmit}
           enableNotes={true}
           enableLoanAssistance={false}
-          buttonText=""
+          buttonText="Submit Information"
         />
       )
     }
