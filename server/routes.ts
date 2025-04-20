@@ -32,6 +32,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.setHeader('Content-Type', 'application/javascript');
     res.sendFile(path.join(__dirname, '../client/public/embed.js'));
   });
+
+  // Special route for the embedded version of the app
+  app.get("/embed", (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  });
   // API endpoint for partial form submissions (saving progress)
   app.post("/api/save-progress", async (req, res) => {
     try {

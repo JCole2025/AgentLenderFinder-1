@@ -150,9 +150,10 @@
     
     // Listen for messages from the iframe
     window.addEventListener('message', function(event) {
-      // Only listen to messages from our domain
-      const appDomain = window.location.hostname;
-      if (!event.origin.includes(appDomain)) return;
+      // For testing purposes, accept messages from any origin
+      // In production, you would want to validate the origin
+      // const appDomain = window.location.hostname;
+      // if (!event.origin.includes(appDomain)) return;
       
       try {
         if (event.data && typeof event.data === 'object') {

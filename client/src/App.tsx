@@ -4,7 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import FinderApp from "@/pages/FinderApp";
-import EmbeddedFinder from "@/pages/embed";
 
 function Router() {
   return (
