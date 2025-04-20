@@ -239,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       // Use the webhook URL from environment variable, with fallback to Zapier
-      const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE || "https://hooks.zapier.com/hooks/catch/17924917/20259dz/";
+      const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE || "https://hooks.zapier.com/hooks/catch/17924917/2xi4wxk/";
       
       try {
         // Call the webhook with verbose logging
