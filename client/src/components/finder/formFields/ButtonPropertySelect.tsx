@@ -69,18 +69,18 @@ export default function ButtonPropertySelect({
       onChange(value);
     } else {
       onChange(value);
-      
+
       // Auto advance to next step if enabled and value isn't an unsupported type
       console.log('ButtonPropertySelect - Property selected:', value);
       console.log('ButtonPropertySelect - Auto advance enabled:', autoAdvance);
       console.log('ButtonPropertySelect - onNext available:', !!onNext);
-      
+
       if (autoAdvance && onNext && value && !UNSUPPORTED_PROPERTY_TYPES.includes(value)) {
         console.log('ButtonPropertySelect - Setting timeout to auto-advance');
         setTimeout(() => {
           console.log('ButtonPropertySelect - Executing onNext()');
           onNext();
-        }, 400);
+        }, 1000); // Increased delay to ensure state is properly updated
       } else {
         console.log('ButtonPropertySelect - Not auto-advancing. Conditions not met:', 
           { autoAdvance, onNextExists: !!onNext, valueNotEmpty: !!value, 
@@ -101,7 +101,7 @@ export default function ButtonPropertySelect({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {propertyTypes.map((type) => {
           const isSelected = type.value === selectedValue;
-          
+
           return (
             <button
               key={type.value}
@@ -120,12 +120,12 @@ export default function ButtonPropertySelect({
               `}>
                 {type.icon}
               </div>
-              
+
               <div className="space-y-1">
                 <div className="font-semibold text-base">
                   {type.label}
                 </div>
-                
+
                 {type.description && (
                   <p className="text-sm text-gray-500">
                     {type.description}
@@ -136,9 +136,9 @@ export default function ButtonPropertySelect({
           );
         })}
       </div>
-      
+
       {error && <p className="text-sm text-red-500">{error}</p>}
-      
+
       {/* Dialog for unsupported property types */}
       <PropertyNotSupportedDialog 
         open={showUnsupportedDialog} 

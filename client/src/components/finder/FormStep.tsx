@@ -24,7 +24,8 @@ export default function FormStep({
   nextLabel = "Next",
   isValid
 }: Props) {
-  if (!isActive) return null;
+  // Allow force show to override isActive check
+  if (!isActive && !props.forceShow) return null;
 
   return (
     <div className="form-step rounded-lg overflow-hidden bg-white shadow">
