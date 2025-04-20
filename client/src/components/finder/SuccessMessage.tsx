@@ -53,7 +53,7 @@ export default function SuccessMessage({ onStartOver }: SuccessMessageProps) {
             <li className="flex items-start">
               <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary text-white text-sm font-medium mr-3 flex-shrink-0">2</span>
               <div>
-                <p>We'll match you with the perfect {professionalType} and connect you with them.</p>
+                <p>We'll hand match you with up to 2 investor friendly {professionalType}s and connect you with them.</p>
               </div>
             </li>
             
