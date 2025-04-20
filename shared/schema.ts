@@ -4,8 +4,16 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Common validation constants
-const PHONE_REGEX = /^\(\d{3}\) \d{3}-\d{4}$/;
+const PHONE_REGEX = /^1?\d{10}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Helper to format phone number to E.164 format
+const formatPhoneToE164 = (phone: string): string => {
+  // Remove all non-numeric characters
+  const cleaned = phone.replace(/\D/g, '');
+  // Ensure it starts with 1
+  return cleaned.startsWith('1') ? cleaned : `1${cleaned}`;
+};
 
 // Enums for better type safety
 export const TransactionType = {
@@ -59,7 +67,9 @@ export const contactSchema = z.object({
   first_name: z.string().min(1, "First name is required").max(50),
   last_name: z.string().min(1, "Last name is required").max(50),
   email: z.string().email("Please enter a valid email").regex(EMAIL_REGEX),
-  phone: z.string().regex(PHONE_REGEX, "Please enter a valid phone number"),
+  phone: z.string()
+    .regex(/^\(\d{3}\) \d{3}-\d{4}$/, "Please enter a valid phone number")
+    .transform(formatPhoneToE164),
   city: z.string().optional(),
   state: z.string().optional(),
   zip: z.string().optional(),
