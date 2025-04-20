@@ -9,6 +9,7 @@ interface Props extends FormStepProps {
   showSubmit?: boolean;
   nextLabel?: string;
   children: React.ReactNode;
+  forceShow?: boolean;
 }
 
 export default function FormStep({
@@ -22,10 +23,11 @@ export default function FormStep({
   showPrevious = true,
   showSubmit = false,
   nextLabel = "Next",
-  isValid
+  isValid,
+  forceShow = false
 }: Props) {
   // Allow force show to override isActive check
-  if (!isActive && !props.forceShow) return null;
+  if (!isActive && !forceShow) return null;
 
   return (
     <div className="form-step rounded-lg overflow-hidden bg-white shadow">
