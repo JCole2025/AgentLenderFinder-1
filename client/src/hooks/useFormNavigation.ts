@@ -53,11 +53,11 @@ export function useFormNavigation() {
       // Sell path has 4 steps
       switch (currentStep) {
         case FormStep.TRANSACTION_TYPE: // Step 1
-          return 2; // Go to location/price
-        case 2: // Location/price
-          return FormStep.PROPERTY_ADDRESS;
-        case FormStep.PROPERTY_ADDRESS:
-          return FormStep.CONTACT_INFO;
+          return FormStep.PROPERTY_TYPE; // Go to property type (B2)
+        case FormStep.PROPERTY_TYPE: // Step 2
+          return FormStep.LOCATION_PRICE; // Go to location/price (D2)
+        case FormStep.LOCATION_PRICE:
+          return FormStep.CONTACT_INFO; // Go to contact info
         case FormStep.CONTACT_INFO:
           return FormStep.CONTACT_INFO; // Stay on last step
         default:
