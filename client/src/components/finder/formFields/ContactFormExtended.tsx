@@ -240,7 +240,16 @@ export default function ContactFormExtended(props: ContactFormProps) {
         </div>
       </form>
       
-      {/* Empty space here - no buttons should be rendered */}
+      <div className="mt-6 flex justify-end">
+        <Button
+          onClick={onSubmit}
+          size="lg"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+          disabled={!isValid}
+        >
+          {buttonText || 'Submit Information'}
+        </Button>
+      </div>
     </div>
   );
 }
