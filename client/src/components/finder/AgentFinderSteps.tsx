@@ -548,8 +548,9 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
           title={card.title}
           subtitle={card.subtitle}
           showNext={false}
-          nextLabel={key === 'contactInformationBuy' || key === 'contactInformationSell' ? "Match with an Agent" : undefined}
+          nextLabel="Match with an Agent"
           showSubmit={key === 'contactInformationBuy' || key === 'contactInformationSell'}
+          onNext={onNext}
         >
           {card.content}
         </FormStep>

@@ -22,7 +22,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
     formData,
     updateFormData,
     errors,
-    isValid,
+    isValid = true,
     onSubmit,
     enableNotes,
     enableLoanAssistance,
