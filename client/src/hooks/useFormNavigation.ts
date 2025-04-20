@@ -71,12 +71,12 @@ export function useFormNavigation() {
         case FormStep.PROPERTY_TYPE:
           return FormStep.OWNER_OCCUPIED; // Step 3
         case FormStep.OWNER_OCCUPIED:
-          return FormStep.LOCATION_PRICE; // Step 4
-        case FormStep.LOCATION_PRICE:
-          return FormStep.TIMELINE; // Step 5
+          return FormStep.TIMELINE; // Step 4 (moved from 5)
         case FormStep.TIMELINE:
-          return FormStep.INVESTMENT_STRATEGY; // Step 6
+          return FormStep.INVESTMENT_STRATEGY; // Step 5
         case FormStep.INVESTMENT_STRATEGY:
+          return FormStep.LOCATION_PRICE; // Step 6 (moved from 4)
+        case FormStep.LOCATION_PRICE:
           return FormStep.CONTACT_INFO; // Step 7
         case FormStep.CONTACT_INFO:
           return FormStep.CONTACT_INFO; // Stay on last step
@@ -90,8 +90,24 @@ export function useFormNavigation() {
    * Determine the previous step based on current step and form data
    */
   const getPreviousStep = (currentStep: number, formData: AgentFormData): number => {
-    // Default previous step (decrement by 1)
-    let prevStep = currentStep - 1;
+    if (formData.transaction_type === 'buy') {
+      switch (currentStep) {
+        case FormStep.CONTACT_INFO:
+          return FormStep.LOCATION_PRICE;
+        case FormStep.LOCATION_PRICE:
+          return FormStep.INVESTMENT_STRATEGY;
+        case FormStep.INVESTMENT_STRATEGY:
+          return FormStep.TIMELINE;
+        case FormStep.TIMELINE:
+          return FormStep.OWNER_OCCUPIED;
+        case FormStep.OWNER_OCCUPIED:
+          return FormStep.PROPERTY_TYPE;
+        case FormStep.PROPERTY_TYPE:
+          return FormStep.TRANSACTION_TYPE;
+        default:
+          return Math.max(currentStep - 1, 1);
+      }
+    }
     
     if (formData.transaction_type === 'sell') {
       // Sell transaction flow has special skip logic for going back
