@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BiggerPockets Agent Finder Widget Example</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .container {
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>BiggerPockets Agent Finder Widget</h1>
+  
+  <h2>How to Embed the Widget</h2>
+  <p>To embed the BiggerPockets Agent Finder Widget on your website, simply add the following code:</p>
+  
+  <pre>&lt;script 
+  src="https://<your-replit-domain>/embed.js" 
+  data-containerid="bp-agent-finder"
+  data-width="100%"
+  data-height="650px"
+  data-borderradius="8px"
+  data-boxshadow="0 4px 12px rgba(0, 0, 0, 0.1)"&gt;
+&lt;/script&gt;</pre>
+  
+  <h2>Customization Options</h2>
+  <p>You can customize the widget by adding the following data attributes to the script tag:</p>
+  
+  <ul>
+    <li><strong>data-containerid</strong>: ID for the container element (default: "bp-agent-finder")</li>
+    <li><strong>data-width</strong>: Width of the widget (default: "100%")</li>
+    <li><strong>data-height</strong>: Height of the widget (default: "650px")</li>
+    <li><strong>data-border</strong>: Border style (default: "none")</li>
+    <li><strong>data-borderradius</strong>: Border radius (default: "8px")</li>
+    <li><strong>data-boxshadow</strong>: Box shadow (default: "0 4px 12px rgba(0, 0, 0, 0.1)")</li>
+  </ul>
+  
+  <h2>Live Example</h2>
+  <div class="container">
+    <!-- Embed the widget -->
+    <script 
+      src="embed.js" 
+      data-containerid="live-example"
+      data-width="100%"
+      data-height="650px">
+    </script>
+  </div>
+</body>
+</html>
