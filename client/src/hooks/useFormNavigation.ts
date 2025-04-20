@@ -186,10 +186,9 @@ export function useFormNavigation() {
         property_address: ""
       });
       
-      // For sell transactions, immediately go to property address step
-      console.log('Setting step to PROPERTY_ADDRESS (step 5) for sell flow');
-      console.log('Going to property address step (step 5)');
-      setStep(FormStep.PROPERTY_ADDRESS);
+      // For sell transactions, go to property type step first
+      console.log('Setting step to PROPERTY_TYPE (step 2) for sell flow');
+      setStep(FormStep.PROPERTY_TYPE);
       
     } else {
       // For buy transaction, just update the form data and let normal flow continue
