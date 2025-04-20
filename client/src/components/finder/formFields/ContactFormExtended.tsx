@@ -245,7 +245,7 @@ export default function ContactFormExtended(props: ContactFormProps) {
           onClick={onSubmit}
           size="lg"
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
-          disabled={!isValid}
+          disabled={!formData.terms_accepted}
         >
           {buttonText || 'Submit Information'}
         </Button>
