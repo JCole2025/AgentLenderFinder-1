@@ -21,7 +21,7 @@ const limiter = rateLimit({
 
 router.use(limiter);
 
-router.get('/widget.js', cors(), (req, res) => {
+router.get('/api/widget.js', cors(), (req, res) => {
   res.header('Content-Type', 'application/javascript');
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET');
