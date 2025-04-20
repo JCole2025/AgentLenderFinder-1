@@ -13,7 +13,7 @@
     modalMode: false,
     targetUrl: window.location.hostname.includes('localhost') 
       ? 'http://localhost:5000/embed' 
-      : 'https://REPLIT_URL_HERE/embed'
+      : window.location.origin + '/embed'
   };
 
   // Parse configuration from script tag data attributes
