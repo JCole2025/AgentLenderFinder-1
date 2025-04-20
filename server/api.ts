@@ -27,7 +27,7 @@ router.get('/api/widget.js', cors(), (req, res) => {
   res.header('Access-Control-Allow-Methods', 'GET');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   
-  const code = fs.readFileSync(path.resolve(import.meta.dirname, '../client/dist/widget.js'), 'utf-8');
+  const code = fs.readFileSync(path.resolve(import.meta.dirname, '../dist/public/assets/widget.js'), 'utf-8');
   res.send(code);
 });
 
