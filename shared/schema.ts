@@ -1,120 +1,119 @@
-import { pgTable, text, serial, integer, boolean, json } from "drizzle-orm/pg-core";
+
+import { pgTable, text, serial, integer, boolean, json, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Finder submissions table
+// Common validation constants
+const PHONE_REGEX = /^\(\d{3}\) \d{3}-\d{4}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Enums for better type safety
+export const TransactionType = {
+  BUY: 'buy',
+  SELL: 'sell',
+} as const;
+
+export const Timeline = {
+  ASAP: 'asap',
+  ONE_TO_THREE_MONTHS: '1_3_months',
+  THREE_TO_SIX_MONTHS: '3_6_months',
+  SIX_TO_TWELVE_MONTHS: '6_12_months',
+  JUST_RESEARCHING: 'just_researching',
+} as const;
+
+export const InvestmentStrategy = {
+  BUY_AND_HOLD: 'buy_and_hold_brrrr',
+  SHORT_TERM_RENTAL: 'short_term_rental',
+  MID_TERM_RENTAL: 'mid_term_rental',
+  NOT_SURE: 'not_sure',
+} as const;
+
+// Database schema
 export const finderSubmissions = pgTable("finder_submissions", {
   id: serial("id").primaryKey(),
-  finderType: text("finder_type").notNull(), // 'agent' or 'lender'
-  submissionData: json("submission_data").notNull(), // Will store the structured form data
+  finderType: text("finder_type").notNull(),
+  submissionData: json("submission_data").notNull(),
   name: text("name").notNull(),
   email: text("email").notNull(),
   phone: text("phone").notNull(),
-  submittedAt: text("submitted_at").notNull(),
+  submittedAt: timestamp("submitted_at").notNull().defaultNow(),
   webhookStatus: text("webhook_status").default("pending"),
   webhookResponse: text("webhook_response"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-// Partial form submissions table (for tracking incomplete submissions)
 export const partialFinderSubmissions = pgTable("partial_finder_submissions", {
   id: serial("id").primaryKey(),
-  finderType: text("finder_type").notNull(), // 'agent' or 'lender'
-  partialData: json("partial_data").notNull(), // Will store the form data as it's being filled
+  finderType: text("finder_type").notNull(),
+  partialData: json("partial_data").notNull(),
   currentStep: integer("current_step").notNull(),
-  sessionId: text("session_id").notNull(), // To identify unique user sessions
-  lastUpdated: text("last_updated").notNull(),
-  isCompleted: boolean("is_completed").default(false), // Flag when the user completes the form
+  sessionId: text("session_id").notNull(),
+  lastUpdated: timestamp("last_updated").notNull().defaultNow(),
+  isCompleted: boolean("is_completed").default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// Validation schemas for agent finder
-export const agentTransactionTypeSchema = z.enum([
-  "buy",
-  "sell"
-], {
-  required_error: "Please select a transaction type",
-});
-
-export const agentStrategySchema = z.array(
-  z.enum([
-    "buy_and_hold_brrrr",
-    "short_term_rental",
-    "mid_term_rental",
-    "not_sure"
-  ])
-).min(1, "Please select at least one option");
-
-export const agentTimelineSchema = z.enum([
-  "asap",
-  "1_3_months",
-  "3_6_months",
-  "6_12_months",
-  "just_researching"
-], {
-  required_error: "Please select a timeline",
+// Zod validation schemas
+export const contactSchema = z.object({
+  first_name: z.string().min(1, "First name is required").max(50),
+  last_name: z.string().min(1, "Last name is required").max(50),
+  email: z.string().email("Please enter a valid email").regex(EMAIL_REGEX),
+  phone: z.string().regex(PHONE_REGEX, "Please enter a valid phone number"),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zip: z.string().optional(),
+  notes: z.string().optional().max(500),
 });
 
 export const agentFinderSchema = z.object({
   lead_partner: z.string().optional(),
-  transaction_type: agentTransactionTypeSchema,
-  location: z.string().min(1, "Please enter a location"),
+  transaction_type: z.enum([TransactionType.BUY, TransactionType.SELL], {
+    required_error: "Please select a transaction type",
+  }),
+  location: z.string().min(1, "Please enter a location").max(100),
   property_type: z.string().min(1, "Please specify property type"),
-  purchase_timeline: agentTimelineSchema,
-  // Property address is optional at the schema level but required in form validation
+  purchase_timeline: z.enum(Object.values(Timeline) as [string, ...string[]], {
+    required_error: "Please select a timeline",
+  }),
   property_address: z.string().optional(),
   price_min: z.string().min(1, "Please specify minimum price"),
   price_max: z.string().min(1, "Please specify maximum price"),
   loan_started: z.boolean().optional(),
-  owner_occupied: z.boolean().optional(), // Added for step 8
-  investment_properties_count: z.string().optional(), // Made optional as per form design
-  strategy: agentStrategySchema,
-  timeline: agentTimelineSchema,
-  contact: z.object({
-    first_name: z.string().min(1, "First name is required"),
-    last_name: z.string().min(1, "Last name is required"),
-    email: z.string().email("Please enter a valid email"),
-    phone: z.string().min(1, "Phone number is required"),
-    city: z.string().optional(), // Made optional
-    state: z.string().optional(), // Made optional as requested
-    zip: z.string().optional(), // Made optional
-    notes: z.string().optional(), // Optional notes field
+  owner_occupied: z.boolean().optional(),
+  investment_properties_count: z.string().optional(),
+  strategy: z.array(z.enum(Object.values(InvestmentStrategy) as [string, ...string[]]))
+    .min(1, "Please select at least one option"),
+  timeline: z.enum(Object.values(Timeline) as [string, ...string[]], {
+    required_error: "Please select a timeline",
   }),
+  contact: contactSchema,
   terms_accepted: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the terms to continue" })
+    errorMap: () => ({ message: "You must accept the terms to continue" }),
   }),
-  loan_assistance: z.boolean().optional(), // Added for optional loan assistance checkbox
-});
-
-// Lender finder schemas have been removed since application only supports Agent Finder
+  loan_assistance: z.boolean().optional(),
+}).refine(
+  (data) => parseInt(data.price_max) > parseInt(data.price_min),
+  { message: "Maximum price must be greater than minimum price" }
+);
 
 export const finderSubmissionSchema = z.object({
   finderType: z.literal("agent"),
   data: z.object({
     finderType: z.literal("agent"),
-    formData: agentFinderSchema
-  })
+    formData: agentFinderSchema,
+  }),
 });
 
-export const insertFinderSubmissionSchema = createInsertSchema(finderSubmissions).pick({
-  finderType: true,
-  submissionData: true,
-  name: true,
-  email: true,
-  phone: true,
-  submittedAt: true,
-});
+// Export types and insert schemas
+export type ContactData = z.infer<typeof contactSchema>;
+export type AgentFinderData = z.infer<typeof agentFinderSchema>;
+export type FinderSubmissionData = z.infer<typeof finderSubmissionSchema>;
 
-export const insertPartialFinderSubmissionSchema = createInsertSchema(partialFinderSubmissions).pick({
-  finderType: true,
-  partialData: true,
-  currentStep: true,
-  sessionId: true,
-  lastUpdated: true,
-  isCompleted: true,
-});
+export const insertFinderSubmissionSchema = createInsertSchema(finderSubmissions);
+export const insertPartialFinderSubmissionSchema = createInsertSchema(partialFinderSubmissions);
 
 export type InsertFinderSubmission = z.infer<typeof insertFinderSubmissionSchema>;
 export type InsertPartialFinderSubmission = z.infer<typeof insertPartialFinderSubmissionSchema>;
 export type FinderSubmission = typeof finderSubmissions.$inferSelect;
 export type PartialFinderSubmission = typeof partialFinderSubmissions.$inferSelect;
-export type AgentFinderData = z.infer<typeof agentFinderSchema>;
-export type FinderSubmissionData = z.infer<typeof finderSubmissionSchema>;
