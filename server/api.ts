@@ -23,57 +23,12 @@ router.use(limiter);
 
 router.get('/widget.js', cors(), (req, res) => {
   res.header('Content-Type', 'application/javascript');
-  const widgetCode = `
-    (function() {
-      const container = document.getElementById('agent-finder-widget');
-      if (!container) return;
-
-      // Add styles
-      const style = document.createElement('style');
-      style.textContent = ${JSON.stringify(widgetCss)};
-      document.head.appendChild(style);
-
-      // Create and append form
-      container.innerHTML = ${JSON.stringify(widgetHtml)};
-
-      // Add event listener
-      const form = document.getElementById('agent-finder-form');
-      if (form) {
-        form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const formData = new FormData(form);
-          const data = Object.fromEntries(formData.entries());
-          
-          try {
-            const response = await fetch('https://agent-lender-finder-joseph274.replit.app/api/submit-finder', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                finderType: 'agent',
-                formData: {
-                  transaction_type: 'buy',
-                  property_type: data.property_type,
-                  location: data.location,
-                  price_min: data.price_min,
-                  price_max: data.price_max
-                }
-              })
-            });
-            
-            if (!response.ok) throw new Error('Submission failed');
-            alert('Form submitted successfully!');
-            form.reset();
-          } catch (error) {
-            console.error('Error:', error);
-            alert('There was an error submitting the form. Please try again.');
-          }
-        });
-      }
-    })();
-  `;
-  res.send(widgetCode);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  
+  const code = fs.readFileSync(path.resolve(import.meta.dirname, '../client/dist/widget.js'), 'utf-8');
+  res.send(code);
 });
 
 // Keep existing /api/widget endpoint for compatibility
