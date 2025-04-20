@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import ProgressBar from "@/components/finder/ProgressBar";
 import FinderForm from "@/components/finder/FinderForm";
 import SuccessMessage from "@/components/finder/SuccessMessage";
@@ -10,14 +10,92 @@ interface FinderAppProps {
 export default function FinderApp({ embedded = false }: FinderAppProps) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
   
+  // Reset form to initial state
   const resetForm = () => {
     setShowSuccess(false);
     setCurrentStep(1);
   };
 
+  // Function to send height updates to parent window if embedded
+  const sendHeightToParent = () => {
+    if (embedded && containerRef.current && window.parent !== window) {
+      const height = containerRef.current.scrollHeight;
+      window.parent.postMessage({ 
+        type: 'resize',
+        height: height
+      }, '*');
+    }
+  };
+
+  // Listen for messages from the parent window
+  useEffect(() => {
+    if (embedded) {
+      // Handler for messages from parent window
+      const handleMessage = (event: MessageEvent) => {
+        // Validate origin if needed
+        // if (event.origin !== 'https://allowedorigin.com') return;
+        
+        if (event.data && typeof event.data === 'object') {
+          // Handle message types
+          switch (event.data.type) {
+            case 'reset':
+              resetForm();
+              break;
+            case 'getState':
+              // Send form state back to parent
+              window.parent.postMessage({
+                type: 'state',
+                step: currentStep,
+                completed: showSuccess
+              }, '*');
+              break;
+          }
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+      return () => window.removeEventListener('message', handleMessage);
+    }
+  }, [embedded, currentStep, showSuccess]);
+
+  // Update height when content changes
+  useEffect(() => {
+    if (embedded) {
+      // Send initial height
+      sendHeightToParent();
+      
+      // Setup observer to detect content changes
+      const resizeObserver = new ResizeObserver(() => {
+        sendHeightToParent();
+      });
+      
+      if (containerRef.current) {
+        resizeObserver.observe(containerRef.current);
+      }
+      
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [embedded, currentStep, showSuccess]);
+
+  // Monitor step changes to update parent
+  useEffect(() => {
+    if (embedded && window.parent !== window) {
+      window.parent.postMessage({ 
+        type: 'stepChange',
+        step: currentStep
+      }, '*');
+    }
+  }, [embedded, currentStep]);
+
   return (
-    <div className={`${embedded ? 'min-h-full' : 'min-h-screen'} flex flex-col`}>
+    <div 
+      ref={containerRef}
+      className={`${embedded ? 'min-h-full' : 'min-h-screen'} flex flex-col`}
+    >
       {/* Header */}
       {!embedded && (
         <header className="bg-white shadow-sm">
@@ -49,7 +127,17 @@ export default function FinderApp({ embedded = false }: FinderAppProps) {
               <FinderForm 
                 currentStep={currentStep}
                 setCurrentStep={setCurrentStep}
-                onSuccess={() => setShowSuccess(true)}
+                onSuccess={() => {
+                  setShowSuccess(true);
+                  
+                  // Notify parent window on successful submission
+                  if (embedded && window.parent !== window) {
+                    window.parent.postMessage({ 
+                      type: 'formSubmitted',
+                      success: true
+                    }, '*');
+                  }
+                }}
               />
             </>
           ) : (

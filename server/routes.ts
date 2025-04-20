@@ -47,7 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           {
             partialData,
             currentStep,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date()
           }
         );
         submissionId = updatedSubmission?.id;
@@ -58,7 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           partialData,
           currentStep,
           sessionId,
-          lastUpdated: new Date().toISOString(),
+          lastUpdated: new Date(),
           isCompleted: false
         });
         submissionId = submission.id;
@@ -185,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: `${formData.contact.first_name} ${formData.contact.last_name}`,
         email: formData.contact.email,
         phone: formData.contact.phone,
-        submittedAt: new Date().toISOString(),
+        submittedAt: new Date(),
       });
 
       // Get current date/time in MST

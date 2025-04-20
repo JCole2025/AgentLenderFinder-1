@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test BiggerPockets Agent Finder Embed</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      line-height: 1.6;
+      color: #333;
+    }
+    
+    .header, .footer {
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .widget-container {
+      margin: 40px auto;
+      border: 1px solid #eaeaea;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #fff;
+      max-width: 800px;
+    }
+    
+    h1, h2, h3 {
+      color: #2b6cb0;
+    }
+    
+    .control-panel {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f0f4f8;
+      border-radius: 8px;
+    }
+    
+    button {
+      background-color: #4299e1;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    
+    button:hover {
+      background-color: #3182ce;
+    }
+    
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 14px;
+    }
+    
+    .event-log {
+      height: 200px;
+      overflow-y: auto;
+      background-color: #2d3748;
+      color: #a0aec0;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    
+    .success {
+      color: #68d391;
+    }
+    
+    .info {
+      color: #63b3ed;
+    }
+    
+    .warning {
+      color: #f6ad55;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Test Website with BiggerPockets Agent Finder Widget</h1>
+    <p>This page demonstrates how the Agent Finder widget can be embedded on any website.</p>
+  </div>
+  
+  <h2>About Our Real Estate Services</h2>
+  <p>Welcome to our test website. We provide various real estate services to help you find the perfect property or investment opportunity. Our team of experts is ready to assist you with all your real estate needs.</p>
+  
+  <div class="widget-container">
+    <h2>Find an Agent</h2>
+    <p>Use the form below to find a qualified real estate agent in your area:</p>
+    
+    <!-- The Agent Finder Widget will be embedded here -->
+    <script 
+      src="embed.js" 
+      data-containerid="agent-finder-container"
+      data-width="100%" 
+      data-height="600px"
+      data-borderradius="8px"
+      data-boxshadow="0 4px 12px rgba(0, 0, 0, 0.1)">
+    </script>
+  </div>
+  
+  <div class="control-panel">
+    <h3>Widget Control Panel (Developer Demo)</h3>
+    <p>This section demonstrates the widget's messaging API for developers:</p>
+    
+    <div>
+      <button onclick="resetWidget()">Reset Widget</button>
+      <button onclick="getWidgetState()">Get Widget State</button>
+    </div>
+    
+    <h4>Event Log:</h4>
+    <div class="event-log" id="event-log"></div>
+  </div>
+  
+  <div class="footer">
+    <h3>Contact Us</h3>
+    <p>If you have any questions about our services, please don't hesitate to contact us at info@example.com or call (555) 123-4567.</p>
+    <p>&copy; 2025 Test Website. All rights reserved.</p>
+  </div>
+  
+  <script>
+    // Reference to the iframe once it's created
+    function getWidgetIframe() {
+      return document.getElementById('agent-finder-container').querySelector('iframe');
+    }
+    
+    // Event log function
+    function logEvent(message, type = 'info') {
+      const log = document.getElementById('event-log');
+      const entry = document.createElement('div');
+      entry.className = type;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      log.appendChild(entry);
+      
+      // Auto-scroll to bottom
+      log.scrollTop = log.scrollHeight;
+    }
+    
+    // Reset the widget
+    function resetWidget() {
+      try {
+        const iframe = getWidgetIframe();
+        iframe.contentWindow.postMessage({ type: 'reset' }, '*');
+        logEvent('Reset command sent to widget');
+      } catch (error) {
+        logEvent(`Error: ${error.message}`, 'warning');
+      }
+    }
+    
+    // Get the current state of the widget
+    function getWidgetState() {
+      try {
+        const iframe = getWidgetIframe();
+        iframe.contentWindow.postMessage({ type: 'getState' }, '*');
+        logEvent('State request sent to widget');
+      } catch (error) {
+        logEvent(`Error: ${error.message}`, 'warning');
+      }
+    }
+    
+    // Listen for messages from the iframe
+    window.addEventListener('message', function(event) {
+      // In production, validate the origin
+      // if (event.origin !== 'https://your-domain.com') return;
+      
+      if (event.data && typeof event.data === 'object') {
+        switch (event.data.type) {
+          case 'resize':
+            logEvent(`Widget height updated to ${event.data.height}px`);
+            break;
+            
+          case 'stepChange':
+            logEvent(`User moved to step ${event.data.step}`);
+            break;
+            
+          case 'formSubmitted':
+            logEvent('Form successfully submitted!', 'success');
+            break;
+            
+          case 'state':
+            logEvent(`Widget state - Step: ${event.data.step}, Completed: ${event.data.completed}`);
+            break;
+            
+          default:
+            logEvent(`Received message: ${JSON.stringify(event.data)}`);
+        }
+      }
+    });
+    
+    // Initial log entry
+    window.addEventListener('load', function() {
+      logEvent('Page loaded. Waiting for widget initialization...', 'info');
+    });
+  </script>
+</body>
+</html>
