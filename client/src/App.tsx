@@ -6,16 +6,16 @@ import NotFound from "@/pages/not-found";
 import FinderApp from "@/pages/FinderApp";
 
 function Router() {
+  // Check if the embedded parameter is present in the URL
+  const isEmbedded = new URLSearchParams(window.location.search).get('embedded') === 'true';
+  
   return (
     <Switch>
       <Route path="/finder">
         {() => <FinderApp />}
       </Route>
-      <Route path="/embed">
-        {() => <FinderApp embedded={true} />}
-      </Route>
       <Route path="/">
-        {() => <FinderApp />}
+        {() => <FinderApp embedded={isEmbedded} />}
       </Route>
       <Route>
         {() => <NotFound />}

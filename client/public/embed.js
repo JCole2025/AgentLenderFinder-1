@@ -61,8 +61,8 @@
     // Create iframe
     const iframe = document.createElement('iframe');
     
-    // Set the iframe source to the embed URL on the same domain as the script
-    iframe.src = `${scriptHost}/embed`;
+    // Set the iframe source to the main page with embedded mode
+    iframe.src = `${scriptHost}/?embedded=true`;
     
     // Set iframe attributes
     iframe.title = "BiggerPockets Agent Finder";

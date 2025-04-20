@@ -35,7 +35,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Special route for the embedded version of the app
   app.get("/embed", (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    // Redirect to the main page with a query parameter to indicate embedded mode
+    res.redirect("/?embedded=true");
   });
   // API endpoint for partial form submissions (saving progress)
   app.post("/api/save-progress", async (req, res) => {
