@@ -11,16 +11,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/save-progress", async (req, res) => {
     try {
       const { finderType, partialData, currentStep, sessionId } = req.body;
-      
+
       if (!sessionId) {
         return res.status(400).json({ message: "Session ID is required" });
       }
-      
+
       // Check if there's an existing submission for this session
       const existingSubmission = await storage.getPartialSubmissionBySession(sessionId);
-      
+
       let submissionId;
-      
+
       if (existingSubmission) {
         // Update existing submission
         const updatedSubmission = await storage.updatePartialSubmission(
@@ -44,7 +44,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
         submissionId = submission.id;
       }
-      
+
       // Send to partial webhook if available
       const partialWebhookUrl = process.env.WEBHOOK_ENDPOINT_PARTIAL;
       if (partialWebhookUrl) {
@@ -59,7 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         } catch (webhookError) {
           console.error("Failed to send to partial webhook:", webhookError);
-          
+
           // Attempt to log to failure webhook
           try {
             const failureWebhookUrl = process.env.WEBHOOK_ENDPOINT_FAILURES;
@@ -76,25 +76,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       }
-      
+
       return res.status(existingSubmission ? 200 : 201).json({ success: true, id: submissionId });
     } catch (error) {
       console.error("Save progress error:", error);
       res.status(500).json({ message: "An error occurred saving your progress" });
     }
   });
-  
+
   // API endpoint to retrieve saved progress
   app.get("/api/get-progress/:sessionId", async (req, res) => {
     try {
       const { sessionId } = req.params;
-      
+
       if (!sessionId) {
         return res.status(400).json({ message: "Session ID is required" });
       }
-      
+
       const savedProgress = await storage.getPartialSubmissionBySession(sessionId);
-      
+
       if (savedProgress) {
         return res.status(200).json({ 
           success: true, 
@@ -112,16 +112,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "An error occurred retrieving your progress" });
     }
   });
-  
+
   // API endpoint to mark a partial submission as complete
   app.post("/api/complete-progress/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      
+
       if (!id) {
         return res.status(400).json({ message: "Submission ID is required" });
       }
-      
+
       await storage.markPartialSubmissionComplete(parseInt(id, 10));
       return res.status(200).json({ success: true });
     } catch (error) {
@@ -135,12 +135,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("SUBMIT FINDER API CALLED =========================");
       console.log("Request body received:", JSON.stringify(req.body, null, 2));
-      
+
       const { finderType, formData } = req.body;
-      
+
       console.log("Finder Type:", finderType);
       console.log("Form Data Transaction Type:", formData?.transaction_type);
-      
+
       // Log investment strategy details for debugging
       if (formData && Array.isArray(formData.strategy)) {
         console.log("Investment Strategy Values:", formData.strategy);
@@ -155,7 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (finderType !== "agent") {
         return res.status(400).json({ message: "Invalid finder type" });
       }
-      
+
       // Note: We're skipping the strict validation to allow the form to submit
       // agentFinderSchema.parse(formData)
 
@@ -176,16 +176,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hours = mstTime.getUTCHours();
       const minutes = mstTime.getUTCMinutes();
       const timeOfDayMST = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-      
+
       // Day of week in MST
       const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
       const dayOfWeekMST = daysOfWeek[mstTime.getUTCDay()];
-      
+
       // Month and year in MST
       const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       const monthMST = months[mstTime.getUTCMonth()];
       const yearMST = mstTime.getUTCFullYear();
-      
+
       // Location handling: extract state and city
       let state = "";
       let city = "";
@@ -196,10 +196,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           city = parts[0].trim();
         }
       }
-      
+
       // Format location as [state],[city] as per specification
       const formattedLocation = state && city ? `${state},${city}` : formData.location;
-      
+
       // Prepare webhook data according to specified field requirements
       // Ensure all fields are sent with "NA" as fallback for empty values
       const webhookData = {
@@ -211,14 +211,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         dayofweek: dayOfWeekMST,
         month: monthMST,
         year: yearMST.toString(),
-        
+
         // Contact information
         first_name: formData.contact.first_name?.trim() || "NA",
         last_name: formData.contact.last_name?.trim() || "NA",
         email: formData.contact.email?.trim().toLowerCase() || "NA",
         phone: formData.contact.phone?.trim() || "NA",
         notes: formData.contact.notes?.trim() || "NA",
-        
+
         // Transaction details
         buy_vs_sell: formData.transaction_type || "NA",
         property_type: formData.property_type?.trim() || "NA",
@@ -240,12 +240,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Use the webhook URL from environment variable, with fallback to Zapier
       const webhookUrl = process.env.WEBHOOK_ENDPOINT_COMPLETE || "https://hooks.zapier.com/hooks/catch/17924917/2xi4wxk/";
-      
+
       try {
         // Call the webhook with verbose logging
         console.log('Sending data to Zapier webhook:', webhookUrl);
         console.log('Webhook payload:', JSON.stringify(webhookData, null, 2));
-        
+
         // Add more detailed axios configuration and error logging
         const axiosConfig = {
           headers: {
@@ -254,24 +254,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
           },
           timeout: 10000 // 10 second timeout
         };
-        
+
         console.log('WEBHOOK REQUEST STARTING with config:', JSON.stringify(axiosConfig));
-        
+
         // Call webhook with detailed config
         const webhookResponse = await axios.post(webhookUrl, webhookData, axiosConfig);
-        
+
         console.log('WEBHOOK SUCCESS - Status:', webhookResponse.status);
         console.log('WEBHOOK SUCCESS - Response:', JSON.stringify(webhookResponse.data));
-        
+
         await storage.updateWebhookStatus(submission.id, "success", JSON.stringify(webhookResponse.data));
-        
+
         // Skip HubSpot API client for now as it's having auth issues
         // console.log('Creating HubSpot contact via API client');
         // console.log('HubSpot Response:', await createHubSpotContact(formData));
       } catch (error) {
         // Enhanced error logging with axios error details
         console.error("WEBHOOK ERROR OCCURRED");
-        
+
         if (axios.isAxiosError(error)) {
           console.error("Axios Error Details:");
           console.error("- Status:", error.response?.status);
@@ -280,7 +280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("- Request URL:", error.config?.url);
           console.error("- Request Method:", error.config?.method);
           console.error("- Request Headers:", JSON.stringify(error.config?.headers || {}));
-          
+
           // Only stringify the relevant parts of the error
           const errorInfo = {
             message: error.message,
@@ -289,14 +289,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             statusText: error.response?.statusText,
             data: error.response?.data,
           };
-          
+
           await storage.updateWebhookStatus(submission.id, "failed", JSON.stringify(errorInfo));
         } else {
           // For non-axios errors
           console.error("Non-Axios Error:", error);
           await storage.updateWebhookStatus(submission.id, "failed", JSON.stringify({ message: String(error) }));
         }
-        
+
         // Also log to failures webhook if available
         try {
           const failureWebhookUrl = process.env.WEBHOOK_ENDPOINT_FAILURES;
@@ -321,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           errors: error.errors 
         });
       }
-      
+
       console.error("Submission error:", error);
       res.status(500).json({ message: "An error occurred processing your submission" });
     }
