@@ -203,8 +203,8 @@
     <p>1. Edit your page or post</p>
     <p>2. Add a "Custom HTML" block</p>
     <p>3. Paste the following code:</p>
-    <pre>&lt;script 
-  src="https://<your-replit-domain>/embed.js" 
+    <pre id="domain-example">&lt;script 
+  src="https://<span class="current-domain">your-deployed-domain.replit.app</span>/embed.js" 
   data-width="100%" 
   data-height="700px"&gt;
 &lt;/script&gt;</pre>
@@ -256,7 +256,7 @@ iframe.contentWindow.postMessage({ type: 'getState' }, '*');</pre>
     <p>Listen for events from the widget:</p>
     <pre>window.addEventListener('message', function(event) {
   // Make sure message is from your iframe
-  if (event.origin !== 'https://<your-replit-domain>') return;
+  if (event.origin !== 'https://<span class="current-domain">your-deployed-domain.replit.app</span>') return;
   
   const data = event.data;
   
@@ -311,6 +311,18 @@ iframe.contentWindow.postMessage({ type: 'getState' }, '*');</pre>
       document.getElementById(tabName).className += " active";
       evt.currentTarget.className += " active";
     }
+    
+    // Update example code with the current domain
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the current domain
+      const currentDomain = window.location.host;
+      
+      // Update all domain placeholders
+      const domainElements = document.querySelectorAll('.current-domain');
+      domainElements.forEach(function(element) {
+        element.textContent = currentDomain;
+      });
+    });
   </script>
 </body>
 </html>
