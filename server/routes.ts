@@ -5,8 +5,27 @@ import { z } from "zod";
 import { agentFinderSchema } from "@shared/schema";
 import axios from "axios";
 import { createHubSpotContact } from "./services/hubspot";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Get the directory name
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve embed.js for embedding the form on other websites
+  app.get("/embed.js", (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.sendFile(path.join(__dirname, '../client/public/embed.js'));
+  });
+  
+  // Allow CORS for the /embed endpoint
+  app.use('/embed', (req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  });
   // API endpoint for partial form submissions (saving progress)
   app.post("/api/save-progress", async (req, res) => {
     try {
