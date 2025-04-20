@@ -31,7 +31,7 @@ router.use(cors({
 
 // Serve the widget.js file
 router.get('/widget.js', (req, res) => {
-  const widgetPath = path.resolve(__dirname, '../dist/public/api/widget.js');
+  const widgetPath = path.resolve(__dirname, '../dist/public/widget.js');
   if (fs.existsSync(widgetPath)) {
     res.type('application/javascript');
     res.sendFile(widgetPath);
