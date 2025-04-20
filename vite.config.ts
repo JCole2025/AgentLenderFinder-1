@@ -29,5 +29,16 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(import.meta.dirname, "client/index.html"),
+        widget: path.resolve(import.meta.dirname, "client/src/widget.tsx")
+      },
+      output: {
+        entryFileNames: (chunkInfo) => {
+          return chunkInfo.name === 'widget' ? 'api/widget.js' : 'assets/[name]-[hash].js';
+        }
+      }
+    }
   },
 });
