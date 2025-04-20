@@ -1,3 +1,4 @@
+
 import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
@@ -14,13 +15,68 @@ const db = drizzle(client);
 const router = express.Router();
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100
 });
 
-router.use(limiter); // Apply rate limiting middleware
+router.use(limiter);
 
-// Widget endpoint with CORS headers
+router.get('/widget.js', cors(), (req, res) => {
+  res.header('Content-Type', 'application/javascript');
+  const widgetCode = `
+    (function() {
+      const container = document.getElementById('agent-finder-widget');
+      if (!container) return;
+
+      // Add styles
+      const style = document.createElement('style');
+      style.textContent = ${JSON.stringify(widgetCss)};
+      document.head.appendChild(style);
+
+      // Create and append form
+      container.innerHTML = ${JSON.stringify(widgetHtml)};
+
+      // Add event listener
+      const form = document.getElementById('agent-finder-form');
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(form);
+          const data = Object.fromEntries(formData.entries());
+          
+          try {
+            const response = await fetch('https://agent-lender-finder-joseph274.replit.app/api/submit-finder', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                finderType: 'agent',
+                formData: {
+                  transaction_type: 'buy',
+                  property_type: data.property_type,
+                  location: data.location,
+                  price_min: data.price_min,
+                  price_max: data.price_max
+                }
+              })
+            });
+            
+            if (!response.ok) throw new Error('Submission failed');
+            alert('Form submitted successfully!');
+            form.reset();
+          } catch (error) {
+            console.error('Error:', error);
+            alert('There was an error submitting the form. Please try again.');
+          }
+        });
+      }
+    })();
+  `;
+  res.send(widgetCode);
+});
+
+// Keep existing /api/widget endpoint for compatibility
 router.get('/api/widget', cors(), (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -108,46 +164,6 @@ router.get('/api/widget', cors(), (req, res) => {
     .bp-widget .submit-button:hover {
       background-color: #0747A6;
     }
-  `;
-
-  const widgetScript = `
-    (function() {
-      const form = document.getElementById('agent-finder-form');
-      
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        
-        try {
-          const response = await fetch('https://agent-lender-finder-joseph274.replit.app/api/submit-finder', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              finderType: 'agent',
-              formData: {
-                transaction_type: 'buy',
-                property_type: data.property_type,
-                location: data.location,
-                price_min: data.price_min,
-                price_max: data.price_max
-              }
-            })
-          });
-          
-          if (!response.ok) throw new Error('Submission failed');
-          
-          alert('Form submitted successfully!');
-          form.reset();
-        } catch (error) {
-          console.error('Error:', error);
-          alert('There was an error submitting the form. Please try again.');
-        }
-      });
-    })();
   `;
 
   res.json({
