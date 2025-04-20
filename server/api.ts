@@ -22,7 +22,12 @@ const limiter = rateLimit({
 });
 
 router.use(limiter);
-router.use(cors());
+router.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Origin', 'Accept'],
+  credentials: true
+}));
 
 // Serve the widget.js file
 router.get('/widget.js', (req, res) => {
