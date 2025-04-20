@@ -63,7 +63,7 @@ export const contactSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   zip: z.string().optional(),
-  notes: z.string().optional().max(500),
+  notes: z.string().max(500).optional(),
 });
 
 export const agentFinderSchema = z.object({
