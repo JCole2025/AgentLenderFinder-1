@@ -94,7 +94,8 @@
       
       // Create script tag
       const script = document.createElement('script');
-      script.src = 'http://localhost:5000/embed.js';
+      // For testing, use the full URL of the Replit app
+      script.src = 'https://' + window.location.hostname + '/embed.js';
       script.setAttribute('data-height', '700px');
       script.setAttribute('data-borderradius', '10px');
       script.setAttribute('data-boxshadow', '0 10px 25px rgba(0, 0, 0, 0.1)');
@@ -150,7 +151,8 @@
     // Listen for messages from the iframe
     window.addEventListener('message', function(event) {
       // Only listen to messages from our domain
-      if (!event.origin.includes('localhost:5000')) return;
+      const appDomain = window.location.hostname;
+      if (!event.origin.includes(appDomain)) return;
       
       try {
         if (event.data && typeof event.data === 'object') {

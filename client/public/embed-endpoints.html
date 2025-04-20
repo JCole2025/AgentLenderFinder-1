@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BiggerPockets Agent Finder - Embedding Endpoints</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    
+    h1, h2, h3 {
+      color: #2563eb;
+    }
+    
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      color: #6b7280;
+      font-size: 1.2rem;
+      margin-top: 0;
+    }
+    
+    .endpoints {
+      margin-top: 40px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.95rem;
+    }
+    
+    thead {
+      background-color: #f3f4f6;
+    }
+    
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    th {
+      font-weight: 600;
+    }
+    
+    tr:hover {
+      background-color: #f9fafb;
+    }
+    
+    .code-example {
+      background-color: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      padding: 20px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+    
+    code {
+      background-color: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+    
+    pre {
+      margin: 0;
+      line-height: 1.5;
+      font-family: monospace;
+    }
+    
+    .note {
+      background-color: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .note h3 {
+      margin-top: 0;
+      color: #d97706;
+    }
+    
+    .url {
+      font-weight: bold;
+      word-break: break-all;
+    }
+    
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.9rem;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>BiggerPockets Agent Finder</h1>
+    <p class="subtitle">Embedding API Documentation</p>
+  </header>
+  
+  <main>
+    <section>
+      <h2>Overview</h2>
+      <p>
+        The BiggerPockets Agent Finder can be embedded on any website using a simple script tag.
+        This document provides details on all available endpoints for embedding and interacting with the widget.
+      </p>
+    </section>
+    
+    <section class="endpoints">
+      <h2>API Endpoints</h2>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Endpoint</th>
+            <th>Description</th>
+            <th>Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="url">/embed.js</td>
+            <td>The main embedding script that creates and initializes the widget iframe</td>
+            <td>Add to any HTML page via a script tag</td>
+          </tr>
+          <tr>
+            <td class="url">/embed</td>
+            <td>The embedded version of the agent finder form</td>
+            <td>Automatically loaded by embed.js (do not use directly)</td>
+          </tr>
+          <tr>
+            <td class="url">/example.html</td>
+            <td>Example page showing embedding options and documentation</td>
+            <td>Reference for developers</td>
+          </tr>
+          <tr>
+            <td class="url">/test-embed.html</td>
+            <td>Test page for the embedded widget with debugging controls</td>
+            <td>Testing and development</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="note">
+        <h3>Important Note</h3>
+        <p>When embedding the widget, always use the absolute URL to the embed.js script:</p>
+        <code>https://your-replit-domain.com/embed.js</code>
+        <p>This ensures the widget loads correctly across different domains.</p>
+      </div>
+    </section>
+    
+    <section>
+      <h2>Basic Implementation</h2>
+      <p>To embed the Agent Finder on your website, add the following code:</p>
+      
+      <div class="code-example">
+        <pre><code>&lt;script 
+  src="https://your-replit-domain.com/embed.js" 
+  data-containerid="bp-agent-finder"
+  data-width="100%"
+  data-height="700px"
+  data-borderradius="8px"
+  data-boxshadow="0 4px 12px rgba(0, 0, 0, 0.1)"&gt;
+&lt;/script&gt;</code></pre>
+      </div>
+      
+      <p>Replace <code>your-replit-domain.com</code> with your actual Replit domain.</p>
+    </section>
+    
+    <section>
+      <h2>Configuration Options</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Description</th>
+            <th>Default</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data-containerid</code></td>
+            <td>ID for the container element</td>
+            <td>"bp-agent-finder"</td>
+          </tr>
+          <tr>
+            <td><code>data-width</code></td>
+            <td>Width of the widget</td>
+            <td>"100%"</td>
+          </tr>
+          <tr>
+            <td><code>data-height</code></td>
+            <td>Height of the widget</td>
+            <td>"650px"</td>
+          </tr>
+          <tr>
+            <td><code>data-border</code></td>
+            <td>Border style</td>
+            <td>"none"</td>
+          </tr>
+          <tr>
+            <td><code>data-borderradius</code></td>
+            <td>Border radius</td>
+            <td>"8px"</td>
+          </tr>
+          <tr>
+            <td><code>data-boxshadow</code></td>
+            <td>Box shadow</td>
+            <td>"0 4px 12px rgba(0, 0, 0, 0.1)"</td>
+          </tr>
+          <tr>
+            <td><code>data-scrolling</code></td>
+            <td>Enable/disable iframe scrolling</td>
+            <td>"no"</td>
+          </tr>
+          <tr>
+            <td><code>data-allowfullscreen</code></td>
+            <td>Allow fullscreen mode</td>
+            <td>"false"</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    
+    <section>
+      <h2>JavaScript API</h2>
+      <p>
+        The embed script exposes a JavaScript API for programmatically interacting with the widget.
+        This API is accessible through the <code>window.BiggerPocketsAgentFinder</code> object.
+      </p>
+      
+      <div class="code-example">
+        <pre><code>// Get reference to the widget instance
+const widget = window.BiggerPocketsAgentFinder.instances[Object.keys(window.BiggerPocketsAgentFinder.instances)[0]];
+
+// Reset the form
+widget.reset();
+
+// Get the current form state
+widget.getState();</code></pre>
+      </div>
+    </section>
+    
+    <section>
+      <h2>Event Handling</h2>
+      <p>
+        You can listen for events from the widget using the window's message event.
+        This allows you to respond to form state changes, submissions, etc.
+      </p>
+      
+      <div class="code-example">
+        <pre><code>window.addEventListener('message', function(event) {
+  // Verify the origin of the message
+  if (event.origin !== 'https://your-replit-domain.com') return;
+  
+  const data = event.data;
+  
+  // Handle different message types
+  switch (data.type) {
+    case 'resize':
+      console.log('Widget resized to height:', data.height);
+      break;
+      
+    case 'stepChange':
+      console.log('Form step changed to:', data.step);
+      break;
+      
+    case 'formSubmitted':
+      console.log('Form successfully submitted!');
+      // You can trigger analytics events or redirects here
+      break;
+  }
+});</code></pre>
+      </div>
+    </section>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 BiggerPockets Agent Finder. All rights reserved.</p>
+  </footer>
+</body>
+</html>
