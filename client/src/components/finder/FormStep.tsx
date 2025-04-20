@@ -35,11 +35,11 @@ export default function FormStep({
         <h2 className="text-xl sm:text-2xl font-semibold mb-2 text-gray-800 leading-tight">{title}</h2>
         {subtitle && <p className="text-gray-600 max-w-3xl">{subtitle}</p>}
       </div>
-      
+
       <div className="p-4 sm:p-8">
         {children}
       </div>
-      
+
       <div className="p-6 bg-gray-50 flex justify-between">
         {showPrevious ? (
           <Button
@@ -56,7 +56,7 @@ export default function FormStep({
         ) : (
           <div></div> // Empty div to maintain flex spacing
         )}
-        
+
         {showSubmit ? (
           <Button 
             disabled={!isValid}
