@@ -50,18 +50,18 @@ export function useFormNavigation() {
     if (!formData) return currentStep;
 
     if (formData.transaction_type === 'sell') {
-      // Sell path has 4 steps
+      // Sell path: A -> B2 -> D2 -> H2
       switch (currentStep) {
-        case FormStep.TRANSACTION_TYPE: // Step 1
+        case FormStep.TRANSACTION_TYPE: // Step 1 (A)
           return FormStep.PROPERTY_TYPE; // Go to property type (B2)
-        case FormStep.PROPERTY_TYPE: // Step 2
+        case FormStep.PROPERTY_TYPE: // Step 2 (B2)
           return FormStep.LOCATION_PRICE; // Go to location/price (D2)
-        case FormStep.LOCATION_PRICE:
-          return FormStep.CONTACT_INFO; // Go to contact info
-        case FormStep.CONTACT_INFO:
+        case FormStep.LOCATION_PRICE: // Step 3 (D2)
+          return FormStep.CONTACT_INFO; // Go to contact info (H2)
+        case FormStep.CONTACT_INFO: // Step 4 (H2)
           return FormStep.CONTACT_INFO; // Stay on last step
         default:
-          return currentStep;
+          return FormStep.PROPERTY_TYPE; // Default to property type if unknown
       }
     } else {
       // Buy path has 7 steps
