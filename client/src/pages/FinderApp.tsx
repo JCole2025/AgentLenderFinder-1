@@ -18,14 +18,28 @@ export default function FinderApp({ embedded = false }: FinderAppProps) {
     setCurrentStep(1);
   };
 
+  // State to track parent origin for secure messaging
+  const [parentOrigin, setParentOrigin] = useState<string>('*');
+  
+  // Function to send messages to parent window
+  const sendMessageToParent = (message: any) => {
+    if (embedded && window.parent !== window) {
+      try {
+        window.parent.postMessage(message, parentOrigin);
+      } catch (error) {
+        console.error("Error sending message to parent:", error);
+      }
+    }
+  };
+  
   // Function to send height updates to parent window if embedded
   const sendHeightToParent = () => {
-    if (embedded && containerRef.current && window.parent !== window) {
+    if (embedded && containerRef.current) {
       const height = containerRef.current.scrollHeight;
-      window.parent.postMessage({ 
+      sendMessageToParent({ 
         type: 'resize',
         height: height
-      }, '*');
+      });
     }
   };
 
@@ -34,31 +48,63 @@ export default function FinderApp({ embedded = false }: FinderAppProps) {
     if (embedded) {
       // Handler for messages from parent window
       const handleMessage = (event: MessageEvent) => {
-        // Validate origin if needed
-        // if (event.origin !== 'https://allowedorigin.com') return;
+        // Skip messages from the same window
+        if (event.source === window) return;
         
         if (event.data && typeof event.data === 'object') {
           // Handle message types
           switch (event.data.type) {
+            case 'init':
+              // Store parent origin for secure messaging
+              if (event.data.parentOrigin) {
+                setParentOrigin(event.data.parentOrigin);
+              }
+              
+              // Send ready confirmation
+              sendMessageToParent({
+                type: 'ready',
+                widgetVersion: '1.0.1'
+              });
+              
+              // Also send initial height
+              if (containerRef.current) {
+                sendMessageToParent({
+                  type: 'resize',
+                  height: containerRef.current.scrollHeight
+                });
+              }
+              break;
+              
             case 'reset':
               resetForm();
               break;
+              
             case 'getState':
               // Send form state back to parent
-              window.parent.postMessage({
+              sendMessageToParent({
                 type: 'state',
                 step: currentStep,
                 completed: showSuccess
-              }, '*');
+              });
               break;
           }
         }
       };
 
+      // Add message listener
       window.addEventListener('message', handleMessage);
+      
+      // Initial ready message (in case parent missed our response)
+      setTimeout(() => {
+        sendMessageToParent({
+          type: 'ready',
+          widgetVersion: '1.0.1'
+        });
+      }, 1000);
+      
       return () => window.removeEventListener('message', handleMessage);
     }
-  }, [embedded, currentStep, showSuccess]);
+  }, [embedded, currentStep, showSuccess, parentOrigin]);
 
   // Update height when content changes
   useEffect(() => {
@@ -83,13 +129,13 @@ export default function FinderApp({ embedded = false }: FinderAppProps) {
 
   // Monitor step changes to update parent
   useEffect(() => {
-    if (embedded && window.parent !== window) {
-      window.parent.postMessage({ 
+    if (embedded) {
+      sendMessageToParent({
         type: 'stepChange',
         step: currentStep
-      }, '*');
+      });
     }
-  }, [embedded, currentStep]);
+  }, [embedded, currentStep, parentOrigin]);
 
   return (
     <div 
@@ -131,11 +177,11 @@ export default function FinderApp({ embedded = false }: FinderAppProps) {
                   setShowSuccess(true);
                   
                   // Notify parent window on successful submission
-                  if (embedded && window.parent !== window) {
-                    window.parent.postMessage({ 
+                  if (embedded) {
+                    sendMessageToParent({ 
                       type: 'formSubmitted',
                       success: true
-                    }, '*');
+                    });
                   }
                 }}
               />

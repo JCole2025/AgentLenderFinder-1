@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>External Domain Embedding Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      background-color: #4f46e5;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+    
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .sidebar {
+      flex: 1;
+      min-width: 250px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    
+    .main-content {
+      flex: 3;
+      min-width: 300px;
+    }
+    
+    .widget-container {
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .controls {
+      background-color: #f0f4f8;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    
+    button:hover {
+      background-color: #4338ca;
+    }
+    
+    .log-container {
+      background-color: #1e293b;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 8px;
+      height: 200px;
+      overflow-y: auto;
+      font-family: monospace;
+    }
+    
+    .log-entry {
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    
+    .success { color: #10b981; }
+    .info { color: #60a5fa; }
+    .warning { color: #f59e0b; }
+    .error { color: #ef4444; }
+    
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+      border-top: 1px solid #ddd;
+    }
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    code {
+      background-color: #f1f5f9;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>External Website Embedding Test</h1>
+    <p>This page simulates embedding the BiggerPockets Agent Finder on a different domain website.</p>
+  </header>
+  
+  <div class="container">
+    <div class="sidebar">
+      <h2>Configuration</h2>
+      <div class="input-group">
+        <label for="widget-url">Widget Source URL</label>
+        <input type="text" id="widget-url" value="http://localhost:5000/embed.js" />
+      </div>
+      
+      <div class="input-group">
+        <label for="container-id">Container ID</label>
+        <input type="text" id="container-id" value="external-agent-finder" />
+      </div>
+      
+      <div class="input-group">
+        <label for="widget-height">Widget Height</label>
+        <input type="text" id="widget-height" value="600px" />
+      </div>
+      
+      <div class="input-group">
+        <label for="border-radius">Border Radius</label>
+        <input type="text" id="border-radius" value="8px" />
+      </div>
+      
+      <div class="input-group">
+        <label for="box-shadow">Box Shadow</label>
+        <input type="text" id="box-shadow" value="0 4px 12px rgba(0, 0, 0, 0.1)" />
+      </div>
+      
+      <button onclick="loadWidget()">Load Widget</button>
+      <button onclick="removeWidget()">Remove Widget</button>
+    </div>
+    
+    <div class="main-content">
+      <div class="controls">
+        <h3>Widget Controls</h3>
+        <button onclick="resetWidget()">Reset Form</button>
+        <button onclick="getState()">Get State</button>
+      </div>
+      
+      <div id="widget-container" class="widget-container">
+        <h2>Agent Finder Widget</h2>
+        <p>Click "Load Widget" to embed the agent finder widget here.</p>
+        <div id="external-agent-finder"></div>
+      </div>
+      
+      <div class="log-section">
+        <h3>Event Log</h3>
+        <div id="log" class="log-container"></div>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>This is a test page to verify cross-domain embedding of the BiggerPockets Agent Finder.</p>
+    <p>&copy; 2025 Test Domain. All rights reserved.</p>
+  </footer>
+  
+  <script>
+    // Get reference to elements
+    const widgetContainer = document.getElementById('widget-container');
+    const logContainer = document.getElementById('log');
+    
+    // Add log entry with timestamp
+    function logEvent(message, type = 'info') {
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      const timestamp = new Date().toLocaleTimeString();
+      entry.textContent = `[${timestamp}] ${message}`;
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+    
+    // Load the widget with current configuration
+    function loadWidget() {
+      try {
+        // Remove any existing widget first
+        removeWidget();
+        
+        // Get configuration values
+        const widgetUrl = document.getElementById('widget-url').value;
+        const containerId = document.getElementById('container-id').value;
+        const height = document.getElementById('widget-height').value;
+        const borderRadius = document.getElementById('border-radius').value;
+        const boxShadow = document.getElementById('box-shadow').value;
+        
+        // Create script element
+        const script = document.createElement('script');
+        script.src = widgetUrl;
+        script.id = 'agent-finder-script';
+        script.setAttribute('data-containerid', containerId);
+        script.setAttribute('data-height', height);
+        script.setAttribute('data-borderradius', borderRadius);
+        script.setAttribute('data-boxshadow', boxShadow);
+        
+        // Append to container
+        document.getElementById(containerId).appendChild(script);
+        
+        logEvent('Widget loaded successfully', 'success');
+      } catch (error) {
+        logEvent(`Error loading widget: ${error.message}`, 'error');
+      }
+    }
+    
+    // Remove the widget
+    function removeWidget() {
+      try {
+        const widgetScript = document.getElementById('agent-finder-script');
+        if (widgetScript) {
+          widgetScript.remove();
+        }
+        
+        const containerId = document.getElementById('container-id').value;
+        const container = document.getElementById(containerId);
+        
+        // Remove all children (including iframe)
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        
+        logEvent('Widget removed', 'info');
+      } catch (error) {
+        logEvent(`Error removing widget: ${error.message}`, 'error');
+      }
+    }
+    
+    // Reset the widget
+    function resetWidget() {
+      try {
+        const containerId = document.getElementById('container-id').value;
+        const container = document.getElementById(containerId);
+        const iframe = container.querySelector('iframe');
+        
+        if (iframe) {
+          iframe.contentWindow.postMessage({ type: 'reset' }, '*');
+          logEvent('Reset command sent to widget', 'info');
+        } else {
+          logEvent('No widget iframe found', 'warning');
+        }
+      } catch (error) {
+        logEvent(`Error resetting widget: ${error.message}`, 'error');
+      }
+    }
+    
+    // Get widget state
+    function getState() {
+      try {
+        const containerId = document.getElementById('container-id').value;
+        const container = document.getElementById(containerId);
+        const iframe = container.querySelector('iframe');
+        
+        if (iframe) {
+          iframe.contentWindow.postMessage({ type: 'getState' }, '*');
+          logEvent('State request sent to widget', 'info');
+        } else {
+          logEvent('No widget iframe found', 'warning');
+        }
+      } catch (error) {
+        logEvent(`Error getting widget state: ${error.message}`, 'error');
+      }
+    }
+    
+    // Listen for messages from the iframe
+    window.addEventListener('message', function(event) {
+      // In production you'd validate the origin
+      // if (event.origin !== 'https://your-widget-domain.com') return;
+      
+      if (event.data && typeof event.data === 'object') {
+        const data = event.data;
+        
+        switch (data.type) {
+          case 'resize':
+            logEvent(`Widget resized to height: ${data.height}px`, 'info');
+            break;
+            
+          case 'stepChange':
+            logEvent(`Form step changed to: ${data.step}`, 'info');
+            break;
+            
+          case 'formSubmitted':
+            logEvent('Form successfully submitted!', 'success');
+            break;
+            
+          case 'state':
+            logEvent(`Widget state - Step: ${data.step}, Completed: ${data.completed}`, 'info');
+            break;
+            
+          default:
+            logEvent(`Received message: ${JSON.stringify(data)}`, 'info');
+        }
+      }
+    });
+    
+    // Log initial message
+    logEvent('External domain test page loaded. Use the controls to interact with the widget.', 'info');
+  </script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cross-Domain Embed Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .widget-container {
+      margin: 30px 0;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    h1 {
+      color: #2563eb;
+    }
+    .log {
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      height: 150px;
+      overflow-y: auto;
+      font-family: monospace;
+      margin: 20px 0;
+    }
+    .controls {
+      margin: 20px 0;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cross-Domain Embed Test</h1>
+    <p>This page will load the embed script from the local server to test cross-domain functionality.</p>
+    
+    <div class="controls">
+      <button onclick="loadWidget()">Load Widget</button>
+      <button onclick="resetWidget()">Reset Widget</button>
+      <button onclick="getWidgetState()">Get State</button>
+    </div>
+    
+    <div class="log" id="log"></div>
+    
+    <div class="widget-container" id="widget-container">
+      <!-- Widget will be loaded here -->
+    </div>
+  </div>
+
+  <script>
+    // Log function
+    function log(message) {
+      const logContainer = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+    
+    // Load widget function
+    function loadWidget() {
+      log('Loading widget...');
+      
+      // Clear any existing widget
+      const container = document.getElementById('widget-container');
+      container.innerHTML = '';
+      
+      // Create container div
+      const widgetContainer = document.createElement('div');
+      widgetContainer.id = 'bp-agent-finder';
+      container.appendChild(widgetContainer);
+      
+      // Create script tag
+      const script = document.createElement('script');
+      script.src = 'http://localhost:5000/embed.js';
+      script.setAttribute('data-height', '700px');
+      script.setAttribute('data-borderradius', '10px');
+      script.setAttribute('data-boxshadow', '0 10px 25px rgba(0, 0, 0, 0.1)');
+      
+      // Add script to page
+      document.body.appendChild(script);
+      
+      log('Widget script added to page');
+    }
+    
+    // Reset widget
+    function resetWidget() {
+      log('Attempting to reset widget...');
+      
+      if (window.BiggerPocketsAgentFinder) {
+        // Use the API we exposed in embed.js
+        const instances = window.BiggerPocketsAgentFinder.instances;
+        const keys = Object.keys(instances);
+        
+        if (keys.length > 0) {
+          const widget = instances[keys[0]];
+          const result = widget.reset();
+          log('Reset request sent: ' + result);
+        } else {
+          log('No widget instances found');
+        }
+      } else {
+        log('Widget API not found. Is the widget loaded?');
+      }
+    }
+    
+    // Get widget state
+    function getWidgetState() {
+      log('Getting widget state...');
+      
+      if (window.BiggerPocketsAgentFinder) {
+        // Use the API we exposed in embed.js
+        const instances = window.BiggerPocketsAgentFinder.instances;
+        const keys = Object.keys(instances);
+        
+        if (keys.length > 0) {
+          const widget = instances[keys[0]];
+          const result = widget.getState();
+          log('State request sent: ' + result);
+        } else {
+          log('No widget instances found');
+        }
+      } else {
+        log('Widget API not found. Is the widget loaded?');
+      }
+    }
+    
+    // Listen for messages from the iframe
+    window.addEventListener('message', function(event) {
+      // Only listen to messages from our domain
+      if (!event.origin.includes('localhost:5000')) return;
+      
+      try {
+        if (event.data && typeof event.data === 'object') {
+          const data = event.data;
+          
+          switch (data.type) {
+            case 'ready':
+              log(`Widget is ready (version ${data.widgetVersion || 'unknown'})`);
+              break;
+              
+            case 'resize':
+              log(`Widget height updated to ${data.height}px`);
+              break;
+              
+            case 'state':
+              log(`Widget state - Step: ${data.step}, Completed: ${data.completed}`);
+              break;
+              
+            case 'stepChange':
+              log(`Form step changed to: ${data.step}`);
+              break;
+              
+            case 'formSubmitted':
+              log('Form successfully submitted! 🎉');
+              break;
+              
+            default:
+              log(`Received message: ${JSON.stringify(data)}`);
+          }
+        }
+      } catch (error) {
+        log(`Error processing message: ${error.message}`);
+      }
+    });
+    
+    // Log initial state
+    log('Page loaded. Click "Load Widget" to load the agent finder.');
+  </script>
+</body>
+</html>
