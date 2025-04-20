@@ -8,6 +8,7 @@ import FinderApp from "@/pages/FinderApp";
 function Router() {
   return (
     <Switch>
+      <Route path="/finder" component={FinderApp} />
       <Route path="/" component={FinderApp} />
       <Route component={NotFound} />
     </Switch>
