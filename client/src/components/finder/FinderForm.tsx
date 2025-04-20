@@ -55,6 +55,14 @@ function FinderFormContent({
   const handleNext = () => {
     console.log('FinderForm - Next step from current step:', currentStep);
     
+    // Normalize sell flow steps
+    if (formData.transaction_type === 'sell') {
+      if (currentStep === 2) {
+        setCurrentStep(4); // B2 -> D2
+        return;
+      }
+    }
+    
     goToNextStep({
       currentStep,
       formData,

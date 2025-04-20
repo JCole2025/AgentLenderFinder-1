@@ -132,7 +132,7 @@ const AgentFinderSteps = React.memo(function AgentFinderSteps({
     },
 
     propertyTypeSell: { // Card B2
-      isActive: currentStep === 2 && formData.transaction_type === 'sell',
+      isActive: (currentStep === 2 || currentStep === 3) && formData.transaction_type === 'sell',
       title: "What type of property are you selling?",
       subtitle: "Select your property type",
       content: (
