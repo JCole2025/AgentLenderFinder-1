@@ -14,10 +14,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up global CORS middleware for all routes
   app.use((req, res, next) => {
+    // Standard CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
+    
+    // Allow embedding from any domain (instead of X-Frame-Options: DENY)
+    res.removeHeader('X-Frame-Options');
+    
+    // Set permissive Content-Security-Policy for cross-domain embedding
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src * 'unsafe-inline' 'unsafe-eval'; frame-ancestors *;"
+    );
     
     // Handle preflight OPTIONS requests
     if (req.method === 'OPTIONS') {
