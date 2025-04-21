@@ -20,14 +20,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     
-    // Allow embedding from any domain (instead of X-Frame-Options: DENY)
+    // Remove X-Frame-Options to allow embedding
     res.removeHeader('X-Frame-Options');
     
-    // Set permissive Content-Security-Policy for cross-domain embedding
-    res.setHeader(
-      'Content-Security-Policy',
-      "default-src * 'unsafe-inline' 'unsafe-eval'; frame-ancestors *;"
-    );
+    // Set Content-Security-Policy to allow embedding from any domain
+    res.setHeader('Content-Security-Policy', "frame-ancestors *");
+    
+    // Additional headers for better cross-browser compatibility
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
     
     // Handle preflight OPTIONS requests
     if (req.method === 'OPTIONS') {
