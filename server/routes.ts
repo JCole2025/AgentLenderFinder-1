@@ -14,21 +14,24 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up global CORS middleware for all routes
   app.use((req, res, next) => {
-    // Standard CORS headers
+    // Enhanced CORS headers for wider compatibility
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', '*');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
     
-    // Remove X-Frame-Options to allow embedding
+    // Remove restrictive frame headers
     res.removeHeader('X-Frame-Options');
+    res.removeHeader('Frame-Options');
     
-    // Set Content-Security-Policy to allow embedding from any domain
-    res.setHeader('Content-Security-Policy', "frame-ancestors *");
+    // Set permissive Content-Security-Policy
+    res.setHeader('Content-Security-Policy', "frame-ancestors * https://*.replit.dev https://*.replit.app https://*.repl.co");
     
-    // Additional headers for better cross-browser compatibility
+    // Additional security and compatibility headers
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
+    res.setHeader('Permissions-Policy', 'interest-cohort=()');
     
     // Handle preflight OPTIONS requests
     if (req.method === 'OPTIONS') {
