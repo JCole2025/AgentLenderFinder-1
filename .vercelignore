@@ -1,0 +1,11 @@
+.git
+node_modules
+.env
+.env.*
+dist
+.replit
+.gitignore
+.config
+README.md
+attached_assets
+drizzle

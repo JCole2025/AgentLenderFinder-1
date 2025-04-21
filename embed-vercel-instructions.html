@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiggerPockets Agent Finder - Embedding Instructions</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: #1a202c;
+            margin-top: 1.5em;
+            margin-bottom: 0.75em;
+        }
+        
+        p, li {
+            margin-bottom: 1em;
+        }
+        
+        .tab-container {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 2em;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            background-color: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .tab-navigation button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            color: #718096;
+        }
+        
+        .tab-navigation button.active {
+            border-bottom-color: #3182ce;
+            color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        
+        .tab-navigation button:hover:not(.active) {
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        pre {
+            background-color: #f1f5f9;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            position: relative;
+        }
+        
+        code {
+            font-family: Menlo, Monaco, "Courier New", monospace;
+        }
+        
+        .copy-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 6px 10px;
+            background-color: #e2e8f0;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .copy-button:hover {
+            background-color: #cbd5e0;
+        }
+        
+        .alert {
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-info {
+            background-color: #ebf8ff;
+            border-left: 4px solid #3182ce;
+        }
+        
+        .alert-warning {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 2em;
+        }
+        
+        .feature-item {
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+        }
+        
+        .feature-item h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #2d3748;
+        }
+        
+        .feature-icon {
+            display: inline-block;
+            margin-right: 8px;
+            color: #4299e1;
+        }
+        
+        .custom-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .option-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .option-card h4 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <h1>BiggerPockets Agent Finder Widget - Embedding Instructions</h1>
+    
+    <div class="alert alert-info">
+        <strong>Vercel Deployment Notice:</strong> This agent finder form is now hosted on Vercel for improved performance and cross-domain embedding capabilities.
+    </div>
+    
+    <p>
+        The BiggerPockets Agent Finder widget can be easily embedded into any website using our embedding script or direct iframe implementation.
+        The widget is fully responsive and will adapt to different screen sizes automatically.
+    </p>
+    
+    <div class="feature-list">
+        <div class="feature-item">
+            <h3><span class="feature-icon">⚡</span> Lightning Fast</h3>
+            <p>Embedded widget loads quickly with optimized assets</p>
+        </div>
+        <div class="feature-item">
+            <h3><span class="feature-icon">📱</span> Responsive Design</h3>
+            <p>Automatically adapts to all screen sizes</p>
+        </div>
+        <div class="feature-item">
+            <h3><span class="feature-icon">🔄</span> Dynamic Height</h3>
+            <p>Adjusts height based on the current form state</p>
+        </div>
+        <div class="feature-item">
+            <h3><span class="feature-icon">🔐</span> Secure Communication</h3>
+            <p>Cross-domain messages with origin validation</p>
+        </div>
+    </div>
+    
+    <div class="tab-container">
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="simple">Simple Embed</button>
+            <button class="tab-button" data-tab="wordpress">WordPress</button>
+            <button class="tab-button" data-tab="direct">Direct iframe</button>
+            <button class="tab-button" data-tab="advanced">Advanced API</button>
+        </div>
+        
+        <div class="tab-content active" id="simple-tab">
+            <h2>Simple Embedding</h2>
+            <p>Add the following code to your HTML where you want the Agent Finder form to appear:</p>
+            
+            <pre><code id="simple-code">&lt;script 
+  src="<span id="vercel-domain">https://your-vercel-app.vercel.app</span>/embed.js" 
+  data-containerid="bp-agent-finder"
+  data-width="100%"
+  data-height="700px"
+  data-borderradius="8px"
+  data-boxshadow="0 4px 12px rgba(0, 0, 0, 0.1)"&gt;
+&lt;/script&gt;</code><button class="copy-button" data-target="simple-code">Copy</button></pre>
+            
+            <p>This script will:</p>
+            <ol>
+                <li>Automatically create a container on your page</li>
+                <li>Insert the Agent Finder form in an iframe</li>
+                <li>Handle all communication and resize events</li>
+            </ol>
+        </div>
+        
+        <div class="tab-content" id="wordpress-tab">
+            <h2>WordPress Implementation</h2>
+            <p>To add the Agent Finder to a WordPress site:</p>
+            
+            <ol>
+                <li>Go to your WordPress page or post editor</li>
+                <li>Add a "Custom HTML" block</li>
+                <li>Paste the following code:</li>
+            </ol>
+            
+            <pre><code id="wp-code">&lt;script 
+  src="<span class="vercel-domain">https://your-vercel-app.vercel.app</span>/embed.js" 
+  data-containerid="bp-agent-finder"
+  data-width="100%"
+  data-height="700px"
+  data-borderradius="8px"
+  data-boxshadow="0 4px 12px rgba(0, 0, 0, 0.1)"&gt;
+&lt;/script&gt;</code><button class="copy-button" data-target="wp-code">Copy</button></pre>
+            
+            <p>If you're using Elementor or another page builder:</p>
+            <ol>
+                <li>Add an HTML or Custom Code widget</li>
+                <li>Paste the code above</li>
+                <li>Save and publish your page</li>
+            </ol>
+        </div>
+        
+        <div class="tab-content" id="direct-tab">
+            <h2>Direct iframe Embedding</h2>
+            <p>If you prefer to use a direct iframe instead of our script, you can use this HTML:</p>
+            
+            <pre><code id="direct-code">&lt;iframe 
+  src="<span class="vercel-domain">https://your-vercel-app.vercel.app</span>/?embedded=true"
+  width="100%"
+  height="700px"
+  style="border-radius: 8px; border: none; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);"
+  title="BiggerPockets Agent Finder"
+  loading="lazy"
+  allow="clipboard-write"&gt;
+&lt;/iframe&gt;</code><button class="copy-button" data-target="direct-code">Copy</button></pre>
+            
+            <div class="alert alert-warning">
+                <strong>Note:</strong> When using direct iframe, you'll need to implement your own height adjustment logic if needed.
+            </div>
+        </div>
+        
+        <div class="tab-content" id="advanced-tab">
+            <h2>Advanced Integration API</h2>
+            <p>For developers who need programmatic control, you can use the JavaScript API:</p>
+            
+            <pre><code id="advanced-code">// First embed the widget using the standard script
+&lt;script 
+  src="<span class="vercel-domain">https://your-vercel-app.vercel.app</span>/embed.js" 
+  data-containerid="bp-agent-finder"
+  id="bp-embed-script"&gt;
+&lt;/script&gt;
+
+&lt;script&gt;
+// Wait for widget to be loaded
+document.getElementById('bp-embed-script').addEventListener('load', function() {
+  // Get reference to the widget iframe
+  const container = document.getElementById('bp-agent-finder');
+  const iframe = container.querySelector('iframe');
+  
+  // Reset the form
+  iframe.contentWindow.postMessage({ 
+    type: 'reset' 
+  }, '<span class="vercel-domain">https://your-vercel-app.vercel.app</span>');
+  
+  // Get the current state of the form
+  iframe.contentWindow.postMessage({ 
+    type: 'getState' 
+  }, '<span class="vercel-domain">https://your-vercel-app.vercel.app</span>');
+  
+  // Listen for events from the widget
+  window.addEventListener('message', function(event) {
+    // Verify the origin for security
+    if (event.origin !== '<span class="vercel-domain">https://your-vercel-app.vercel.app</span>') return;
+    
+    const data = event.data;
+    
+    // Handle different message types
+    switch (data.type) {
+      case 'resize':
+        console.log('Widget height updated to', data.height);
+        break;
+        
+      case 'stepChange':
+        console.log('User moved to step', data.step);
+        break;
+        
+      case 'formSubmitted':
+        console.log('Form successfully submitted!');
+        // You can trigger your own analytics or actions here
+        break;
+    }
+  });
+});
+&lt;/script&gt;</code><button class="copy-button" data-target="advanced-code">Copy</button></pre>
+        </div>
+    </div>
+    
+    <h2>Customization Options</h2>
+    <p>You can customize the appearance of the widget by modifying these attributes:</p>
+    
+    <div class="custom-options">
+        <div class="option-card">
+            <h4>data-containerid</h4>
+            <p>ID for the container element</p>
+            <p><strong>Default:</strong> "bp-agent-finder"</p>
+        </div>
+        <div class="option-card">
+            <h4>data-width</h4>
+            <p>Width of the widget</p>
+            <p><strong>Default:</strong> "100%"</p>
+        </div>
+        <div class="option-card">
+            <h4>data-height</h4>
+            <p>Initial height of the widget</p>
+            <p><strong>Default:</strong> "650px"</p>
+        </div>
+        <div class="option-card">
+            <h4>data-borderradius</h4>
+            <p>Border radius of the widget</p>
+            <p><strong>Default:</strong> "8px"</p>
+        </div>
+        <div class="option-card">
+            <h4>data-boxshadow</h4>
+            <p>Box shadow for the widget</p>
+            <p><strong>Default:</strong> "0 4px 12px rgba(0, 0, 0, 0.1)"</p>
+        </div>
+    </div>
+    
+    <h2>Troubleshooting</h2>
+    
+    <h3>Common Issues and Solutions</h3>
+    <ul>
+        <li><strong>Widget not appearing:</strong> Make sure you've placed the script in a visible area of your page and that the container ID is not being used elsewhere.</li>
+        <li><strong>Form submission errors:</strong> Check your browser console for any error messages. The widget will display specific error details when failures occur.</li>
+        <li><strong>Styling conflicts:</strong> If your website's CSS is affecting the widget's appearance, you may need to use an iframe with sandbox attributes for better isolation.</li>
+        <li><strong>Cross-domain issues:</strong> Our widget is designed to work across domains, but if you're experiencing issues, ensure that your Content Security Policy (CSP) allows embedding content from our domain.</li>
+    </ul>
+    
+    <script>
+        // Auto-detect the current domain
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentDomain = window.location.origin;
+            const domainElements = document.querySelectorAll('.vercel-domain, #vercel-domain');
+            domainElements.forEach(el => {
+                el.textContent = currentDomain;
+            });
+            
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and content
+                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    // Show the corresponding content
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Copy button functionality
+            document.querySelectorAll('.copy-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const codeElement = document.getElementById(targetId);
+                    
+                    // Create a temporary textarea element to copy text
+                    const textarea = document.createElement('textarea');
+                    textarea.value = codeElement.textContent;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    // Change button text temporarily
+                    const originalText = button.textContent;
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
