@@ -8,21 +8,30 @@ app.use(express.urlencoded({ extended: false }));
 
 // Add comprehensive security headers for reliable iframe embedding
 app.use((req, res, next) => {
-  // Allow embedding from any domain
-  res.setHeader('Content-Security-Policy', "frame-ancestors *");
+  // Remove any frame restrictions
   res.removeHeader('X-Frame-Options');
+  res.removeHeader('Frame-Options');
   
-  // CORS headers
+  // Allow embedding from any domain with maximum compatibility
+  res.setHeader('Content-Security-Policy', "frame-ancestors *");
+  
+  // Set fully permissive CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Methods', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Max-Age', '86400');
   
-  // Additional security headers
+  // Set cross-origin policies for maximum compatibility
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
-  res.setHeader('Permissions-Policy', 'interest-cohort=()');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
   next();
 });
 
