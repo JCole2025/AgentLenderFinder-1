@@ -11,6 +11,7 @@ app.use((req, res, next) => {
   // Remove any frame restrictions
   res.removeHeader('X-Frame-Options');
   res.removeHeader('Frame-Options');
+  res.removeHeader('Content-Security-Policy');
   
   // Allow embedding from any domain with maximum compatibility
   res.setHeader('Content-Security-Policy', "frame-ancestors *");
@@ -19,12 +20,14 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
   res.setHeader('Access-Control-Max-Age', '86400');
   
   // Set cross-origin policies for maximum compatibility
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
   res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  res.setHeader('Permissions-Policy', 'interest-cohort=()');
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
